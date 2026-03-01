@@ -5,7 +5,6 @@ import { useCart } from "@/context/CartContext";
 const navItems = [
   { icon: Home, label: "Accueil", path: "/" },
   { icon: Search, label: "Catalogue", path: "/catalogue" },
-  { icon: Package, label: "Pack", path: "/pack" },
   { icon: ShoppingCart, label: "Panier", path: "__cart__" },
 ];
 

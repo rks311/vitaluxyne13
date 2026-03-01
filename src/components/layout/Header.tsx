@@ -21,7 +21,6 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link to="/catalogue" className="text-muted-foreground hover:text-primary transition-colors">Catalogue</Link>
-          <Link to="/pack" className="text-muted-foreground hover:text-primary transition-colors">Créer un Pack</Link>
           <a href="tel:+213555123456" className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
             <Phone size={14} /> 0555 12 34 56
           </a>
@@ -60,7 +59,6 @@ export default function Header() {
           >
             <nav className="container py-4 flex flex-col gap-3">
               <Link to="/catalogue" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">Catalogue</Link>
-              <Link to="/pack" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">Créer un Pack</Link>
               <a href="tel:+213555123456" className="py-2 font-medium flex items-center gap-2 hover:text-primary transition-colors">
                 <Phone size={16} /> 0555 12 34 56
               </a>
