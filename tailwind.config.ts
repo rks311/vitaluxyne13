@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Oswald", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        heading: ["Bebas Neue", "sans-serif"],
+        body: ["Space Grotesk", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,6 +51,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        silver: {
+          DEFAULT: "hsl(var(--silver))",
+          light: "hsl(var(--silver-light))",
+          dark: "hsl(var(--silver-dark))",
+        },
         surface: "hsl(var(--surface))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -81,35 +86,31 @@ export default {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "fade-in-right": {
-          "0%": { opacity: "0", transform: "translateX(20px)" },
-          "100%": { opacity: "1", transform: "translateX(0)" },
-        },
         "scale-in": {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
-        "pulse-neon": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(130 100% 42% / 0.4)" },
-          "50%": { boxShadow: "0 0 40px hsl(130 100% 42% / 0.7)" },
-        },
         "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(40px)" },
+          "0%": { opacity: "0", transform: "translateY(60px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "count-down": {
-          "0%": { transform: "scaleX(1)" },
-          "100%": { transform: "scaleX(0)" },
+        "reveal": {
+          "0%": { clipPath: "inset(0 100% 0 0)" },
+          "100%": { clipPath: "inset(0 0% 0 0)" },
+        },
+        "line-grow": {
+          "0%": { transform: "scaleX(0)" },
+          "100%": { transform: "scaleX(1)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
-        "fade-in-right": "fade-in-right 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
-        "pulse-neon": "pulse-neon 2s ease-in-out infinite",
-        "slide-up": "slide-up 0.6s ease-out forwards",
+        "slide-up": "slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "reveal": "reveal 1s cubic-bezier(0.77, 0, 0.175, 1) forwards",
+        "line-grow": "line-grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
     },
   },

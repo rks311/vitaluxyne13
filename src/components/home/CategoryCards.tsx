@@ -20,33 +20,42 @@ const catImages: Record<string, string> = {
 
 export default function CategoryCards() {
   return (
-    <section className="container py-12 md:py-16">
-      <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-8">
-        NOS <span className="text-primary">CATÉGORIES</span>
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+    <section className="container py-20 md:py-28">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-12"
+      >
+        <h2 className="font-heading text-4xl md:text-5xl tracking-tight">
+          CATÉGORIES
+        </h2>
+        <div className="w-8 h-px bg-foreground/30 mx-auto mt-4" />
+      </motion.div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-1.5">
         {categories.map((cat, i) => (
           <motion.div
             key={cat.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.08 }}
           >
             <Link
               to={`/catalogue?cat=${cat.id}`}
-              className="group block relative rounded-lg overflow-hidden aspect-square"
+              className="group block relative overflow-hidden aspect-[4/3]"
             >
               <img
                 src={catImages[cat.id]}
                 alt={cat.label}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-              <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="text-2xl">{cat.icon}</span>
-                <h3 className="font-heading font-semibold text-sm md:text-base mt-1">{cat.label}</h3>
+              <div className="absolute inset-0 bg-background/50 group-hover:bg-background/30 transition-colors duration-500" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <h3 className="font-heading text-xl md:text-2xl tracking-wide text-foreground group-hover:tracking-widest transition-all duration-500">
+                  {cat.label.toUpperCase()}
+                </h3>
               </div>
             </Link>
           </motion.div>
