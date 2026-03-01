@@ -80,7 +80,7 @@
     background: linear-gradient(135deg, hsl(0 0% 80%), hsl(0 0% 60%));
   }
   .gradient-dark {
-    background: linear-gradient(180deg, hsl(220 15% 6%), hsl(220 15% 10%));
+    background: linear-gradient(180deg, hsl(0 0% 5%), hsl(0 0% 9%));
   }
   .price-tag {
     @apply font-heading font-bold text-primary;
@@ -97,10 +97,10 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(220 15% 6%);
+    background: hsl(0 0% 5%);
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(220 15% 20%);
+    background: hsl(0 0% 18%);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -111,5 +111,12 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

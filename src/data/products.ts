@@ -24,6 +24,7 @@ export const categories = [
   { id: "gainer", label: "Gainer", icon: "🏋️" },
   { id: "seche", label: "Sèche", icon: "🔥" },
   { id: "masse", label: "Prise de Masse", icon: "💥" },
+  { id: "packs", label: "Nos Packs", icon: "📦" },
   { id: "accessoires", label: "Accessoires", icon: "🎒" },
 ];
 
