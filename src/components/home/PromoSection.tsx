@@ -1,24 +1,16 @@
 import { products } from "@/data/products";
 import ProductCard from "@/components/product/ProductCard";
-import { motion } from "framer-motion";
 
 export default function PromoSection() {
   const promos = products.filter((p) => p.isPromo).slice(0, 4);
 
   return (
-    <section className="bg-surface py-20 md:py-28">
+    <section className="bg-surface py-12 md:py-16">
       <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="font-heading text-4xl md:text-5xl tracking-tight">
-            PROMOTIONS
-          </h2>
-          <div className="w-8 h-px bg-foreground/30 mx-auto mt-4" />
-        </motion.div>
+        <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-2">
+          🔥 <span className="text-primary">PROMOTIONS</span>
+        </h2>
+        <p className="text-center text-muted-foreground text-sm mb-8">Offres limitées - Ne ratez pas ces deals !</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {promos.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} />

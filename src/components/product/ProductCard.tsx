@@ -1,6 +1,6 @@
 import { Product, formatPrice } from "@/data/products";
 import { useCart } from "@/context/CartContext";
-import { Plus } from "lucide-react";
+import { ShoppingCart, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useProductImage } from "@/hooks/useProductImage";
@@ -20,44 +20,51 @@ export default function ProductCard({ product, index = 0 }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      className="group flex flex-col"
+      className="group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 transition-all duration-300 hover:neon-glow flex flex-col"
     >
       {/* Image */}
-      <Link to={`/produit/${product.id}`} className="relative aspect-[3/4] overflow-hidden bg-card mb-3">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={imageSrc}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {product.isTopSale && <span className="badge-top">BEST</span>}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {product.isTopSale && <span className="badge-top">🔥 Top Vente</span>}
           {product.isPromo && product.oldPrice && (
             <span className="badge-promo">-{Math.round((1 - product.price / product.oldPrice) * 100)}%</span>
           )}
         </div>
-
-        {/* Quick add */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            addItem(product, product.flavors[0] || "Nature", product.weights[0] || "");
-          }}
-          className="absolute bottom-3 right-3 w-10 h-10 bg-foreground text-background flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:bg-silver-light"
-        >
-          <Plus size={18} />
-        </button>
-      </Link>
+      </div>
 
       {/* Info */}
-      <div className="space-y-1">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-body">{product.brand}</p>
-        <h3 className="text-sm font-medium leading-tight line-clamp-1 font-body">{product.name}</h3>
-        <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold font-body">{formatPrice(product.price)}</span>
-          {product.oldPrice && (
-            <span className="text-xs text-muted-foreground line-through font-body">{formatPrice(product.oldPrice)}</span>
-          )}
+      <div className="p-3 flex-1 flex flex-col">
+        <p className="text-xs text-muted-foreground mb-1">{product.brand}</p>
+        <h3 className="font-medium text-sm leading-tight mb-2 line-clamp-2">{product.name}</h3>
+
+        <div className="mt-auto">
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="price-tag text-lg">{formatPrice(product.price)}</span>
+            {product.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatPrice(product.oldPrice)}</span>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => addItem(product, product.flavors[0] || "Nature", product.weights[0] || "")}
+              className="flex-1 h-9 rounded-md gradient-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity"
+            >
+              <ShoppingCart size={14} /> Ajouter
+            </button>
+            <Link
+              to={`/produit/${product.id}`}
+              className="h-9 w-9 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+            >
+              <Eye size={16} />
+            </Link>
+          </div>
         </div>
       </div>
     </motion.div>
