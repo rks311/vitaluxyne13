@@ -1,7 +1,22 @@
 import { Phone, MapPin, Mail } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Footer() {
+  const [clicks, setClicks] = useState(0);
+  const navigate = useNavigate();
+
+  const handleSecretClick = () => {
+    const newClicks = clicks + 1;
+    setClicks(newClicks);
+    if (newClicks >= 5) {
+      setClicks(0);
+      navigate("/admin/login");
+    }
+    // Reset after 3 seconds
+    setTimeout(() => setClicks(0), 3000);
+  };
+
   return (
     <footer className="bg-surface border-t border-border pb-20 md:pb-0">
       <div className="container py-12">
@@ -11,14 +26,13 @@ export default function Footer() {
               ULTRA<span className="text-primary">NUTRITION</span>
             </h3>
             <p className="text-sm text-muted-foreground">
-              La référence N°1 des compléments alimentaires de musculation en Algérie.
+              La référence des compléments alimentaires de musculation en Algérie.
             </p>
           </div>
           <div>
             <h4 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider">Navigation</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/catalogue" className="hover:text-primary transition-colors">Catalogue</Link></li>
-              <li><Link to="/pack" className="hover:text-primary transition-colors">Créer un Pack</Link></li>
               <li><Link to="/catalogue" className="hover:text-primary transition-colors">Promotions</Link></li>
             </ul>
           </div>
@@ -40,7 +54,12 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-          © 2026 Ultra Nutrition. Tous droits réservés.
+          <button
+            onClick={handleSecretClick}
+            className="hover:text-muted-foreground/80 transition-colors cursor-default select-none"
+          >
+            © 2026 Ultra Nutrition. Tous droits réservés.
+          </button>
         </div>
       </div>
     </footer>
