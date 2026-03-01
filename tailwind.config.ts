@@ -90,8 +90,8 @@ export default {
           "100%": { opacity: "1", transform: "scale(1)" },
         },
         "pulse-neon": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(130 100% 42% / 0.4)" },
-          "50%": { boxShadow: "0 0 40px hsl(130 100% 42% / 0.7)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(0 0% 75% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(0 0% 75% / 0.5)" },
         },
         "slide-up": {
           "0%": { opacity: "0", transform: "translateY(40px)" },
