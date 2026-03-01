@@ -1,53 +1,83 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background */}
+    <section className="relative h-screen flex items-end overflow-hidden">
+      {/* Full-bleed background */}
       <div className="absolute inset-0">
-        <img src={heroBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <motion.img
+          src={heroBg}
+          alt=""
+          className="w-full h-full object-cover"
+          initial={{ scale: 1.15 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-background/20" />
       </div>
 
-      <div className="container relative z-10 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="max-w-xl"
-        >
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6">
-            <Zap size={12} /> N°1 en Algérie
-          </span>
+      {/* Content at bottom */}
+      <div className="container relative z-10 pb-16 md:pb-24">
+        <div className="max-w-2xl">
+          {/* Thin silver line accent */}
+          <motion.div
+            className="w-12 h-px bg-foreground/40 mb-6 origin-left"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          />
 
-          <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold leading-[0.95] mb-4">
-            DÉPASSE TES
+          <motion.h1
+            className="font-heading text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.85] tracking-tight mb-6"
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            DÉPASSE
             <br />
-            <span className="text-primary neon-text">LIMITES</span>
-          </h1>
+            <span className="text-silver">TES LIMITES</span>
+          </motion.h1>
 
-          <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-md">
-            Compléments alimentaires 100% authentiques. Whey, créatine, gainer et plus.
-            Livraison rapide dans toute l'Algérie.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3">
+          <motion.div
+            className="flex flex-col sm:flex-row gap-3 mt-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+          >
             <Link to="/catalogue">
-              <Button className="w-full sm:w-auto h-12 px-8 text-base font-heading gradient-primary text-primary-foreground hover:opacity-90 neon-glow">
-                Commander maintenant <ArrowRight size={18} className="ml-2" />
-              </Button>
+              <button className="group flex items-center gap-3 h-14 px-8 bg-foreground text-background font-body font-semibold text-sm tracking-wide uppercase hover:bg-silver-light transition-colors duration-300">
+                Commander
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </button>
             </Link>
             <Link to="/pack">
-              <Button variant="outline" className="w-full sm:w-auto h-12 px-8 text-base font-heading border-primary/30 text-primary hover:bg-primary/10">
+              <button className="h-14 px-8 border border-foreground/30 text-foreground font-body font-medium text-sm tracking-wide uppercase hover:border-foreground/60 hover:bg-foreground/5 transition-all duration-300">
                 Créer mon pack
-              </Button>
+              </button>
             </Link>
-          </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-6 right-4 md:right-0 flex flex-col items-center gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+        >
+          <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-body" style={{ writingMode: "vertical-lr" }}>
+            Scroll
+          </span>
+          <motion.div
+            className="w-px h-8 bg-foreground/30"
+            animate={{ scaleY: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ originY: 0 }}
+          />
         </motion.div>
       </div>
     </section>
