@@ -8,6 +8,7 @@ import gainerImg from "@/assets/gainer.jpg";
 import fatburnerImg from "@/assets/fatburner.jpg";
 import preworkoutImg from "@/assets/preworkout.jpg";
 import bcaaImg from "@/assets/bcaa.jpg";
+import packsImg from "@/assets/packs.jpg";
 
 const catImages: Record<string, string> = {
   whey: wheyImg,
@@ -15,42 +16,52 @@ const catImages: Record<string, string> = {
   gainer: gainerImg,
   seche: fatburnerImg,
   masse: preworkoutImg,
+  packs: packsImg,
   accessoires: bcaaImg,
 };
 
 export default function CategoryCards() {
   return (
-    <section className="container py-12 md:py-16">
-      <h2 className="font-heading text-2xl md:text-3xl font-bold text-center mb-8">
-        NOS <span className="text-primary">CATÉGORIES</span>
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={cat.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.08 }}
-          >
-            <Link
-              to={`/catalogue?cat=${cat.id}`}
-              className="group block relative rounded-lg overflow-hidden aspect-square"
+    <section className="py-10 md:py-14">
+      <div className="container">
+        <h2 className="font-heading text-xl md:text-2xl font-bold mb-6 tracking-wide">
+          CATÉGORIES
+        </h2>
+      </div>
+
+      {/* Horizontal scroll on mobile, grid on desktop */}
+      <div className="container">
+        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-4 lg:grid-cols-7 md:overflow-visible md:pb-0">
+          {categories.map((cat, i) => (
+            <motion.div
+              key={cat.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+              className="snap-start shrink-0 w-[130px] md:w-auto"
             >
-              <img
-                src={catImages[cat.id]}
-                alt={cat.label}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-              <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="text-2xl">{cat.icon}</span>
-                <h3 className="font-heading font-semibold text-sm md:text-base mt-1">{cat.label}</h3>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
+              <Link
+                to={`/catalogue?cat=${cat.id}`}
+                className="group block relative rounded-xl overflow-hidden aspect-[3/4]"
+              >
+                <img
+                  src={catImages[cat.id]}
+                  alt={cat.label}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/30 rounded-xl transition-colors duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                  <span className="text-lg">{cat.icon}</span>
+                  <h3 className="font-heading font-semibold text-xs md:text-sm mt-1 text-foreground">
+                    {cat.label}
+                  </h3>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
