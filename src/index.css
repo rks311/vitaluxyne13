@@ -1,50 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 0 0% 75%;
-    --primary-foreground: 0 0% 5%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 85%;
-    --muted: 0 0% 16%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 0 0% 80%;
-    --accent-foreground: 0 0% 5%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 78%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 88%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 52%;
+    --accent: 0 0% 82%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 16%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 75%;
+    --border: 0 0% 14%;
+    --input: 0 0% 12%;
+    --ring: 0 0% 78%;
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 7%;
-    --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 0 0% 75%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 14%;
-    --sidebar-accent-foreground: 0 0% 85%;
-    --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 0 0% 75%;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 0 0% 78%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 88%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 0 0% 78%;
 
     /* Custom tokens */
-    --neon-glow: 0 0 20px hsl(0 0% 75% / 0.3), 0 0 60px hsl(0 0% 75% / 0.1);
-    --neon-glow-strong: 0 0 20px hsl(0 0% 75% / 0.5), 0 0 80px hsl(0 0% 75% / 0.15);
-    --card-hover: 0 0% 12%;
+    --neon-glow: 0 0 15px hsl(0 0% 78% / 0.25), 0 0 50px hsl(0 0% 78% / 0.08);
+    --neon-glow-strong: 0 0 20px hsl(0 0% 78% / 0.4), 0 0 60px hsl(0 0% 78% / 0.12);
+    --card-hover: 0 0% 11%;
     --badge-promo: 45 100% 50%;
     --badge-top: 0 85% 55%;
-    --surface: 0 0% 7%;
-  }
-
-  .dark {
-    /* Already dark by default */
+    --surface: 0 0% 6%;
   }
 }
 
@@ -54,6 +52,8 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
@@ -68,43 +68,49 @@
     box-shadow: var(--neon-glow-strong);
   }
   .neon-text {
-    text-shadow: 0 0 10px hsl(0 0% 75% / 0.5), 0 0 40px hsl(0 0% 75% / 0.15);
+    text-shadow: 0 0 10px hsl(0 0% 78% / 0.4), 0 0 40px hsl(0 0% 78% / 0.12);
   }
   .neon-border {
-    border-color: hsl(0 0% 75% / 0.3);
+    border-color: hsl(0 0% 78% / 0.3);
   }
   .glass-card {
     @apply bg-card/80 backdrop-blur-md border border-border/50;
   }
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(0 0% 80%), hsl(0 0% 60%));
+    background: linear-gradient(135deg, hsl(0 0% 82%), hsl(0 0% 58%));
   }
   .gradient-dark {
-    background: linear-gradient(180deg, hsl(0 0% 5%), hsl(0 0% 9%));
+    background: linear-gradient(180deg, hsl(0 0% 4%), hsl(0 0% 8%));
   }
   .price-tag {
     @apply font-heading font-bold text-primary;
   }
   .badge-promo {
-    @apply bg-yellow-500 text-black font-heading font-bold text-xs px-2 py-0.5 rounded;
+    @apply bg-yellow-500 text-black font-heading font-bold text-xs px-2 py-0.5 rounded-lg;
   }
   .badge-top {
-    @apply bg-destructive text-destructive-foreground font-heading font-bold text-xs px-2 py-0.5 rounded;
+    @apply bg-destructive text-destructive-foreground font-heading font-bold text-xs px-2 py-0.5 rounded-lg;
   }
 
-  /* Scrollbar */
+  /* iOS safe area */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(0 0% 5%);
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(0 0% 18%);
-    border-radius: 3px;
+    background: hsl(0 0% 16%);
+    border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(0 0% 75% / 0.5);
+    background: hsl(0 0% 78% / 0.4);
   }
 }
 

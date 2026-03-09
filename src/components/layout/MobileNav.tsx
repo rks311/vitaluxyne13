@@ -1,6 +1,7 @@
-import { Home, Search, Package, ShoppingCart, User } from "lucide-react";
+import { Home, Search, ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
+import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "Accueil", path: "/" },
@@ -13,7 +14,7 @@ export default function MobileNav() {
   const { itemCount, setIsOpen } = useCart();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/50 safe-area-bottom">
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
           const isCart = item.path === "__cart__";
@@ -30,9 +31,13 @@ export default function MobileNav() {
                 <div className="relative">
                   <Icon size={20} className="text-muted-foreground" />
                   {itemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full gradient-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2.5 w-4.5 h-4.5 rounded-full gradient-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center min-w-[18px]"
+                    >
                       {itemCount}
-                    </span>
+                    </motion.span>
                   )}
                 </div>
                 <span className="text-[10px] text-muted-foreground">{item.label}</span>
@@ -50,6 +55,9 @@ export default function MobileNav() {
               <span className={`text-[10px] ${isActive ? "text-primary font-medium" : "text-muted-foreground"}`}>
                 {item.label}
               </span>
+              {isActive && (
+                <motion.div layoutId="nav-indicator" className="absolute top-0 w-8 h-0.5 rounded-full gradient-primary" />
+              )}
             </Link>
           );
         })}
