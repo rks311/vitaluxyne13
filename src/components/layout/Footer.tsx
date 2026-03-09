@@ -1,21 +1,8 @@
 import { Phone, MapPin, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export default function Footer() {
-  const [clicks, setClicks] = useState(0);
   const navigate = useNavigate();
-
-  const handleSecretClick = () => {
-    const newClicks = clicks + 1;
-    setClicks(newClicks);
-    if (newClicks >= 5) {
-      setClicks(0);
-      navigate("/admin/login");
-    }
-    // Reset after 3 seconds
-    setTimeout(() => setClicks(0), 3000);
-  };
 
   return (
     <footer className="bg-surface border-t border-border pb-20 md:pb-0">
@@ -33,7 +20,7 @@ export default function Footer() {
             <h4 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider">Navigation</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/catalogue" className="hover:text-primary transition-colors">Catalogue</Link></li>
-              <li><Link to="/catalogue" className="hover:text-primary transition-colors">Promotions</Link></li>
+              <li><Link to="/catalogue?cat=packs" className="hover:text-primary transition-colors">Nos Packs</Link></li>
             </ul>
           </div>
           <div>
@@ -54,12 +41,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
+          <span>© 2026 Ultra Nutrition. Tous droits réservés.</span>
+          {/* Hidden admin access - single tap on the dot */}
           <button
-            onClick={handleSecretClick}
-            className="hover:text-muted-foreground/80 transition-colors cursor-default select-none"
-          >
-            © 2026 Ultra Nutrition. Tous droits réservés.
-          </button>
+            onClick={() => navigate("/admin/login")}
+            className="inline-block w-2 h-2 rounded-full ml-1 opacity-0 cursor-default"
+            aria-hidden="true"
+          />
         </div>
       </div>
     </footer>
