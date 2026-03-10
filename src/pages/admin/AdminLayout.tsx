@@ -1,18 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
-  { label: "Commandes", icon: ShoppingCart, path: "/admin/orders" },
-  { label: "Produits", icon: Package, path: "/admin/products" },
-  { label: "Packs", icon: Boxes, path: "/admin/packs" },
-  { label: "Clients", icon: Users, path: "/admin/clients" },
-  { label: "Promotions", icon: Tags, path: "/admin/promos" },
-  { label: "Paramètres", icon: Settings, path: "/admin/settings" },
-];
+import { useLang } from "@/context/LanguageContext";
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -20,17 +11,26 @@ export default function AdminLayout() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, lang, setLang } = useLang();
+
+  const navItems = [
+    { label: t("admin.dashboard"), icon: LayoutDashboard, path: "/admin" },
+    { label: t("admin.orders"), icon: ShoppingCart, path: "/admin/orders" },
+    { label: t("admin.products"), icon: Package, path: "/admin/products" },
+    { label: t("admin.packs"), icon: Boxes, path: "/admin/packs" },
+    { label: t("admin.clients"), icon: Users, path: "/admin/clients" },
+    { label: t("admin.promos"), icon: Tags, path: "/admin/promos" },
+    { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
+  ];
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/admin/login");
       setLoading(false);
     });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) navigate("/admin/login");
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -45,7 +45,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-background flex">
       {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileOpen(false)} />}
 
-      <aside className={cn("fixed md:sticky top-0 left-0 z-50 h-screen bg-card border-r border-border flex flex-col transition-all duration-300", collapsed ? "w-[68px]" : "w-64", mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
+      <aside className={cn("fixed md:sticky top-0 left-0 z-50 h-screen bg-card border-e border-border flex flex-col transition-all duration-300", collapsed ? "w-[68px]" : "w-64", mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-border shrink-0">
           {!collapsed && <span className="font-heading text-lg font-bold">ULTRA<span className="text-primary">ADMIN</span></span>}
           <button onClick={() => { setCollapsed(!collapsed); setMobileOpen(false); }} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground">
@@ -66,10 +66,14 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="p-2 border-t border-border shrink-0">
+        <div className="p-2 border-t border-border shrink-0 space-y-1">
+          <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-secondary transition-colors">
+            <Globe size={18} className="shrink-0" />
+            {!collapsed && <span>{t("lang.switch")}</span>}
+          </button>
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors">
             <LogOut size={18} className="shrink-0" />
-            {!collapsed && <span>Déconnexion</span>}
+            {!collapsed && <span>{t("admin.logout")}</span>}
           </button>
         </div>
       </aside>

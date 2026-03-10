@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Wand2, ImageOff } from "lucide-react";
+import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { removeBg } from "@/lib/removeBackground";
 
 const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null };
 
@@ -17,7 +18,7 @@ export default function AdminProducts() {
   const [form, setForm] = useState(defaultProduct);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [removingBg, setRemovingBg] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [flavorsInput, setFlavorsInput] = useState("");
   const [weightsInput, setWeightsInput] = useState("");
   const [objectivesInput, setObjectivesInput] = useState("");
@@ -54,37 +55,35 @@ export default function AdminProducts() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `products/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
-    if (error) { toast.error("Erreur upload"); setUploading(false); return; }
-    setForm((f) => ({ ...f, image_url: path }));
-    toast.success("Image uploadée !");
-    setUploading(false);
-  };
+    setUploadProgress("Upload de l'image...");
 
-  const handleRemoveBg = async () => {
-    if (!form.image_url) { toast.error("Uploadez d'abord une image"); return; }
-    setRemovingBg(true);
     try {
-      const fullUrl = getStorageUrl(form.image_url);
-      const { data, error } = await supabase.functions.invoke('remove-background', {
-        body: { imageUrl: fullUrl }
-      });
-      
-      if (error) throw error;
-      
-      if (data.bgRemoved && data.storagePath) {
-        setForm((f) => ({ ...f, image_url: data.storagePath }));
-        toast.success("Fond supprimé avec succès ! ✨");
-      } else {
-        toast.info(data.message || "Service de suppression de fond indisponible");
+      // Step 1: Remove background automatically
+      setUploadProgress("✨ Suppression du fond en cours...");
+      let processedFile: File | Blob;
+      try {
+        processedFile = await removeBg(file);
+        toast.success("Fond supprimé automatiquement ! ✨");
+      } catch (bgErr) {
+        console.warn("BG removal failed, using original:", bgErr);
+        processedFile = file;
+        toast.info("Image uploadée sans suppression du fond");
       }
+
+      // Step 2: Upload to storage
+      setUploadProgress("Sauvegarde...");
+      const path = `products/${Date.now()}.png`;
+      const { error } = await supabase.storage.from("product-images").upload(path, processedFile, { contentType: "image/png", upsert: true });
+      if (error) throw error;
+
+      setForm((f) => ({ ...f, image_url: path }));
+      toast.success("Image prête !");
     } catch (err) {
       console.error(err);
-      toast.error("Erreur lors de la suppression du fond");
+      toast.error("Erreur lors du traitement de l'image");
     } finally {
-      setRemovingBg(false);
+      setUploading(false);
+      setUploadProgress("");
     }
   };
 
@@ -92,19 +91,12 @@ export default function AdminProducts() {
     if (!form.name || !form.brand || !form.price) { toast.error("Remplissez les champs requis"); return; }
     setSaving(true);
     const data = {
-      name: form.name,
-      brand: form.brand,
-      category: form.category,
-      price: form.price,
-      old_price: form.old_price || null,
+      name: form.name, brand: form.brand, category: form.category, price: form.price, old_price: form.old_price || null,
       description: form.description || null,
       flavors: flavorsInput.split(",").map(s => s.trim()).filter(Boolean),
       weights: weightsInput.split(",").map(s => s.trim()).filter(Boolean),
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
-      in_stock: form.in_stock,
-      is_top_sale: form.is_top_sale,
-      is_promo: form.is_promo,
-      image_url: form.image_url,
+      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url,
     };
 
     if (editing) {
@@ -141,7 +133,6 @@ export default function AdminProducts() {
         </button>
       </div>
 
-      {/* Form modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
           <div className="bg-card border border-border rounded-xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -151,24 +142,22 @@ export default function AdminProducts() {
             </div>
 
             <div className="space-y-3">
-              {/* Image upload with BG removal */}
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Image</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Image (fond supprimé auto)</label>
                 <div className="flex items-center gap-3 flex-wrap">
-                  {form.image_url && <img src={getStorageUrl(form.image_url)} alt="" className="w-20 h-20 rounded-md object-cover border border-border" />}
+                  {form.image_url && <img src={getStorageUrl(form.image_url)} alt="" className="w-20 h-20 rounded-md object-cover border border-border bg-muted" />}
                   <div className="flex flex-col gap-2">
                     <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-9 px-3 rounded-md bg-secondary text-sm flex items-center gap-2 hover:bg-muted">
-                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} {uploading ? "Upload..." : "Choisir image"}
+                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                      {uploading ? uploadProgress : "📸 Choisir image"}
                     </button>
-                    {form.image_url && (
-                      <button 
-                        onClick={handleRemoveBg} 
-                        disabled={removingBg} 
-                        className="h-9 px-3 rounded-md bg-primary/10 text-primary text-sm flex items-center gap-2 hover:bg-primary/20 transition-colors"
-                      >
-                        {removingBg ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
-                        {removingBg ? "Suppression du fond..." : "✨ Supprimer le fond"}
-                      </button>
+                    {uploading && (
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 rounded-full bg-secondary overflow-hidden">
+                          <div className="h-full rounded-full gradient-primary animate-pulse" style={{ width: "60%" }} />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">{uploadProgress}</span>
+                      </div>
                     )}
                   </div>
                   <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
@@ -239,7 +228,7 @@ export default function AdminProducts() {
                   <td className="px-3 py-3 text-muted-foreground hidden md:table-cell">{p.brand}</td>
                   <td className="px-3 py-3">
                     <span className="font-heading font-bold text-primary">{formatPrice(p.price)}</span>
-                    {p.old_price && <span className="text-[10px] text-muted-foreground line-through ml-1">{formatPrice(p.old_price)}</span>}
+                    {p.old_price && <span className="text-[10px] text-muted-foreground line-through ms-1">{formatPrice(p.old_price)}</span>}
                   </td>
                   <td className="px-3 py-3 hidden md:table-cell">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
