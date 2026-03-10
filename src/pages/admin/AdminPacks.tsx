@@ -125,6 +125,10 @@ export default function AdminPacks() {
                 <div><label className="text-xs text-muted-foreground mb-1 block">Ancien prix</label><input type="number" value={form.old_price || ""} onChange={(e) => setForm(f => ({ ...f, old_price: e.target.value ? +e.target.value : null }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               </div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Produits du pack (séparés par virgule)</label><input value={itemsInput} onChange={(e) => setItemsInput(e.target.value)} placeholder="Gold Standard Whey, Creatine Monohydrate" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-muted-foreground mb-1 block">Quantité en stock</label><input type="number" value={form.stock_qty} onChange={(e) => setForm(f => ({ ...f, stock_qty: +e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" min={0} /></div>
+                <div><label className="text-xs text-muted-foreground mb-1 block">Durée du pack</label><input value={form.duration} onChange={(e) => setForm(f => ({ ...f, duration: e.target.value }))} placeholder="1 mois, 3 mois" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              </div>
               <label className="flex items-center gap-2 text-sm py-2"><input type="checkbox" checked={form.active} onChange={(e) => setForm(f => ({ ...f, active: e.target.checked }))} className="accent-primary" /> Actif (visible côté client)</label>
               <button onClick={handleSave} disabled={saving} className="w-full h-11 rounded-md gradient-primary text-primary-foreground font-heading font-bold">{saving ? "Enregistrement..." : editing ? "Modifier" : "Créer"}</button>
             </div>
