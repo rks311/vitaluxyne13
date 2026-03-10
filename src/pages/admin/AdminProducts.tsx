@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2 } from "lucide-react";
+import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Wand2, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ export default function AdminProducts() {
   const [form, setForm] = useState(defaultProduct);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [removingBg, setRemovingBg] = useState(false);
   const [flavorsInput, setFlavorsInput] = useState("");
   const [weightsInput, setWeightsInput] = useState("");
   const [objectivesInput, setObjectivesInput] = useState("");
@@ -60,6 +61,31 @@ export default function AdminProducts() {
     setForm((f) => ({ ...f, image_url: path }));
     toast.success("Image uploadée !");
     setUploading(false);
+  };
+
+  const handleRemoveBg = async () => {
+    if (!form.image_url) { toast.error("Uploadez d'abord une image"); return; }
+    setRemovingBg(true);
+    try {
+      const fullUrl = getStorageUrl(form.image_url);
+      const { data, error } = await supabase.functions.invoke('remove-background', {
+        body: { imageUrl: fullUrl }
+      });
+      
+      if (error) throw error;
+      
+      if (data.bgRemoved && data.storagePath) {
+        setForm((f) => ({ ...f, image_url: data.storagePath }));
+        toast.success("Fond supprimé avec succès ! ✨");
+      } else {
+        toast.info(data.message || "Service de suppression de fond indisponible");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de la suppression du fond");
+    } finally {
+      setRemovingBg(false);
+    }
   };
 
   const handleSave = async () => {
@@ -125,14 +151,26 @@ export default function AdminProducts() {
             </div>
 
             <div className="space-y-3">
-              {/* Image upload */}
+              {/* Image upload with BG removal */}
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Image</label>
-                <div className="flex items-center gap-3">
-                  {form.image_url && <img src={getStorageUrl(form.image_url)} alt="" className="w-16 h-16 rounded-md object-cover" />}
-                  <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-10 px-4 rounded-md bg-secondary text-sm flex items-center gap-2 hover:bg-muted">
-                    {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} {uploading ? "Upload..." : "Choisir"}
-                  </button>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {form.image_url && <img src={getStorageUrl(form.image_url)} alt="" className="w-20 h-20 rounded-md object-cover border border-border" />}
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-9 px-3 rounded-md bg-secondary text-sm flex items-center gap-2 hover:bg-muted">
+                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} {uploading ? "Upload..." : "Choisir image"}
+                    </button>
+                    {form.image_url && (
+                      <button 
+                        onClick={handleRemoveBg} 
+                        disabled={removingBg} 
+                        className="h-9 px-3 rounded-md bg-primary/10 text-primary text-sm flex items-center gap-2 hover:bg-primary/20 transition-colors"
+                      >
+                        {removingBg ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+                        {removingBg ? "Suppression du fond..." : "✨ Supprimer le fond"}
+                      </button>
+                    )}
+                  </div>
                   <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                 </div>
               </div>
