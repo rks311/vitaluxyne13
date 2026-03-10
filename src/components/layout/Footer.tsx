@@ -41,12 +41,12 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-          <span>{t("footer.rights")}</span>
-          <button
+          <span
             onClick={() => navigate("/admin/login")}
-            className="inline-block w-2 h-2 rounded-full ml-1 opacity-0 cursor-default"
-            aria-hidden="true"
-          />
+            className="cursor-text select-none"
+          >
+            {t("footer.rights")}
+          </span>
         </div>
       </div>
     </footer>

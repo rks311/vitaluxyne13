@@ -9,7 +9,7 @@ export default function AdminPacks() {
   const [packs, setPacks] = useState<PackWithItems[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<PackWithItems | null>(null);
-  const [form, setForm] = useState({ name: "", description: "", price: 0, old_price: null as number | null, active: true, image_url: null as string | null });
+  const [form, setForm] = useState({ name: "", description: "", price: 0, old_price: null as number | null, active: true, image_url: null as string | null, stock_qty: 0, duration: "" });
   const [itemsInput, setItemsInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -24,14 +24,14 @@ export default function AdminPacks() {
 
   const openAdd = () => {
     setEditing(null);
-    setForm({ name: "", description: "", price: 0, old_price: null, active: true, image_url: null });
+    setForm({ name: "", description: "", price: 0, old_price: null, active: true, image_url: null, stock_qty: 0, duration: "" });
     setItemsInput("");
     setShowForm(true);
   };
 
   const openEdit = (pack: PackWithItems) => {
     setEditing(pack);
-    setForm({ name: pack.name, description: pack.description || "", price: pack.price, old_price: pack.old_price, active: pack.active ?? true, image_url: pack.image_url });
+    setForm({ name: pack.name, description: pack.description || "", price: pack.price, old_price: pack.old_price, active: pack.active ?? true, image_url: pack.image_url, stock_qty: (pack as any).stock_qty ?? 0, duration: (pack as any).duration || "" });
     setItemsInput((pack.pack_items || []).map(i => i.product_name).join(", "));
     setShowForm(true);
   };
@@ -52,7 +52,7 @@ export default function AdminPacks() {
     if (!form.name || !form.price) { toast.error("Remplissez les champs requis"); return; }
     setSaving(true);
 
-    const packData = { name: form.name, description: form.description || null, price: form.price, old_price: form.old_price || null, active: form.active, image_url: form.image_url };
+    const packData = { name: form.name, description: form.description || null, price: form.price, old_price: form.old_price || null, active: form.active, image_url: form.image_url, stock_qty: form.stock_qty, duration: form.duration || null };
     const itemNames = itemsInput.split(",").map(s => s.trim()).filter(Boolean);
 
     if (editing) {
@@ -125,6 +125,10 @@ export default function AdminPacks() {
                 <div><label className="text-xs text-muted-foreground mb-1 block">Ancien prix</label><input type="number" value={form.old_price || ""} onChange={(e) => setForm(f => ({ ...f, old_price: e.target.value ? +e.target.value : null }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               </div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Produits du pack (séparés par virgule)</label><input value={itemsInput} onChange={(e) => setItemsInput(e.target.value)} placeholder="Gold Standard Whey, Creatine Monohydrate" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs text-muted-foreground mb-1 block">Quantité en stock</label><input type="number" value={form.stock_qty} onChange={(e) => setForm(f => ({ ...f, stock_qty: +e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" min={0} /></div>
+                <div><label className="text-xs text-muted-foreground mb-1 block">Durée du pack</label><input value={form.duration} onChange={(e) => setForm(f => ({ ...f, duration: e.target.value }))} placeholder="1 mois, 3 mois" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              </div>
               <label className="flex items-center gap-2 text-sm py-2"><input type="checkbox" checked={form.active} onChange={(e) => setForm(f => ({ ...f, active: e.target.checked }))} className="accent-primary" /> Actif (visible côté client)</label>
               <button onClick={handleSave} disabled={saving} className="w-full h-11 rounded-md gradient-primary text-primary-foreground font-heading font-bold">{saving ? "Enregistrement..." : editing ? "Modifier" : "Créer"}</button>
             </div>
@@ -167,10 +171,14 @@ export default function AdminPacks() {
                   <span className="font-heading font-bold text-primary text-lg">{formatPrice(pack.price)}</span>
                   {pack.old_price && <span className="text-xs text-muted-foreground line-through ml-2">{formatPrice(pack.old_price)}</span>}
                 </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => openEdit(pack)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
-                  <button onClick={() => handleDelete(pack.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground font-mono">Qté: {(pack as any).stock_qty ?? 0}</span>
+                  {(pack as any).duration && <span className="text-[10px] text-muted-foreground">· {(pack as any).duration}</span>}
                 </div>
+              </div>
+              <div className="flex items-center justify-end gap-1 pt-2">
+                <button onClick={() => openEdit(pack)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
+                <button onClick={() => handleDelete(pack.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
               </div>
             </div>
           </motion.div>

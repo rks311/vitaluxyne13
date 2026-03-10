@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { removeBg } from "@/lib/removeBackground";
 
-const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null };
+const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null, stock_qty: 0 };
 
 const categoryOptions = ["whey", "creatine", "gainer", "preworkout", "bcaa", "fatburner"];
 
@@ -44,7 +44,7 @@ export default function AdminProducts() {
 
   const openEdit = (p: DbProduct) => {
     setEditing(p);
-    setForm({ name: p.name, brand: p.brand, category: p.category, price: p.price, old_price: p.old_price, description: p.description || "", flavors: p.flavors || [], weights: p.weights || [], objectives: p.objectives || [], in_stock: p.in_stock ?? true, is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false, image_url: p.image_url });
+    setForm({ name: p.name, brand: p.brand, category: p.category, price: p.price, old_price: p.old_price, description: p.description || "", flavors: p.flavors || [], weights: p.weights || [], objectives: p.objectives || [], in_stock: p.in_stock ?? true, is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false, image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0 });
     setFlavorsInput((p.flavors || []).join(", "));
     setWeightsInput((p.weights || []).join(", "));
     setObjectivesInput((p.objectives || []).join(", "));
@@ -96,7 +96,7 @@ export default function AdminProducts() {
       flavors: flavorsInput.split(",").map(s => s.trim()).filter(Boolean),
       weights: weightsInput.split(",").map(s => s.trim()).filter(Boolean),
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
-      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url,
+      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url, stock_qty: form.stock_qty,
     };
 
     if (editing) {
@@ -185,6 +185,7 @@ export default function AdminProducts() {
               <div><label className="text-xs text-muted-foreground mb-1 block">Goûts (séparés par virgule)</label><input value={flavorsInput} onChange={(e) => setFlavorsInput(e.target.value)} placeholder="Chocolat, Vanille, Fraise" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Poids (séparés par virgule)</label><input value={weightsInput} onChange={(e) => setWeightsInput(e.target.value)} placeholder="1kg, 2.5kg" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Objectifs (séparés par virgule)</label><input value={objectivesInput} onChange={(e) => setObjectivesInput(e.target.value)} placeholder="Prise de masse, Force" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              <div><label className="text-xs text-muted-foreground mb-1 block">Quantité en stock</label><input type="number" value={form.stock_qty} onChange={(e) => setForm(f => ({ ...f, stock_qty: +e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" min={0} /></div>
 
               <div className="flex flex-wrap gap-4 py-2">
                 <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.in_stock} onChange={(e) => setForm(f => ({ ...f, in_stock: e.target.checked }))} className="accent-primary" /> En stock</label>
@@ -231,9 +232,12 @@ export default function AdminProducts() {
                     {p.old_price && <span className="text-[10px] text-muted-foreground line-through ms-1">{formatPrice(p.old_price)}</span>}
                   </td>
                   <td className="px-3 py-3 hidden md:table-cell">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
-                      {p.in_stock ? "En stock" : "Rupture"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                        {p.in_stock ? "En stock" : "Rupture"}
+                      </span>
+                      <span className="text-xs text-muted-foreground font-mono">{(p as any).stock_qty ?? 0}</span>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-muted-foreground text-xs hidden lg:table-cell capitalize">{p.category}</td>
                   <td className="px-4 py-3">
