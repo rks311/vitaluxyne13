@@ -232,9 +232,12 @@ export default function AdminProducts() {
                     {p.old_price && <span className="text-[10px] text-muted-foreground line-through ms-1">{formatPrice(p.old_price)}</span>}
                   </td>
                   <td className="px-3 py-3 hidden md:table-cell">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
-                      {p.in_stock ? "En stock" : "Rupture"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                        {p.in_stock ? "En stock" : "Rupture"}
+                      </span>
+                      <span className="text-xs text-muted-foreground font-mono">{(p as any).stock_qty ?? 0}</span>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-muted-foreground text-xs hidden lg:table-cell capitalize">{p.category}</td>
                   <td className="px-4 py-3">
