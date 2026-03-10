@@ -31,7 +31,7 @@ export default function AdminPacks() {
 
   const openEdit = (pack: PackWithItems) => {
     setEditing(pack);
-    setForm({ name: pack.name, description: pack.description || "", price: pack.price, old_price: pack.old_price, active: pack.active ?? true, image_url: pack.image_url });
+    setForm({ name: pack.name, description: pack.description || "", price: pack.price, old_price: pack.old_price, active: pack.active ?? true, image_url: pack.image_url, stock_qty: (pack as any).stock_qty ?? 0, duration: (pack as any).duration || "" });
     setItemsInput((pack.pack_items || []).map(i => i.product_name).join(", "));
     setShowForm(true);
   };
