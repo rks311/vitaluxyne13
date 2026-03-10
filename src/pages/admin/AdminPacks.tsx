@@ -9,7 +9,7 @@ export default function AdminPacks() {
   const [packs, setPacks] = useState<PackWithItems[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<PackWithItems | null>(null);
-  const [form, setForm] = useState({ name: "", description: "", price: 0, old_price: null as number | null, active: true, image_url: null as string | null });
+  const [form, setForm] = useState({ name: "", description: "", price: 0, old_price: null as number | null, active: true, image_url: null as string | null, stock_qty: 0, duration: "" });
   const [itemsInput, setItemsInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
