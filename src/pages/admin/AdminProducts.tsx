@@ -96,7 +96,7 @@ export default function AdminProducts() {
       flavors: flavorsInput.split(",").map(s => s.trim()).filter(Boolean),
       weights: weightsInput.split(",").map(s => s.trim()).filter(Boolean),
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
-      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url,
+      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url, stock_qty: form.stock_qty,
     };
 
     if (editing) {
