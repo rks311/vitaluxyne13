@@ -171,7 +171,12 @@ export default function AdminPacks() {
                   <span className="font-heading font-bold text-primary text-lg">{formatPrice(pack.price)}</span>
                   {pack.old_price && <span className="text-xs text-muted-foreground line-through ml-2">{formatPrice(pack.old_price)}</span>}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground font-mono">Qté: {(pack as any).stock_qty ?? 0}</span>
+                  {(pack as any).duration && <span className="text-[10px] text-muted-foreground">· {(pack as any).duration}</span>}
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-1 pt-2">
                   <button onClick={() => openEdit(pack)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
                   <button onClick={() => handleDelete(pack.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
                 </div>
