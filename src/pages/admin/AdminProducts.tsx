@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { removeBg } from "@/lib/removeBackground";
 
-const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null };
+const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null, stock_qty: 0 };
 
 const categoryOptions = ["whey", "creatine", "gainer", "preworkout", "bcaa", "fatburner"];
 
