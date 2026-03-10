@@ -44,7 +44,7 @@ export default function AdminProducts() {
 
   const openEdit = (p: DbProduct) => {
     setEditing(p);
-    setForm({ name: p.name, brand: p.brand, category: p.category, price: p.price, old_price: p.old_price, description: p.description || "", flavors: p.flavors || [], weights: p.weights || [], objectives: p.objectives || [], in_stock: p.in_stock ?? true, is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false, image_url: p.image_url });
+    setForm({ name: p.name, brand: p.brand, category: p.category, price: p.price, old_price: p.old_price, description: p.description || "", flavors: p.flavors || [], weights: p.weights || [], objectives: p.objectives || [], in_stock: p.in_stock ?? true, is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false, image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0 });
     setFlavorsInput((p.flavors || []).join(", "));
     setWeightsInput((p.weights || []).join(", "));
     setObjectivesInput((p.objectives || []).join(", "));
