@@ -24,7 +24,7 @@ export default function AdminPacks() {
 
   const openAdd = () => {
     setEditing(null);
-    setForm({ name: "", description: "", price: 0, old_price: null, active: true, image_url: null });
+    setForm({ name: "", description: "", price: 0, old_price: null, active: true, image_url: null, stock_qty: 0, duration: "" });
     setItemsInput("");
     setShowForm(true);
   };
