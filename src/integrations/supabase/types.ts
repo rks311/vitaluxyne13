@@ -179,33 +179,39 @@ export type Database = {
           active: boolean | null
           created_at: string
           description: string | null
+          duration: string | null
           id: string
           image_url: string | null
           name: string
           old_price: number | null
           price: number
+          stock_qty: number | null
           updated_at: string
         }
         Insert: {
           active?: boolean | null
           created_at?: string
           description?: string | null
+          duration?: string | null
           id?: string
           image_url?: string | null
           name: string
           old_price?: number | null
           price: number
+          stock_qty?: number | null
           updated_at?: string
         }
         Update: {
           active?: boolean | null
           created_at?: string
           description?: string | null
+          duration?: string | null
           id?: string
           image_url?: string | null
           name?: string
           old_price?: number | null
           price?: number
+          stock_qty?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -229,6 +235,7 @@ export type Database = {
           price: number
           rating: number | null
           reviews_count: number | null
+          stock_qty: number | null
           updated_at: string
           weights: string[] | null
         }
@@ -250,6 +257,7 @@ export type Database = {
           price: number
           rating?: number | null
           reviews_count?: number | null
+          stock_qty?: number | null
           updated_at?: string
           weights?: string[] | null
         }
@@ -271,6 +279,7 @@ export type Database = {
           price?: number
           rating?: number | null
           reviews_count?: number | null
+          stock_qty?: number | null
           updated_at?: string
           weights?: string[] | null
         }
