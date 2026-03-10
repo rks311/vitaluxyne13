@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import Header from "@/components/layout/Header";
 import MobileNav from "@/components/layout/MobileNav";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
@@ -34,44 +35,46 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <CartProvider>
-          <Routes>
-            {/* Admin routes - no header/footer */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="packs" element={<AdminPacks />} />
-              <Route path="clients" element={<AdminClients />} />
-              <Route path="promos" element={<AdminPromos />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
+        <LanguageProvider>
+          <CartProvider>
+            <Routes>
+              {/* Admin routes - no header/footer */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="packs" element={<AdminPacks />} />
+                <Route path="clients" element={<AdminClients />} />
+                <Route path="promos" element={<AdminPromos />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-            {/* Client routes */}
-            <Route
-              path="*"
-              element={
-                <>
-                  <Header />
-                  <CartDrawer />
-                  <main>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/catalogue" element={<Catalog />} />
-                      <Route path="/produit/:id" element={<ProductDetail />} />
-                      <Route path="/checkout" element={<Checkout />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                  <MobileNav />
-                  <WhatsAppButton />
-                </>
-              }
-            />
-          </Routes>
-        </CartProvider>
+              {/* Client routes */}
+              <Route
+                path="*"
+                element={
+                  <>
+                    <Header />
+                    <CartDrawer />
+                    <main>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/catalogue" element={<Catalog />} />
+                        <Route path="/produit/:id" element={<ProductDetail />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </main>
+                    <Footer />
+                    <MobileNav />
+                    <WhatsAppButton />
+                  </>
+                }
+              />
+            </Routes>
+          </CartProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
