@@ -44,15 +44,11 @@ export default function Checkout() {
 
       // Auto-decrement stock for each product
       for (const item of items) {
-        await supabase.rpc('decrement_stock' as any, { p_product_id: item.productId, p_qty: item.quantity }).catch(() => {
-          // Fallback: direct update
-          supabase.from("products").select("stock_qty").eq("id", item.productId).single().then(({ data }) => {
-            if (data) {
-              const newQty = Math.max(0, ((data as any).stock_qty || 0) - item.quantity);
-              supabase.from("products").update({ stock_qty: newQty } as any).eq("id", item.productId);
-            }
-          });
-        });
+        const { data } = await supabase.from("products").select("stock_qty").eq("id", item.productId).single();
+        if (data) {
+          const newQty = Math.max(0, ((data as any).stock_qty || 0) - item.quantity);
+          await supabase.from("products").update({ stock_qty: newQty } as any).eq("id", item.productId);
+        }
       }
 
       await supabase.from("clients").upsert({ name: form.name.trim().slice(0, 100), phone: form.phone.trim().slice(0, 15), wilaya: form.wilaya }, { onConflict: "phone" });
