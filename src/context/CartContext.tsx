@@ -1,8 +1,12 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Product } from "@/data/products";
+import type { DbProduct } from "@/types/database";
 
 export interface CartItem {
-  product: Product;
+  productId: string;
+  name: string;
+  brand: string;
+  price: number;
+  imageUrl: string | null;
   quantity: number;
   flavor: string;
   weight: string;
@@ -10,9 +14,9 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, flavor: string, weight: string, qty?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (product: DbProduct, flavor: string, weight: string, qty?: number) => void;
+  removeItem: (productId: string, flavor: string, weight: string) => void;
+  updateQuantity: (productId: string, flavor: string, weight: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
   itemCount: number;
@@ -22,40 +26,64 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+function itemKey(productId: string, flavor: string, weight: string) {
+  return `${productId}-${flavor}-${weight}`;
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const addItem = useCallback((product: Product, flavor: string, weight: string, qty = 1) => {
+  const addItem = useCallback((product: DbProduct, flavor: string, weight: string, qty = 1) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id && i.flavor === flavor && i.weight === weight);
+      const existing = prev.find(
+        (i) => i.productId === product.id && i.flavor === flavor && i.weight === weight
+      );
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id && i.flavor === flavor && i.weight === weight
+          i.productId === product.id && i.flavor === flavor && i.weight === weight
             ? { ...i, quantity: i.quantity + qty }
             : i
         );
       }
-      return [...prev, { product, quantity: qty, flavor, weight }];
+      return [
+        ...prev,
+        {
+          productId: product.id,
+          name: product.name,
+          brand: product.brand,
+          price: product.price,
+          imageUrl: product.image_url,
+          quantity: qty,
+          flavor,
+          weight,
+        },
+      ];
     });
     setIsOpen(true);
   }, []);
 
-  const removeItem = useCallback((productId: string) => {
-    setItems((prev) => prev.filter((i) => i.product.id !== productId));
+  const removeItem = useCallback((productId: string, flavor: string, weight: string) => {
+    setItems((prev) => prev.filter((i) => !(i.productId === productId && i.flavor === flavor && i.weight === weight)));
   }, []);
 
-  const updateQuantity = useCallback((productId: string, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, flavor: string, weight: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.product.id !== productId));
+      setItems((prev) => prev.filter((i) => !(i.productId === productId && i.flavor === flavor && i.weight === weight)));
       return;
     }
-    setItems((prev) => prev.map((i) => (i.product.id === productId ? { ...i, quantity } : i)));
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productId === productId && i.flavor === flavor && i.weight === weight
+          ? { ...i, quantity }
+          : i
+      )
+    );
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
 
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
