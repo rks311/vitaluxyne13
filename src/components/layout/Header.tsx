@@ -1,34 +1,40 @@
-import { ShoppingCart, Phone, Menu, X } from "lucide-react";
+import { ShoppingCart, Phone, Menu, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
+import { useLang } from "@/context/LanguageContext";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
   const { itemCount, setIsOpen } = useCart();
+  const { t, lang, setLang } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/50">
       <div className="container flex items-center justify-between h-14 md:h-16">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <span className="font-heading text-lg md:text-2xl font-bold tracking-tight">
             ULTRA<span className="text-primary">NUTRITION</span>
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link to="/catalogue" className="text-muted-foreground hover:text-primary transition-colors">Catalogue</Link>
-          <Link to="/catalogue?cat=packs" className="text-muted-foreground hover:text-primary transition-colors">Packs</Link>
+          <Link to="/catalogue" className="text-muted-foreground hover:text-primary transition-colors">{t("nav.catalog")}</Link>
+          <Link to="/catalogue?cat=packs" className="text-muted-foreground hover:text-primary transition-colors">{t("nav.packs")}</Link>
           <a href="tel:+213555123456" className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
             <Phone size={14} /> 0555 12 34 56
           </a>
         </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setLang(lang === "fr" ? "ar" : "fr")}
+            className="p-2 text-muted-foreground hover:text-primary transition-colors text-xs font-medium flex items-center gap-1"
+          >
+            <Globe size={16} />
+            <span className="hidden sm:inline">{t("lang.switch")}</span>
+          </button>
           <button
             onClick={() => setIsOpen(true)}
             className="relative p-2.5 text-muted-foreground hover:text-primary transition-colors"
@@ -50,7 +56,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -60,8 +65,8 @@ export default function Header() {
             className="md:hidden overflow-hidden border-t border-border"
           >
             <nav className="container py-4 flex flex-col gap-3">
-              <Link to="/catalogue" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">Catalogue</Link>
-              <Link to="/catalogue?cat=packs" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">Nos Packs</Link>
+              <Link to="/catalogue" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">{t("nav.catalog")}</Link>
+              <Link to="/catalogue?cat=packs" onClick={() => setMenuOpen(false)} className="py-2 font-medium hover:text-primary transition-colors">{t("nav.packs")}</Link>
               <a href="tel:+213555123456" className="py-2 font-medium flex items-center gap-2 hover:text-primary transition-colors">
                 <Phone size={16} /> 0555 12 34 56
               </a>

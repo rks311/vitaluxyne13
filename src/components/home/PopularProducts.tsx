@@ -5,9 +5,11 @@ import ProductCard from "@/components/product/ProductCard";
 import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLang } from "@/context/LanguageContext";
 
 export default function PopularProducts() {
   const [products, setProducts] = useState<DbProduct[]>([]);
+  const { t } = useLang();
 
   useEffect(() => {
     supabase.from("products").select("*").eq("is_top_sale", true).limit(4)
@@ -24,12 +26,12 @@ export default function PopularProducts() {
             <TrendingUp size={18} className="text-primary" />
           </div>
           <div>
-            <h2 className="font-heading text-lg md:text-2xl font-bold">BEST <span className="text-primary">SELLERS</span></h2>
-            <p className="text-[10px] md:text-xs text-muted-foreground">Les plus vendus ce mois</p>
+            <h2 className="font-heading text-lg md:text-2xl font-bold">{t("popular.title")} <span className="text-primary">{t("popular.highlight")}</span></h2>
+            <p className="text-[10px] md:text-xs text-muted-foreground">{t("popular.sub")}</p>
           </div>
         </div>
         <Link to="/catalogue" className="text-xs text-primary flex items-center gap-1 hover:underline font-medium">
-          Tout voir <ArrowRight size={12} />
+          {t("popular.viewAll")} <ArrowRight size={12} />
         </Link>
       </motion.div>
 
