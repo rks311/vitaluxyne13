@@ -177,9 +177,8 @@ export default function AdminPacks() {
                 </div>
               </div>
               <div className="flex items-center justify-end gap-1 pt-2">
-                  <button onClick={() => openEdit(pack)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
-                  <button onClick={() => handleDelete(pack.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
-                </div>
+                <button onClick={() => openEdit(pack)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
+                <button onClick={() => handleDelete(pack.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
               </div>
             </div>
           </motion.div>
