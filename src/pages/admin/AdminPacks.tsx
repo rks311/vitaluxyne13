@@ -52,7 +52,7 @@ export default function AdminPacks() {
     if (!form.name || !form.price) { toast.error("Remplissez les champs requis"); return; }
     setSaving(true);
 
-    const packData = { name: form.name, description: form.description || null, price: form.price, old_price: form.old_price || null, active: form.active, image_url: form.image_url };
+    const packData = { name: form.name, description: form.description || null, price: form.price, old_price: form.old_price || null, active: form.active, image_url: form.image_url, stock_qty: form.stock_qty, duration: form.duration || null };
     const itemNames = itemsInput.split(",").map(s => s.trim()).filter(Boolean);
 
     if (editing) {
