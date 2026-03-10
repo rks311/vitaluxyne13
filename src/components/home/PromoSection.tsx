@@ -1,27 +1,30 @@
-import { products } from "@/data/products";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { DbProduct } from "@/types/database";
+import { formatPrice, getStorageUrl } from "@/types/database";
 import ProductCard from "@/components/product/ProductCard";
 import { Flame } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PromoSection() {
-  const promos = products.filter((p) => p.isPromo).slice(0, 4);
+  const [promos, setPromos] = useState<DbProduct[]>([]);
+
+  useEffect(() => {
+    supabase.from("products").select("*").eq("is_promo", true).limit(4)
+      .then(({ data }) => setPromos(data || []));
+  }, []);
+
+  if (promos.length === 0) return null;
 
   return (
     <section className="bg-surface py-10 md:py-16">
       <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-3 mb-6"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
             <Flame size={18} className="text-destructive" />
           </div>
           <div>
-            <h2 className="font-heading text-lg md:text-2xl font-bold">
-              PROMOS <span className="text-destructive">EN COURS</span>
-            </h2>
+            <h2 className="font-heading text-lg md:text-2xl font-bold">PROMOS <span className="text-destructive">EN COURS</span></h2>
             <p className="text-[10px] md:text-xs text-muted-foreground">Offres limitées — ne ratez pas !</p>
           </div>
         </motion.div>
