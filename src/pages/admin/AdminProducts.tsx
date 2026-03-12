@@ -4,48 +4,10 @@ import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { removeBg } from "@/lib/removeBackground";
 
 const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null, stock_qty: 0 };
 
 const categoryOptions = ["whey", "creatine", "gainer", "preworkout", "bcaa", "fatburner"];
-
-/** Draws the transparent product on a themed gradient canvas */
-function addThemedBackground(blob: Blob): Promise<Blob> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const size = Math.max(img.width, img.height) + 80;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d")!;
-
-      // Themed gradient background matching the dark silver theme
-      const grad = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.6);
-      grad.addColorStop(0, "hsl(0, 0%, 18%)");
-      grad.addColorStop(0.6, "hsl(0, 0%, 10%)");
-      grad.addColorStop(1, "hsl(0, 0%, 6%)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, size, size);
-
-      // Subtle silver ring accent
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size * 0.42, 0, Math.PI * 2);
-      ctx.strokeStyle = "hsla(0, 0%, 78%, 0.08)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Center the product
-      const x = (size - img.width) / 2;
-      const y = (size - img.height) / 2;
-      ctx.drawImage(img, x, y);
-
-      canvas.toBlob((b) => resolve(b!), "image/png", 0.95);
-    };
-    img.src = URL.createObjectURL(blob);
-  });
-}
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<DbProduct[]>([]);
@@ -55,7 +17,6 @@ export default function AdminProducts() {
   const [form, setForm] = useState(defaultProduct);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState("");
   const [flavorsInput, setFlavorsInput] = useState("");
   const [weightsInput, setWeightsInput] = useState("");
   const [objectivesInput, setObjectivesInput] = useState("");
@@ -90,39 +51,17 @@ export default function AdminProducts() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setUploadProgress("Traitement de l'image...");
-
     try {
-      // Step 1: Remove background
-      setUploadProgress("✨ Suppression du fond...");
-      let processedBlob: Blob;
-      try {
-        processedBlob = await removeBg(file);
-        toast.success("Fond supprimé ✨");
-      } catch (bgErr) {
-        console.warn("BG removal failed:", bgErr);
-        processedBlob = file;
-        toast.info("Image uploadée sans suppression du fond");
-      }
-
-      // Step 2: Add themed background
-      setUploadProgress("🎨 Ajout arrière-plan...");
-      const finalBlob = await addThemedBackground(processedBlob);
-
-      // Step 3: Upload
-      setUploadProgress("☁️ Sauvegarde...");
-      const path = `products/${Date.now()}.png`;
-      const { error } = await supabase.storage.from("product-images").upload(path, finalBlob, { contentType: "image/png", upsert: true });
+      const path = `products/${Date.now()}.${file.name.split(".").pop()}`;
+      const { error } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type, upsert: true });
       if (error) throw error;
-
       setForm((f) => ({ ...f, image_url: path }));
-      toast.success("Image prête avec arrière-plan ! 🎨");
+      toast.success("Image uploadée !");
     } catch (err) {
       console.error(err);
-      toast.error("Erreur lors du traitement");
+      toast.error("Erreur lors de l'upload");
     } finally {
       setUploading(false);
-      setUploadProgress("");
     }
   };
 
@@ -182,27 +121,17 @@ export default function AdminProducts() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Image (fond supprimé + arrière-plan auto)</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Image du produit</label>
                 <div className="flex items-center gap-3 flex-wrap">
                   {form.image_url && (
-                    <div className="w-24 h-24 rounded-xl overflow-hidden border border-border bg-secondary">
-                      <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-cover" />
+                    <div className="w-24 h-24 rounded-xl overflow-hidden border border-border product-image-bg">
+                      <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
                     </div>
                   )}
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-9 px-3 rounded-md bg-secondary text-sm flex items-center gap-2 hover:bg-muted transition-colors">
-                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                      {uploading ? uploadProgress : "📸 Choisir image"}
-                    </button>
-                    {uploading && (
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 flex-1 rounded-full bg-secondary overflow-hidden">
-                          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse" style={{ width: "70%" }} />
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">{uploadProgress}</span>
-                      </div>
-                    )}
-                  </div>
+                  <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-9 px-3 rounded-md bg-secondary text-sm flex items-center gap-2 hover:bg-muted transition-colors">
+                    {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    {uploading ? "Upload..." : "📸 Choisir image"}
+                  </button>
                   <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                 </div>
               </div>
@@ -262,8 +191,8 @@ export default function AdminProducts() {
                 <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-lg overflow-hidden bg-secondary border border-border shrink-0">
-                        <img src={getStorageUrl(p.image_url)} alt="" className="w-full h-full object-cover" />
+                      <div className="w-11 h-11 rounded-lg overflow-hidden border border-border shrink-0 product-image-bg">
+                        <img src={getStorageUrl(p.image_url)} alt="" className="w-full h-full object-contain p-0.5" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">{p.name}</p>
@@ -301,3 +230,4 @@ export default function AdminProducts() {
     </div>
   );
 }
+
