@@ -22,8 +22,8 @@ export default function ProductCard({ product, index = 0 }: Props) {
       transition={{ delay: index * 0.05, duration: 0.4 }}
       className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300 flex flex-col active:scale-[0.98]"
     >
-      <div className="relative aspect-square overflow-hidden bg-muted">
-        <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+      <div className="relative aspect-square overflow-hidden product-image-bg">
+        <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" />
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.is_top_sale && <span className="badge-top text-[9px] px-1.5">{t("product.top")}</span>}
           {product.is_promo && product.old_price && (
