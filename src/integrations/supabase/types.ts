@@ -288,36 +288,42 @@ export type Database = {
       promos: {
         Row: {
           active: boolean | null
+          apply_to: string
           created_at: string
           discount: number
           discount_type: string
           end_date: string | null
           id: string
           name: string
+          product_ids: string[] | null
           products_count: number | null
           start_date: string | null
           updated_at: string
         }
         Insert: {
           active?: boolean | null
+          apply_to?: string
           created_at?: string
           discount: number
           discount_type?: string
           end_date?: string | null
           id?: string
           name: string
+          product_ids?: string[] | null
           products_count?: number | null
           start_date?: string | null
           updated_at?: string
         }
         Update: {
           active?: boolean | null
+          apply_to?: string
           created_at?: string
           discount?: number
           discount_type?: string
           end_date?: string | null
           id?: string
           name?: string
+          product_ids?: string[] | null
           products_count?: number | null
           start_date?: string | null
           updated_at?: string
