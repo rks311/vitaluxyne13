@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { formatPrice } from "@/types/database";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
