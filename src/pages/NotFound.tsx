@@ -7,7 +7,7 @@ const NotFound = () => {
   const { t } = useLang();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    // Silent 404 tracking - no console error spam
   }, [location.pathname]);
 
   return (

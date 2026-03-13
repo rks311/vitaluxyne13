@@ -12,7 +12,6 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
   const { t, lang, setLang } = useLang();
 
@@ -20,19 +19,12 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isSignup) {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        toast.success(t("admin.accountCreated"));
-        navigate("/admin");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success(t("admin.loginSuccess"));
-        navigate("/admin");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success(t("admin.loginSuccess"));
+      navigate("/admin");
     } catch (err: any) {
-      toast.error(err.message || "Erreur");
+      toast.error(err.message || "Erreur de connexion");
     } finally {
       setLoading(false);
     }
@@ -69,13 +61,9 @@ export default function AdminLogin() {
             </div>
           </div>
           <Button type="submit" disabled={loading} className="w-full h-12 gradient-primary text-primary-foreground font-heading text-base">
-            {loading ? t("admin.loading") : isSignup ? t("admin.signup") : t("admin.login")}
+            {loading ? t("admin.loading") : t("admin.login")}
           </Button>
         </form>
-
-        <button onClick={() => setIsSignup(!isSignup)} className="w-full text-center text-xs text-muted-foreground mt-4 hover:text-primary transition-colors">
-          {isSignup ? t("admin.hasAccount") : t("admin.firstTime")}
-        </button>
       </motion.div>
     </div>
   );
