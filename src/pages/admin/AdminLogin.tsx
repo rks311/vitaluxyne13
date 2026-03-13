@@ -62,13 +62,9 @@ export default function AdminLogin() {
             </div>
           </div>
           <Button type="submit" disabled={loading} className="w-full h-12 gradient-primary text-primary-foreground font-heading text-base">
-            {loading ? t("admin.loading") : isSignup ? t("admin.signup") : t("admin.login")}
+            {loading ? t("admin.loading") : t("admin.login")}
           </Button>
         </form>
-
-        <button onClick={() => setIsSignup(!isSignup)} className="w-full text-center text-xs text-muted-foreground mt-4 hover:text-primary transition-colors">
-          {isSignup ? t("admin.hasAccount") : t("admin.firstTime")}
-        </button>
       </motion.div>
     </div>
   );
