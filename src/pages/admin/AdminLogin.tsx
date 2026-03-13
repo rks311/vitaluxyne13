@@ -20,19 +20,12 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isSignup) {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        toast.success(t("admin.accountCreated"));
-        navigate("/admin");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success(t("admin.loginSuccess"));
-        navigate("/admin");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success(t("admin.loginSuccess"));
+      navigate("/admin");
     } catch (err: any) {
-      toast.error(err.message || "Erreur");
+      toast.error(err.message || "Erreur de connexion");
     } finally {
       setLoading(false);
     }
