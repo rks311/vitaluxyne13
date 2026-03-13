@@ -42,14 +42,12 @@ export default function Checkout() {
       const orderItems = items.map((item) => ({ order_id: order.id, product_name: item.name, flavor: item.flavor, weight: item.weight, quantity: item.quantity, unit_price: item.price, total_price: item.price * item.quantity }));
       await supabase.from("order_items").insert(orderItems);
 
-      // Auto-decrement stock for each product
-      for (const item of items) {
-        const { data } = await supabase.from("products").select("stock_qty").eq("id", item.productId).single();
-        if (data) {
-          const newQty = Math.max(0, ((data as any).stock_qty || 0) - item.quantity);
-          await supabase.from("products").update({ stock_qty: newQty } as any).eq("id", item.productId);
-        }
-      }
+      // Atomic stock decrement via RPC
+      await Promise.all(
+        items.map((item) =>
+          supabase.rpc("decrement_stock", { p_product_id: item.productId, p_quantity: item.quantity })
+        )
+      );
 
       await supabase.from("clients").upsert({ name: form.name.trim().slice(0, 100), phone: form.phone.trim().slice(0, 15), wilaya: form.wilaya }, { onConflict: "phone" });
 
