@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
 import type { DbProduct } from "@/types/database";
 
 export interface CartItem {
@@ -26,13 +26,29 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-function itemKey(productId: string, flavor: string, weight: string) {
-  return `${productId}-${flavor}-${weight}`;
+const CART_KEY = "ultra_cart";
+
+function loadCart(): CartItem[] {
+  try {
+    const saved = localStorage.getItem(CART_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch { /* ignore */ }
+  return [];
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCart);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Persist cart
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(items));
+    } catch { /* quota exceeded */ }
+  }, [items]);
 
   const addItem = useCallback((product: DbProduct, flavor: string, weight: string, qty = 1) => {
     setItems((prev) => {
@@ -81,13 +97,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    localStorage.removeItem(CART_KEY);
+  }, []);
 
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  const total = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
+  const itemCount = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
+
+  const value = useMemo(() => ({
+    items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, isOpen, setIsOpen
+  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, isOpen]);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, isOpen, setIsOpen }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
