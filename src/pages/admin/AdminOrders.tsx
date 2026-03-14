@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/types/database";
 import type { DbOrder } from "@/types/database";
-import { Search, Eye, Check, X, Clock, Truck } from "lucide-react";
+import { Search, Eye, Check, X, Clock, Truck, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { exportOrdersPDF, exportOrdersExcel } from "@/lib/exportUtils";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
