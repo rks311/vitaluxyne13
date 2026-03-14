@@ -59,6 +59,14 @@ export default function AdminOrders() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher..." className="w-full h-10 rounded-md bg-card border border-border pl-9 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" maxLength={100} />
         </div>
+        <div className="flex gap-2">
+          <button onClick={() => exportOrdersPDF(filtered, `Commandes_${activeFilter}`)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors" title="Exporter PDF">
+            <FileText size={14} className="text-red-400" /> PDF
+          </button>
+          <button onClick={() => exportOrdersExcel(filtered, `Commandes_${activeFilter}`)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors" title="Exporter Excel">
+            <FileSpreadsheet size={14} className="text-emerald-400" /> Excel
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">

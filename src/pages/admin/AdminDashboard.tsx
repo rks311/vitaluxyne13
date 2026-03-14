@@ -126,10 +126,18 @@ export default function AdminDashboard() {
           <h2 className="font-heading text-xl font-bold">Bienvenue sur UltraAdmin 👋</h2>
           <p className="text-sm text-muted-foreground mt-1">Voici un résumé de votre activité aujourd'hui</p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
-          <Activity size={14} className="text-emerald-400" />
-          <span className="text-emerald-400 font-medium">En ligne</span>
-          <span>· {new Date().toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+        <div className="hidden md:flex items-center gap-3">
+          <button onClick={() => exportDashboardPDF(stats, topProducts, ordersByDay)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors">
+            <FileText size={14} className="text-red-400" /> Rapport PDF
+          </button>
+          <button onClick={() => exportDashboardExcel(stats, topProducts, ordersByDay, categoryData, statusData)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors">
+            <FileSpreadsheet size={14} className="text-emerald-400" /> Rapport Excel
+          </button>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Activity size={14} className="text-emerald-400" />
+            <span className="text-emerald-400 font-medium">En ligne</span>
+            <span>· {new Date().toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+          </div>
         </div>
       </motion.div>
 
