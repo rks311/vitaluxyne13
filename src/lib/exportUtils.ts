@@ -11,7 +11,7 @@ export function exportOrdersPDF(orders: any[], title = "Commandes") {
   // Header
   doc.setFontSize(18);
   doc.setTextColor(40);
-  doc.text("Ultra Nutrition", 14, 18);
+  doc.text("Vitaluxyne", 14, 18);
   doc.setFontSize(11);
   doc.setTextColor(120);
   doc.text(title, 14, 26);
@@ -51,7 +51,7 @@ export function exportDashboardPDF(stats: any, topProducts: any[], ordersByDay: 
   
   doc.setFontSize(18);
   doc.setTextColor(40);
-  doc.text("Ultra Nutrition — Rapport", 14, 18);
+  doc.text("Vitaluxyne — Rapport", 14, 18);
   doc.setFontSize(10);
   doc.setTextColor(120);
   doc.text(`Généré le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR")}`, 14, 26);

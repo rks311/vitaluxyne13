@@ -6,84 +6,98 @@ export const translations: Record<string, Record<Lang, string>> = {
   "nav.packs": { fr: "Packs", ar: "الباقات" },
   "nav.home": { fr: "Accueil", ar: "الرئيسية" },
   "nav.cart": { fr: "Panier", ar: "السلة" },
+  "nav.categories": { fr: "Catégories", ar: "الفئات" },
 
   // Hero
-  "hero.subtitle": { fr: "Compléments Alimentaires Premium", ar: "مكملات غذائية ممتازة" },
-  "hero.authentic": { fr: "Authentique", ar: "أصلي" },
-  "hero.delivery": { fr: "Livraison", ar: "التوصيل" },
-  "hero.payment": { fr: "Paiement", ar: "الدفع" },
-
-  // Flash Banner
-  "flash.title": { fr: "FLASH SALE", ar: "تخفيضات سريعة" },
-  "flash.ends": { fr: "se termine dans", ar: "ينتهي خلال" },
+  "hero.title": { fr: "Compléments alimentaires de qualité pour votre santé", ar: "مكملات غذائية عالية الجودة لصحتك" },
+  "hero.titleHighlight": { fr: "pas seulement vos muscles", ar: "ليس فقط لعضلاتك" },
+  "hero.subtitle": { fr: "Vitamines, minéraux et compléments certifiés pour toute la famille. Livraison partout en Algérie.", ar: "فيتامينات ومعادن ومكملات معتمدة لجميع أفراد العائلة. توصيل في كل أنحاء الجزائر." },
+  "hero.cta": { fr: "Découvrir les produits", ar: "اكتشف المنتجات" },
+  "hero.whatsapp": { fr: "Parler à un conseiller", ar: "تحدث مع مستشار" },
 
   // Categories
-  "cat.title": { fr: "CATÉGORIES", ar: "الفئات" },
+  "cat.title": { fr: "Nos catégories", ar: "فئاتنا" },
+  "cat.beaute": { fr: "Beauté", ar: "الجمال" },
+  "cat.cerveau": { fr: "Cerveau et concentration", ar: "الدماغ والتركيز" },
+  "cat.stress": { fr: "Stress et sommeil", ar: "التوتر والنوم" },
+  "cat.muscles": { fr: "Muscles", ar: "العضلات" },
+  "cat.os": { fr: "Os et articulations", ar: "العظام والمفاصل" },
+  "cat.coeur": { fr: "Cœur", ar: "القلب" },
+  "cat.immunite": { fr: "Immunité", ar: "المناعة" },
+  "cat.hormones": { fr: "Hormones", ar: "الهرمونات" },
+  "cat.perte": { fr: "Perte de poids", ar: "فقدان الوزن" },
+  "cat.autre": { fr: "Autre", ar: "أخرى" },
 
-  // Popular
-  "popular.title": { fr: "BEST", ar: "الأكثر" },
-  "popular.highlight": { fr: "SELLERS", ar: "مبيعاً" },
-  "popular.sub": { fr: "Les plus vendus ce mois", ar: "الأكثر مبيعاً هذا الشهر" },
-  "popular.viewAll": { fr: "Tout voir", ar: "عرض الكل" },
+  // Featured sections
+  "section.cerveau": { fr: "Produits pour le cerveau et la concentration", ar: "منتجات للدماغ والتركيز" },
+  "section.stress": { fr: "Produits anti-stress et pour le sommeil", ar: "منتجات مضادة للتوتر ومساعدة على النوم" },
+  "section.muscles": { fr: "Produits musculaires", ar: "منتجات العضلات" },
+  "section.beaute": { fr: "Produits de beauté", ar: "منتجات التجميل" },
+  "section.immunite": { fr: "Produits pour l'immunité", ar: "منتجات المناعة" },
+  "section.viewAll": { fr: "Voir tout", ar: "عرض الكل" },
 
-  // Packs
-  "packs.title": { fr: "NOS", ar: "باقاتنا" },
-  "packs.highlight": { fr: "PACKS", ar: "المميزة" },
-  "packs.sub": { fr: "Économisez avec nos packs combinés", ar: "وفّر مع باقاتنا المجمعة" },
-  "packs.order": { fr: "Commander", ar: "اطلب الآن" },
-  "packs.whatsapp": { fr: "Contactez-nous sur WhatsApp pour commander ce pack !", ar: "تواصل معنا عبر واتساب لطلب هذه الباقة!" },
-  "packs.viewDetail": { fr: "Voir détails →", ar: "عرض التفاصيل →" },
-  "packs.contains": { fr: "Ce pack contient", ar: "تحتوي هذه الباقة على" },
-  "packs.save": { fr: "Vous économisez", ar: "توفير" },
-  "packs.more": { fr: "autres", ar: "أخرى" },
-
-  // Promos
-  "promo.title": { fr: "PROMOS", ar: "عروض" },
-  "promo.highlight": { fr: "EN COURS", ar: "حالية" },
-  "promo.sub": { fr: "Offres limitées — ne ratez pas !", ar: "عروض محدودة — لا تفوتها!" },
-
-  // Trust
-  "trust.delivery": { fr: "Livraison 48h", ar: "توصيل 48 ساعة" },
+  // Trust badges
+  "trust.delivery": { fr: "Livraison rapide", ar: "توصيل سريع" },
   "trust.deliveryDesc": { fr: "Partout en Algérie", ar: "في كل أنحاء الجزائر" },
-  "trust.cod": { fr: "Paiement COD", ar: "الدفع عند الاستلام" },
-  "trust.codDesc": { fr: "Cash à la livraison", ar: "نقداً عند التسليم" },
-  "trust.original": { fr: "100% Original", ar: "100% أصلي" },
-  "trust.originalDesc": { fr: "Produits authentiques", ar: "منتجات أصلية" },
-  "trust.support": { fr: "Support 24/7", ar: "دعم 24/7" },
-  "trust.supportDesc": { fr: "Réponse rapide WhatsApp", ar: "رد سريع عبر واتساب" },
+  "trust.cod": { fr: "Paiement à la livraison", ar: "الدفع عند الاستلام" },
+  "trust.codDesc": { fr: "Cash on delivery", ar: "نقداً عند التسليم" },
+  "trust.original": { fr: "Produits authentiques", ar: "منتجات أصلية" },
+  "trust.originalDesc": { fr: "Qualité garantie", ar: "جودة مضمونة" },
+  "trust.support": { fr: "Conseil gratuit", ar: "استشارة مجانية" },
+  "trust.supportDesc": { fr: "Appelez-nous ou WhatsApp", ar: "اتصل بنا أو واتساب" },
 
-  // Testimonials
-  "reviews.title": { fr: "AVIS", ar: "آراء" },
-  "reviews.highlight": { fr: "CLIENTS", ar: "العملاء" },
-  "reviews.sub": { fr: "Ce que disent nos clients", ar: "ماذا يقول عملاؤنا" },
-
-  // Product Card
+  // Product Card / Detail
   "product.add": { fr: "Ajouter", ar: "أضف" },
-  "product.top": { fr: "🔥 Top", ar: "🔥 الأفضل" },
+  "product.orderNow": { fr: "Commander maintenant", ar: "اطلب الآن" },
   "product.addToCart": { fr: "Ajouter au panier", ar: "أضف إلى السلة" },
   "product.inStock": { fr: "En stock", ar: "متوفر" },
   "product.outOfStock": { fr: "Rupture de stock", ar: "غير متوفر" },
   "product.flavor": { fr: "Goût", ar: "النكهة" },
   "product.weight": { fr: "Poids", ar: "الوزن" },
   "product.quantity": { fr: "Quantité", ar: "الكمية" },
-  "product.similar": { fr: "PRODUITS", ar: "منتجات" },
-  "product.similarHighlight": { fr: "SIMILAIRES", ar: "مشابهة" },
+  "product.similar": { fr: "Produits similaires", ar: "منتجات مشابهة" },
   "product.notFound": { fr: "Produit non trouvé", ar: "المنتج غير موجود" },
   "product.back": { fr: "Retour", ar: "رجوع" },
   "product.backToCatalog": { fr: "Retour au catalogue", ar: "العودة للكتالوج" },
   "product.reviews": { fr: "avis", ar: "تقييم" },
   "product.nutrition": { fr: "Valeurs Nutritionnelles", ar: "القيم الغذائية" },
+  "product.description": { fr: "Description", ar: "الوصف" },
+  "product.composition": { fr: "Composition", ar: "التركيبة" },
+  "product.usage": { fr: "Comment l'utiliser", ar: "طريقة الاستخدام" },
+  "product.benefits": { fr: "Bienfaits", ar: "الفوائد" },
+  "product.trustCod": { fr: "Paiement à la livraison", ar: "الدفع عند الاستلام" },
+  "product.trustAdvice": { fr: "Conseil téléphonique gratuit", ar: "استشارة هاتفية مجانية" },
 
   // Catalog
-  "catalog.title": { fr: "NOTRE", ar: "كتالوجنا" },
-  "catalog.highlight": { fr: "CATALOGUE", ar: "المتميز" },
+  "catalog.title": { fr: "Catalogue", ar: "الكتالوج" },
   "catalog.search": { fr: "Rechercher un produit...", ar: "البحث عن منتج..." },
   "catalog.filters": { fr: "Filtres", ar: "تصفية" },
   "catalog.category": { fr: "Catégorie", ar: "الفئة" },
-  "catalog.objective": { fr: "Objectif", ar: "الهدف" },
   "catalog.clearFilters": { fr: "Effacer les filtres", ar: "مسح الفلاتر" },
-  "catalog.results": { fr: "produit(s) trouvé(s)", ar: "منتج(ات) تم العثور عليها" },
+  "catalog.results": { fr: "produit(s)", ar: "منتج(ات)" },
   "catalog.noResults": { fr: "Aucun produit trouvé", ar: "لم يتم العثور على منتجات" },
+  "catalog.sort": { fr: "Trier par", ar: "ترتيب حسب" },
+  "catalog.sortNewest": { fr: "Plus récents", ar: "الأحدث" },
+  "catalog.sortPriceAsc": { fr: "Prix croissant", ar: "السعر تصاعدياً" },
+  "catalog.sortPriceDesc": { fr: "Prix décroissant", ar: "السعر تنازلياً" },
+  "catalog.sortPopular": { fr: "Populaires", ar: "الأكثر شعبية" },
+  "catalog.all": { fr: "Toutes", ar: "الكل" },
+
+  // Order form
+  "order.title": { fr: "Commander", ar: "طلب" },
+  "order.fullName": { fr: "Nom complet", ar: "الاسم الكامل" },
+  "order.phone": { fr: "Numéro de téléphone", ar: "رقم الهاتف" },
+  "order.city": { fr: "Ville", ar: "المدينة" },
+  "order.address": { fr: "Adresse complète", ar: "العنوان الكامل" },
+  "order.product": { fr: "Produit", ar: "المنتج" },
+  "order.quantity": { fr: "Quantité", ar: "الكمية" },
+  "order.comment": { fr: "Commentaires (optionnel)", ar: "ملاحظات (اختياري)" },
+  "order.submit": { fr: "Confirmer la commande", ar: "تأكيد الطلب" },
+  "order.submitting": { fr: "Envoi en cours...", ar: "جاري الإرسال..." },
+  "order.thankYou": { fr: "Merci !", ar: "شكراً !" },
+  "order.thankYouMsg": { fr: "Un conseiller Vitaluxyne vous appellera pour confirmer votre commande.", ar: "سيتصل بك مستشار Vitaluxyne لتأكيد طلبك." },
+  "order.whatsappContact": { fr: "Contacter sur WhatsApp", ar: "تواصل عبر واتساب" },
+  "order.newOrder": { fr: "Nouvelle commande", ar: "طلب جديد" },
 
   // Cart
   "cart.title": { fr: "Panier", ar: "السلة" },
@@ -93,7 +107,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "cart.viewCatalog": { fr: "Voir le catalogue", ar: "عرض الكتالوج" },
 
   // Checkout
-  "checkout.title": { fr: "COMMANDER", ar: "تأكيد الطلب" },
+  "checkout.title": { fr: "Commander", ar: "تأكيد الطلب" },
   "checkout.info": { fr: "Infos", ar: "المعلومات" },
   "checkout.delivery": { fr: "Livraison", ar: "التوصيل" },
   "checkout.confirm": { fr: "Confirmer", ar: "تأكيد" },
@@ -131,38 +145,21 @@ export const translations: Record<string, Record<Lang, string>> = {
   "checkout.orderSuccess": { fr: "envoyée avec succès !", ar: "تم إرسال الطلب بنجاح!" },
   "checkout.orderError": { fr: "Erreur lors de l'envoi. Réessayez.", ar: "خطأ أثناء الإرسال. حاول مرة أخرى." },
 
+  // Landing page
+  "landing.orderNow": { fr: "Commander maintenant", ar: "اطلب الآن" },
+  "landing.whatsapp": { fr: "Parler sur WhatsApp", ar: "تحدث عبر واتساب" },
+  "landing.testimonials": { fr: "Avis de nos clients", ar: "آراء عملائنا" },
+  "landing.benefits": { fr: "Pourquoi ce produit ?", ar: "لماذا هذا المنتج؟" },
+
   // Footer
-  "footer.desc": { fr: "La référence des compléments alimentaires de musculation en Algérie.", ar: "المرجع في المكملات الغذائية لكمال الأجسام في الجزائر." },
+  "footer.desc": { fr: "Compléments alimentaires de qualité pour toute la famille. Santé, bien-être, performance.", ar: "مكملات غذائية عالية الجودة لجميع أفراد العائلة. صحة ورفاهية وأداء." },
   "footer.navigation": { fr: "Navigation", ar: "التنقل" },
   "footer.info": { fr: "Informations", ar: "معلومات" },
   "footer.faq": { fr: "FAQ", ar: "الأسئلة الشائعة" },
   "footer.returns": { fr: "Politique de retour", ar: "سياسة الإرجاع" },
   "footer.shipping": { fr: "Livraison", ar: "التوصيل" },
   "footer.contact": { fr: "Contact", ar: "اتصل بنا" },
-  "footer.rights": { fr: "© 2026 Ultra Nutrition. Tous droits réservés.", ar: "© 2026 Ultra Nutrition. جميع الحقوق محفوظة." },
-
-  // Pack Builder
-  "packBuilder.title": { fr: "CRÉER MON", ar: "أنشئ" },
-  "packBuilder.highlight": { fr: "PACK", ar: "باقتي" },
-  "packBuilder.sub": { fr: "Compose ton pack personnalisé", ar: "أنشئ باقتك المخصصة" },
-  "packBuilder.objective": { fr: "Objectif", ar: "الهدف" },
-  "packBuilder.protein": { fr: "Protéine", ar: "البروتين" },
-  "packBuilder.complement": { fr: "Complément", ar: "المكمل" },
-  "packBuilder.summary": { fr: "Résumé", ar: "الملخص" },
-  "packBuilder.whatObjective": { fr: "Quel est ton objectif ?", ar: "ما هو هدفك؟" },
-  "packBuilder.massGain": { fr: "Prise de masse", ar: "زيادة الكتلة" },
-  "packBuilder.cutting": { fr: "Sèche", ar: "تنشيف" },
-  "packBuilder.chooseProtein": { fr: "Choisis ta protéine", ar: "اختر البروتين" },
-  "packBuilder.addComplement": { fr: "Ajoute un complément", ar: "أضف مكملاً" },
-  "packBuilder.packReady": { fr: "Ton pack est prêt !", ar: "باقتك جاهزة!" },
-  "packBuilder.validatePack": { fr: "Valide ton pack et passe commande.", ar: "أكّد باقتك واطلبها." },
-  "packBuilder.yourPack": { fr: "Ton Pack", ar: "باقتك" },
-  "packBuilder.noProducts": { fr: "Aucun produit sélectionné", ar: "لم يتم اختيار منتجات" },
-  "packBuilder.orderPack": { fr: "Commander le pack", ar: "اطلب الباقة" },
-
-  // 404
-  "notFound.title": { fr: "Page non trouvée", ar: "الصفحة غير موجودة" },
-  "notFound.back": { fr: "Retour à l'accueil", ar: "العودة للرئيسية" },
+  "footer.rights": { fr: "© 2026 Vitaluxyne. Tous droits réservés.", ar: "© 2026 Vitaluxyne. جميع الحقوق محفوظة." },
 
   // Admin
   "admin.dashboard": { fr: "Dashboard", ar: "لوحة التحكم" },
@@ -175,8 +172,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   "admin.logout": { fr: "Déconnexion", ar: "تسجيل الخروج" },
   "admin.login": { fr: "Se connecter", ar: "تسجيل الدخول" },
   "admin.signup": { fr: "Créer un compte", ar: "إنشاء حساب" },
-  "admin.loginTitle": { fr: "ADMINISTRATION", ar: "الإدارة" },
-  "admin.loginSub": { fr: "Ultra Nutrition — Panneau Admin", ar: "Ultra Nutrition — لوحة الإدارة" },
+  "admin.loginTitle": { fr: "Administration", ar: "الإدارة" },
+  "admin.loginSub": { fr: "Vitaluxyne — Panneau Admin", ar: "Vitaluxyne — لوحة الإدارة" },
   "admin.email": { fr: "Email", ar: "البريد الإلكتروني" },
   "admin.password": { fr: "Mot de passe", ar: "كلمة المرور" },
   "admin.loading": { fr: "Chargement...", ar: "جاري التحميل..." },
@@ -187,4 +184,34 @@ export const translations: Record<string, Record<Lang, string>> = {
 
   // Language
   "lang.switch": { fr: "العربية", ar: "Français" },
+
+  // Testimonials
+  "reviews.title": { fr: "Avis clients", ar: "آراء العملاء" },
+  "reviews.sub": { fr: "Ce que disent nos clients", ar: "ماذا يقول عملاؤنا" },
+
+  // Packs
+  "packs.title": { fr: "Nos Packs", ar: "باقاتنا" },
+  "packs.sub": { fr: "Économisez avec nos packs combinés", ar: "وفّر مع باقاتنا المجمعة" },
+  "packs.order": { fr: "Commander", ar: "اطلب الآن" },
+  "packs.whatsapp": { fr: "Contactez-nous sur WhatsApp pour commander ce pack !", ar: "تواصل معنا عبر واتساب لطلب هذه الباقة!" },
+  "packs.viewDetail": { fr: "Voir détails →", ar: "عرض التفاصيل →" },
+  "packs.contains": { fr: "Ce pack contient", ar: "تحتوي هذه الباقة على" },
+  "packs.save": { fr: "Vous économisez", ar: "توفير" },
+  "packs.more": { fr: "autres", ar: "أخرى" },
+
+  // Promos
+  "promo.title": { fr: "Promos en cours", ar: "عروض حالية" },
+  "promo.sub": { fr: "Offres limitées — ne ratez pas !", ar: "عروض محدودة — لا تفوتها!" },
+
+  // Not Found
+  "notFound.title": { fr: "Page non trouvée", ar: "الصفحة غير موجودة" },
+  "notFound.back": { fr: "Retour à l'accueil", ar: "العودة للرئيسية" },
+
+  // Pack Builder
+  "packBuilder.title": { fr: "Créer mon pack", ar: "أنشئ باقتي" },
+  "packBuilder.sub": { fr: "Compose ton pack personnalisé", ar: "أنشئ باقتك المخصصة" },
+
+  // Flash Banner
+  "flash.title": { fr: "OFFRE SPÉCIALE", ar: "عرض خاص" },
+  "flash.ends": { fr: "se termine dans", ar: "ينتهي خلال" },
 };

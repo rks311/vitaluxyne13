@@ -1,38 +1,48 @@
-import { testimonials } from "@/data/products";
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLang } from "@/context/LanguageContext";
+
+// REPLACE WITH REAL TESTIMONIALS
+const testimonials = [
+  { name: "Amira B.", location: "Alger", text: "Excellente qualité ! J'utilise les vitamines B12 et C depuis 3 mois. Je recommande Vitaluxyne.", rating: 5 },
+  { name: "Karim M.", location: "Oran", text: "Livraison rapide et produits authentiques. Le zinc et les oméga-3 sont très bien dosés.", rating: 5 },
+  { name: "Sarah L.", location: "Constantine", text: "Le collagène m'a fait un bien fou pour la peau. Merci pour vos conseils personnalisés !", rating: 4 },
+  { name: "Youcef D.", location: "Tizi Ouzou", text: "Très bon rapport qualité-prix. Je prends les multivitamines en famille.", rating: 5 },
+];
 
 export default function Testimonials() {
   const { t } = useLang();
 
   return (
-    <section className="bg-surface py-10 md:py-16">
+    <section className="py-12 md:py-16 bg-background">
       <div className="container">
-        <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Quote size={18} className="text-primary" />
-          </div>
-          <div>
-            <h2 className="font-heading text-lg md:text-2xl font-bold">{t("reviews.title")} <span className="text-primary">{t("reviews.highlight")}</span></h2>
-            <p className="text-[10px] md:text-xs text-muted-foreground">{t("reviews.sub")}</p>
-          </div>
-        </motion.div>
+        <div className="text-center mb-10">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{t("reviews.title")}</h2>
+          <p className="text-muted-foreground mt-2">{t("reviews.sub")}</p>
+          <div className="w-12 h-1 bg-accent mx-auto mt-3 rounded-full" />
+        </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:pb-0">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {testimonials.map((review, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="snap-start shrink-0 w-[260px] md:w-auto p-4 rounded-2xl bg-card border border-border hover:border-primary/20 transition-colors">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              className="p-5 rounded-xl border border-border bg-card"
+            >
               <div className="flex gap-0.5 mb-3">
-                {Array.from({ length: review.rating }).map((_, j) => (
-                  <Star key={j} size={12} className="fill-primary text-primary" />
+                {Array.from({ length: 5 }).map((_, j) => (
+                  <Star key={j} size={14} className={j < review.rating ? "fill-accent text-accent" : "text-muted"} />
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground mb-4 leading-relaxed italic">"{review.text}"</p>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">"{review.text}"</p>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold">{review.name.charAt(0)}</div>
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">{review.name.charAt(0)}</div>
                 <div>
-                  <p className="text-sm font-medium">{review.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{review.city}</p>
+                  <p className="font-heading font-semibold text-sm">{review.name}</p>
+                  <p className="text-xs text-muted-foreground">{review.location}</p>
                 </div>
               </div>
             </motion.div>

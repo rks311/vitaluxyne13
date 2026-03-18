@@ -123,7 +123,7 @@ export default function AdminDashboard() {
       {/* Welcome banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-primary/10 via-card to-card border border-border rounded-xl p-5 flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-xl font-bold">Bienvenue sur UltraAdmin 👋</h2>
+          <h2 className="font-heading text-xl font-bold">Bienvenue sur Vitaluxyne Admin 👋</h2>
           <p className="text-sm text-muted-foreground mt-1">Voici un résumé de votre activité aujourd'hui</p>
         </div>
         <div className="hidden md:flex items-center gap-3">

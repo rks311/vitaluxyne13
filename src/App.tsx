@@ -18,6 +18,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Catalog = lazy(() => import("./pages/Catalog"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Checkout = lazy(() => import("./pages/Checkout"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
@@ -32,7 +33,7 @@ const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 min cache
+      staleTime: 5 * 60 * 1000,
       retry: 2,
       refetchOnWindowFocus: false,
     },
@@ -58,6 +59,9 @@ const App = () => (
             <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
+                  {/* Landing pages for Facebook/Instagram ads — lightweight, no header/footer */}
+                  <Route path="/l/:slug" element={<LandingPage />} />
+
                   {/* Admin routes */}
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin" element={<AdminLayout />}>
