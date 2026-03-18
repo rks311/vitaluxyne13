@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Oswald", "sans-serif"],
+        heading: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },
       colors: {
@@ -52,6 +52,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         surface: "hsl(var(--surface))",
+        gold: "hsl(var(--gold))",
+        mint: "hsl(var(--mint))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -89,17 +91,9 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
-        "pulse-neon": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(0 0% 75% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(0 0% 75% / 0.5)" },
-        },
         "slide-up": {
           "0%": { opacity: "0", transform: "translateY(40px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "count-down": {
-          "0%": { transform: "scaleX(1)" },
-          "100%": { transform: "scaleX(0)" },
         },
       },
       animation: {
@@ -108,7 +102,6 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "fade-in-right": "fade-in-right 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
-        "pulse-neon": "pulse-neon 2s ease-in-out infinite",
         "slide-up": "slide-up 0.6s ease-out forwards",
       },
     },
