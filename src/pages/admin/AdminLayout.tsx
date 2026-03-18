@@ -64,47 +64,24 @@ export default function AdminLayout() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Realtime new orders
   useEffect(() => {
-    // Mark initial load after a short delay so we don't notify for existing orders
     const timer = setTimeout(() => { initialLoadDone.current = true; }, 3000);
-
     const channel = supabase
       .channel('admin-orders-realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders' },
-        (payload) => {
-          if (!initialLoadDone.current) return;
-          const order = payload.new as any;
-          const notif: Notification = {
-            id: order.id,
-            orderNumber: order.order_number,
-            clientName: order.client_name,
-            total: order.total,
-            timestamp: new Date(),
-          };
-          setNotifications(prev => [notif, ...prev].slice(0, 20));
-          playNotificationSound();
-        }
-      )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+        if (!initialLoadDone.current) return;
+        const order = payload.new as any;
+        const notif: Notification = { id: order.id, orderNumber: order.order_number, clientName: order.client_name, total: order.total, timestamp: new Date() };
+        setNotifications(prev => [notif, ...prev].slice(0, 20));
+        playNotificationSound();
+      })
       .subscribe();
-
-    return () => {
-      clearTimeout(timer);
-      supabase.removeChannel(channel);
-    };
+    return () => { clearTimeout(timer); supabase.removeChannel(channel); };
   }, []);
 
-  const clearNotifications = useCallback(() => {
-    setNotifications([]);
-    setShowPanel(false);
-  }, []);
+  const clearNotifications = useCallback(() => { setNotifications([]); setShowPanel(false); }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
+  const handleLogout = async () => { await supabase.auth.signOut(); navigate("/"); };
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" /></div>;
 
@@ -114,10 +91,10 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-background flex">
       {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileOpen(false)} />}
 
-      <aside className={cn("fixed md:sticky top-0 left-0 z-50 h-screen bg-card border-e border-border flex flex-col transition-all duration-300", collapsed ? "w-[68px]" : "w-64", mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border shrink-0">
-          {!collapsed && <span className="font-heading text-lg font-bold">ULTRA<span className="text-primary">ADMIN</span></span>}
-          <button onClick={() => { setCollapsed(!collapsed); setMobileOpen(false); }} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground">
+      <aside className={cn("fixed md:sticky top-0 left-0 z-50 h-screen bg-primary flex flex-col transition-all duration-300", collapsed ? "w-[68px]" : "w-64", mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
+        <div className="h-16 flex items-center justify-between px-4 border-b border-primary-foreground/20 shrink-0">
+          {!collapsed && <span className="font-heading text-lg font-bold text-primary-foreground">Vitaluxyne</span>}
+          <button onClick={() => { setCollapsed(!collapsed); setMobileOpen(false); }} className="p-1.5 rounded-md hover:bg-primary-foreground/10 text-primary-foreground/70">
             <ChevronLeft size={18} className={cn("transition-transform", collapsed && "rotate-180")} />
           </button>
         </div>
@@ -127,7 +104,7 @@ export default function AdminLayout() {
             const Icon = item.icon;
             const active = location.pathname === item.path;
             return (
-              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors", active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground")}>
+              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", active ? "bg-primary-foreground/20 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground")}>
                 <Icon size={18} className="shrink-0" />
                 {!collapsed && <span>{item.label}</span>}
               </button>
@@ -135,12 +112,12 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="p-2 border-t border-border shrink-0 space-y-1">
-          <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-secondary transition-colors">
+        <div className="p-2 border-t border-primary-foreground/20 shrink-0 space-y-1">
+          <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 transition-colors">
             <Globe size={18} className="shrink-0" />
             {!collapsed && <span>{t("lang.switch")}</span>}
           </button>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-300 hover:bg-red-500/20 transition-colors">
             <LogOut size={18} className="shrink-0" />
             {!collapsed && <span>{t("admin.logout")}</span>}
           </button>
@@ -148,57 +125,34 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 flex items-center gap-3 px-4 md:px-6 border-b border-border bg-card/50 backdrop-blur-md sticky top-0 z-30">
+        <header className="h-16 flex items-center gap-3 px-4 md:px-6 border-b border-border bg-background sticky top-0 z-30">
           <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 text-muted-foreground hover:text-foreground">
             <Menu size={20} />
           </button>
-          <h1 className="font-heading text-lg font-bold flex-1">{navItems.find((n) => n.path === location.pathname)?.label || "Admin"}</h1>
+          <h1 className="font-heading text-lg font-bold flex-1 text-foreground">{navItems.find((n) => n.path === location.pathname)?.label || "Admin"}</h1>
 
-          {/* Notification Bell */}
           <div className="relative">
-            <button
-              onClick={() => setShowPanel(!showPanel)}
-              className="relative p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <button onClick={() => setShowPanel(!showPanel)} className="relative p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
               <Bell size={20} />
               <AnimatePresence>
                 {unreadCount > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1"
-                  >
+                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </motion.span>
                 )}
               </AnimatePresence>
             </button>
 
-            {/* Notification Panel */}
             <AnimatePresence>
               {showPanel && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50"
-                >
+                <motion.div initial={{ opacity: 0, y: 8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.95 }} transition={{ duration: 0.15 }} className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50">
                   <div className="flex items-center justify-between p-3 border-b border-border">
                     <h3 className="font-heading font-bold text-sm">Notifications</h3>
                     <div className="flex items-center gap-1">
-                      {unreadCount > 0 && (
-                        <button onClick={clearNotifications} className="text-[10px] text-primary hover:underline px-2 py-1">
-                          Tout effacer
-                        </button>
-                      )}
-                      <button onClick={() => setShowPanel(false)} className="p-1 rounded-md hover:bg-secondary text-muted-foreground">
-                        <X size={14} />
-                      </button>
+                      {unreadCount > 0 && <button onClick={clearNotifications} className="text-[10px] text-primary hover:underline px-2 py-1">Tout effacer</button>}
+                      <button onClick={() => setShowPanel(false)} className="p-1 rounded-md hover:bg-secondary text-muted-foreground"><X size={14} /></button>
                     </div>
                   </div>
-
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="p-6 text-center">
@@ -207,24 +161,14 @@ export default function AdminLayout() {
                       </div>
                     ) : (
                       notifications.map((notif) => (
-                        <button
-                          key={notif.id}
-                          onClick={() => { navigate("/admin/orders"); setShowPanel(false); }}
-                          className="w-full flex items-start gap-3 p-3 hover:bg-secondary/50 transition-colors border-b border-border/50 last:border-0 text-left"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <ShoppingCart size={14} className="text-emerald-400" />
+                        <button key={notif.id} onClick={() => { navigate("/admin/orders"); setShowPanel(false); }} className="w-full flex items-start gap-3 p-3 hover:bg-secondary/50 transition-colors border-b border-border/50 last:border-0 text-left">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <ShoppingCart size={14} className="text-primary" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium">
-                              Nouvelle commande <span className="text-primary font-mono">{notif.orderNumber}</span>
-                            </p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                              {notif.clientName} · {formatPrice(notif.total)}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground/60 mt-1">
-                              {notif.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-                            </p>
+                            <p className="text-xs font-medium">Nouvelle commande <span className="text-primary font-mono">{notif.orderNumber}</span></p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{notif.clientName} · {formatPrice(notif.total)}</p>
+                            <p className="text-[10px] text-muted-foreground/60 mt-1">{notif.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>
                           </div>
                         </button>
                       ))

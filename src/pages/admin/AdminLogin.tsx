@@ -39,28 +39,28 @@ export default function AdminLogin() {
           </button>
         </div>
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
             <Lock size={28} className="text-primary-foreground" />
           </div>
-          <h1 className="font-heading text-2xl font-bold">{t("admin.loginTitle")}</h1>
+          <h1 className="font-heading text-2xl font-bold text-foreground">{t("admin.loginTitle")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("admin.loginSub")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">{t("admin.email")}</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@ultranutrition.dz" className="w-full h-12 rounded-md bg-card border border-border px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary" required maxLength={100} />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@vitaluxyne.com" className="w-full h-12 rounded-xl bg-card border border-border px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" required maxLength={100} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">{t("admin.password")}</label>
             <div className="relative">
-              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full h-12 rounded-md bg-card border border-border px-4 pe-10 text-sm focus:outline-none focus:ring-1 focus:ring-primary" required minLength={6} maxLength={50} />
+              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full h-12 rounded-xl bg-card border border-border px-4 pe-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" required minLength={6} maxLength={50} />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
-          <Button type="submit" disabled={loading} className="w-full h-12 gradient-primary text-primary-foreground font-heading text-base">
+          <Button type="submit" disabled={loading} className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-heading text-base rounded-xl">
             {loading ? t("admin.loading") : t("admin.login")}
           </Button>
         </form>
