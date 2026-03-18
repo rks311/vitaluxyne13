@@ -2,12 +2,13 @@ import { useParams, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Star, ChevronLeft, Check, Loader2 } from "lucide-react";
+import { ShoppingCart, Star, ChevronLeft, Check, Loader2, Truck, Phone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
+import OrderForm from "@/components/product/OrderForm";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -19,6 +20,8 @@ export default function ProductDetail() {
   const [selectedFlavor, setSelectedFlavor] = useState("");
   const [selectedWeight, setSelectedWeight] = useState("");
   const [qty, setQty] = useState(1);
+  const [activeTab, setActiveTab] = useState("description");
+  const [showOrderForm, setShowOrderForm] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +35,7 @@ export default function ProductDetail() {
       setLoading(false);
     };
     if (id) fetchData();
+    window.scrollTo(0, 0);
   }, [id]);
 
   if (loading) return <div className="container py-20 flex justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>;
@@ -47,114 +51,192 @@ export default function ProductDetail() {
 
   const flavors = product.flavors || [];
   const weights = product.weights || [];
-  const flavor = selectedFlavor || flavors[0] || "Nature";
+  const flavor = selectedFlavor || flavors[0] || "";
   const weight = selectedWeight || weights[0] || "";
   const nutritionFacts = (product.nutrition_facts as any[] || []);
 
+  const tabs = [
+    { key: "description", label: t("product.description") },
+    { key: "composition", label: t("product.composition") },
+    { key: "usage", label: t("product.usage") },
+  ];
+
   return (
-    <div className="container py-4 md:py-8 min-h-screen">
-      <Link to="/catalogue" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-4">
-        <ChevronLeft size={16} /> {t("product.back")}
-      </Link>
+    <div className="min-h-screen bg-background">
+      <div className="container py-4 md:py-8">
+        <Link to="/catalogue" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
+          <ChevronLeft size={16} /> {t("product.back")}
+        </Link>
 
-      <div className="grid md:grid-cols-2 gap-6 md:gap-10">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-lg overflow-hidden bg-card border border-border">
-          <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover" />
-        </motion.div>
+        <div className="grid md:grid-cols-2 gap-6 md:gap-12">
+          {/* Image */}
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border">
+            <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover" />
+          </motion.div>
 
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col">
-          <div className="flex gap-2 mb-2">
-            {product.is_top_sale && <span className="badge-top">🔥 Top</span>}
-            {product.is_promo && <span className="badge-promo">Promo</span>}
-          </div>
-          <p className="text-sm text-muted-foreground">{product.brand}</p>
-          <h1 className="font-heading text-2xl md:text-3xl font-bold mt-1 mb-2">{product.name}</h1>
-
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={14} className={i < Math.round(product.rating || 0) ? "fill-primary text-primary" : "text-muted"} />
-              ))}
+          {/* Info */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col">
+            <div className="flex gap-2 mb-2">
+              {product.is_top_sale && <span className="badge-top">⭐ Populaire</span>}
+              {product.is_promo && <span className="badge-promo">Promo</span>}
             </div>
-            <span className="text-xs text-muted-foreground">({product.reviews_count || 0} {t("product.reviews")})</span>
-          </div>
+            <p className="text-sm text-muted-foreground">{product.brand}</p>
+            <h1 className="font-heading text-2xl md:text-3xl font-bold mt-1 mb-3 text-foreground">{product.name}</h1>
 
-          <div className="flex items-baseline gap-3 mb-6">
-            <span className="price-tag text-3xl">{formatPrice(product.price)}</span>
-            {product.old_price && <span className="text-lg text-muted-foreground line-through">{formatPrice(product.old_price)}</span>}
-          </div>
-
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
-
-          {flavors.length > 0 && (
-            <div className="mb-4">
-              <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.flavor")}</label>
-              <div className="flex flex-wrap gap-2">
-                {flavors.map((f) => (
-                  <button key={f} onClick={() => setSelectedFlavor(f)} className={`px-3 py-1.5 rounded-md text-sm transition-colors ${flavor === f ? "gradient-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"}`}>{f}</button>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} size={14} className={i < Math.round(product.rating || 0) ? "fill-accent text-accent" : "text-muted"} />
                 ))}
               </div>
+              <span className="text-xs text-muted-foreground">({product.reviews_count || 0} {t("product.reviews")})</span>
             </div>
-          )}
 
-          {weights.length > 0 && (
-            <div className="mb-4">
-              <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.weight")}</label>
-              <div className="flex flex-wrap gap-2">
-                {weights.map((w) => (
-                  <button key={w} onClick={() => setSelectedWeight(w)} className={`px-3 py-1.5 rounded-md text-sm transition-colors ${weight === w ? "gradient-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"}`}>{w}</button>
-                ))}
+            <div className="flex items-baseline gap-3 mb-6">
+              <span className="font-heading font-bold text-3xl text-accent">{formatPrice(product.price)}</span>
+              {product.old_price && <span className="text-lg text-muted-foreground line-through">{formatPrice(product.old_price)}</span>}
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
+
+            {flavors.length > 0 && (
+              <div className="mb-4">
+                <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.flavor")}</label>
+                <div className="flex flex-wrap gap-2">
+                  {flavors.map((f) => (
+                    <button key={f} onClick={() => setSelectedFlavor(f)} className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${flavor === f ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"}`}>{f}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {weights.length > 0 && (
+              <div className="mb-4">
+                <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.weight")}</label>
+                <div className="flex flex-wrap gap-2">
+                  {weights.map((w) => (
+                    <button key={w} onClick={() => setSelectedWeight(w)} className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${weight === w ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"}`}>{w}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.quantity")}</label>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center font-bold hover:bg-muted transition-colors">-</button>
+                <span className="font-medium text-lg w-8 text-center">{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center font-bold hover:bg-muted transition-colors">+</button>
               </div>
             </div>
-          )}
 
-          <div className="mb-6">
-            <label className="text-xs font-heading uppercase tracking-wider text-muted-foreground mb-2 block">{t("product.quantity")}</label>
-            <div className="flex items-center gap-3">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center font-bold hover:bg-muted">-</button>
-              <span className="font-medium text-lg w-8 text-center">{qty}</span>
-              <button onClick={() => setQty(qty + 1)} className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center font-bold hover:bg-muted">+</button>
+            <div className="flex items-center gap-1.5 text-sm mb-6">
+              {product.in_stock ? (
+                <><Check size={14} className="text-primary" /><span className="text-primary font-medium">{t("product.inStock")}</span></>
+              ) : (
+                <span className="text-destructive font-medium">{t("product.outOfStock")}</span>
+              )}
             </div>
-          </div>
 
-          <div className="flex items-center gap-1.5 text-sm mb-6">
-            {product.in_stock ? (
-              <><Check size={14} className="text-primary" /><span className="text-primary font-medium">{t("product.inStock")}</span></>
-            ) : (
-              <span className="text-destructive font-medium">{t("product.outOfStock")}</span>
+            <div className="flex gap-3 mb-6">
+              <Button
+                onClick={() => setShowOrderForm(true)}
+                disabled={!product.in_stock}
+                className="flex-1 h-12 font-heading text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg shadow-primary/20"
+              >
+                {t("product.orderNow")}
+              </Button>
+              <Button
+                onClick={() => addItem(product, flavor, weight, qty)}
+                disabled={!product.in_stock}
+                variant="outline"
+                className="h-12 px-4 rounded-xl border-primary text-primary hover:bg-primary/5"
+              >
+                <ShoppingCart size={18} />
+              </Button>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex gap-4 p-4 rounded-xl bg-secondary/50 border border-border">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Truck size={16} className="text-primary" />
+                <span>{t("product.trustCod")}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Phone size={16} className="text-primary" />
+                <span>{t("product.trustAdvice")}</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Tabs */}
+        <div className="mt-10 md:mt-16">
+          <div className="flex gap-1 border-b border-border">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-3 text-sm font-heading font-medium transition-colors relative ${activeTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {tab.label}
+                {activeTab === tab.key && (
+                  <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+          <div className="py-6">
+            {activeTab === "description" && (
+              <div className="prose prose-sm max-w-none text-muted-foreground">
+                <p>{product.description || "Description à venir."}</p>
+                {nutritionFacts.length > 0 && (
+                  <div className="mt-6 p-4 rounded-xl bg-card border border-border">
+                    <h3 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider text-foreground">{t("product.nutrition")}</h3>
+                    <div className="space-y-2">
+                      {nutritionFacts.map((fact: any) => (
+                        <div key={fact.label} className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">{fact.label}</span>
+                          <span className="font-medium text-foreground">{fact.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab === "composition" && (
+              <p className="text-sm text-muted-foreground">
+                {/* REPLACE WITH REAL COMPOSITION DATA */}
+                Composition détaillée à venir. Consultez l'étiquette du produit pour les informations complètes.
+              </p>
+            )}
+            {activeTab === "usage" && (
+              <p className="text-sm text-muted-foreground">
+                {/* REPLACE WITH REAL USAGE INSTRUCTIONS */}
+                Mode d'emploi : consultez les recommandations sur l'emballage ou contactez notre équipe pour des conseils personnalisés.
+              </p>
             )}
           </div>
+        </div>
 
-          <div className="flex gap-3">
-            <Button onClick={() => addItem(product, flavor, weight, qty)} disabled={!product.in_stock} className="flex-1 h-12 font-heading text-base gradient-primary text-primary-foreground hover:opacity-90 neon-glow">
-              <ShoppingCart size={18} className="me-2" /> {t("product.addToCart")}
-            </Button>
-          </div>
-
-          {nutritionFacts.length > 0 && (
-            <div className="mt-8 p-4 rounded-lg bg-card border border-border">
-              <h3 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider">{t("product.nutrition")}</h3>
-              <div className="space-y-2">
-                {nutritionFacts.map((fact: any) => (
-                  <div key={fact.label} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{fact.label}</span>
-                    <span className="font-medium">{fact.value}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Similar products */}
+        {similar.length > 0 && (
+          <div className="mt-12 md:mt-16">
+            <h2 className="font-heading text-xl md:text-2xl font-bold mb-6 text-foreground">{t("product.similar")}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              {similar.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
-          )}
-        </motion.div>
+          </div>
+        )}
       </div>
 
-      {similar.length > 0 && (
-        <div className="mt-12 md:mt-16">
-          <h2 className="font-heading text-xl md:text-2xl font-bold mb-6">{t("product.similar")} <span className="text-primary">{t("product.similarHighlight")}</span></h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {similar.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
-          </div>
-        </div>
-      )}
+      {/* Order Form Slide-over */}
+      <AnimatePresence>
+        {showOrderForm && product && (
+          <OrderForm product={product} quantity={qty} onClose={() => setShowOrderForm(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
