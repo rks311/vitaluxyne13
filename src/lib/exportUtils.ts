@@ -11,7 +11,7 @@ export function exportOrdersPDF(orders: any[], title = "Commandes") {
   // Header
   doc.setFontSize(18);
   doc.setTextColor(40);
-  doc.text("Ultra Nutrition", 14, 18);
+  doc.text("Vitaluxyne", 14, 18);
   doc.setFontSize(11);
   doc.setTextColor(120);
   doc.text(title, 14, 26);
