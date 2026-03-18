@@ -1,9 +1,6 @@
 import HeroSection from "@/components/home/HeroSection";
-import FlashBanner from "@/components/home/FlashBanner";
-import CategoryCards from "@/components/home/CategoryCards";
-import PopularProducts from "@/components/home/PopularProducts";
-import PacksSection from "@/components/home/PacksSection";
-import PromoSection from "@/components/home/PromoSection";
+import CategoryGrid from "@/components/home/CategoryGrid";
+import ProductCarousel from "@/components/home/ProductCarousel";
 import TrustBadges from "@/components/home/TrustBadges";
 import Testimonials from "@/components/home/Testimonials";
 
@@ -11,11 +8,15 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <HeroSection />
-      <FlashBanner />
-      <CategoryCards />
-      <PopularProducts />
-      <PacksSection />
-      <PromoSection />
+      <CategoryGrid />
+      
+      {/* REPLACE WITH REAL CATEGORIES: adjust category slugs to match your products table */}
+      <ProductCarousel category="cerveau" titleKey="section.cerveau" />
+      <ProductCarousel category="stress" titleKey="section.stress" />
+      <ProductCarousel category="muscles" titleKey="section.muscles" />
+      <ProductCarousel category="beaute" titleKey="section.beaute" />
+      <ProductCarousel category="immunite" titleKey="section.immunite" />
+      
       <TrustBadges />
       <Testimonials />
     </div>
