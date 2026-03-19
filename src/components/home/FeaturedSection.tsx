@@ -94,13 +94,10 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
-                    {/* Quick add overlay */}
-                    <button
-                      onClick={(e) => handleQuickAdd(e, p)}
-                      className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 shadow-lg"
-                    >
+                    {/* View product overlay */}
+                    <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 shadow-lg">
                       <ShoppingCart size={14} />
-                    </button>
+                    </div>
                   </div>
 
                   {/* Content */}
