@@ -4,8 +4,7 @@ import { getStorageUrl, formatPrice, type DbProduct } from "@/types/database";
 import { Link } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
-import { Star, ShoppingCart, Flame, TrendingUp, Sparkles, Heart } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { Star, ShoppingCart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 type SectionType = "top" | "promo" | "new" | "category";
