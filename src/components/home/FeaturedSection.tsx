@@ -21,7 +21,6 @@ interface FeaturedSectionProps {
 export default function FeaturedSection({ type, category, title, subtitle, icon, limit = 8 }: FeaturedSectionProps) {
   const [products, setProducts] = useState<DbProduct[]>([]);
   const { t } = useLang();
-  const { addItem } = useCart();
 
   useEffect(() => {
     let query = supabase.from("products").select("*").eq("in_stock", true);
@@ -35,19 +34,6 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
   }, [type, category, limit]);
 
   if (products.length === 0) return null;
-
-  const handleQuickAdd = (e: React.MouseEvent, p: DbProduct) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addItem({
-      id: p.id,
-      name: p.name,
-      price: p.price,
-      image: getStorageUrl(p.image_url),
-      quantity: 1,
-    });
-    toast.success(`${p.name} ajouté au panier`);
-  };
 
   return (
     <section className="py-10 md:py-14">
