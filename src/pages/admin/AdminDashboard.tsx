@@ -1,61 +1,90 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/types/database";
-import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet } from "lucide-react";
+import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, Wallet, PiggyBank } from "lucide-react";
 import { exportDashboardPDF, exportDashboardExcel } from "@/lib/exportUtils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
 
 const COLORS = ["hsl(142,60%,45%)", "hsl(217,70%,55%)", "hsl(45,100%,50%)", "hsl(270,60%,55%)", "hsl(0,70%,55%)"];
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({ revenue: 0, orders: 0, products: 0, clients: 0, pendingOrders: 0, avgOrderValue: 0, deliveredOrders: 0, shippedOrders: 0 });
+  const [stats, setStats] = useState({
+    revenue: 0, orders: 0, products: 0, clients: 0,
+    pendingOrders: 0, avgOrderValue: 0, deliveredOrders: 0, shippedOrders: 0,
+    totalCost: 0, netProfit: 0, profitMargin: 0,
+  });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [ordersByDay, setOrdersByDay] = useState<any[]>([]);
   const [statusData, setStatusData] = useState<any[]>([]);
   const [lowStockProducts, setLowStockProducts] = useState<any[]>([]);
+  const [profitByDay, setProfitByDay] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
-      const [ordersRes, productsRes, clientsRes] = await Promise.all([
+      const [ordersRes, productsRes, clientsRes, orderItemsRes] = await Promise.all([
         supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("products").select("id, name, category, price, stock_qty, image_url"),
+        supabase.from("products").select("id, name, category, price, cost_price, stock_qty, image_url"),
         supabase.from("clients").select("id"),
+        supabase.from("order_items").select("product_name, quantity, total_price, unit_price"),
       ]);
 
       const orders = ordersRes.data || [];
       const products = productsRes.data || [];
+      const items = orderItemsRes.data || [];
       const revenue = orders.filter(o => o.status === "Livrée").reduce((s, o) => s + o.total, 0);
       const pendingOrders = orders.filter(o => o.status === "En préparation").length;
       const deliveredOrders = orders.filter(o => o.status === "Livrée").length;
       const shippedOrders = orders.filter(o => o.status === "Expédiée").length;
       const avgOrderValue = orders.length > 0 ? Math.round(orders.reduce((s, o) => s + o.total, 0) / orders.length) : 0;
 
-      setStats({ revenue, orders: orders.length, products: products.length, clients: (clientsRes.data || []).length, pendingOrders, avgOrderValue, deliveredOrders, shippedOrders });
+      // Build product cost map
+      const costMap: Record<string, number> = {};
+      products.forEach(p => { costMap[p.name] = (p as any).cost_price || 0; });
+
+      // Calculate profit from delivered order items
+      let totalCost = 0;
+      let totalItemRevenue = 0;
+      items.forEach(item => {
+        const costPerUnit = costMap[item.product_name] || 0;
+        totalCost += costPerUnit * item.quantity;
+        totalItemRevenue += item.total_price;
+      });
+
+      const netProfit = revenue - totalCost;
+      const profitMargin = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
+
+      setStats({
+        revenue, orders: orders.length, products: products.length,
+        clients: (clientsRes.data || []).length, pendingOrders, avgOrderValue,
+        deliveredOrders, shippedOrders, totalCost, netProfit, profitMargin,
+      });
       setRecentOrders(orders.slice(0, 8));
 
       // Low stock
-      setLowStockProducts(products.filter(p => (p.stock_qty ?? 0) <= 5 && (p.stock_qty ?? 0) >= 0).sort((a, b) => (a.stock_qty ?? 0) - (b.stock_qty ?? 0)).slice(0, 5));
+      setLowStockProducts(products.filter(p => (p.stock_qty ?? 0) <= 5).sort((a, b) => (a.stock_qty ?? 0) - (b.stock_qty ?? 0)).slice(0, 5));
 
       // Orders by day (last 7 days)
-      const dayMap: Record<string, { count: number; revenue: number }> = {};
+      const dayMap: Record<string, { count: number; revenue: number; cost: number }> = {};
       const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(); d.setDate(d.getDate() - i);
-        dayMap[d.toISOString().split('T')[0]] = { count: 0, revenue: 0 };
+        dayMap[d.toISOString().split('T')[0]] = { count: 0, revenue: 0, cost: 0 };
       }
       orders.forEach(o => {
         const key = o.created_at.split('T')[0];
         if (dayMap[key]) { dayMap[key].count++; dayMap[key].revenue += o.total; }
       });
-      setOrdersByDay(Object.entries(dayMap).map(([date, data]) => {
+      const dayData = Object.entries(dayMap).map(([date, data]) => {
         const d = new Date(date);
-        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue };
-      }));
+        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue, profit: Math.round(data.revenue * (profitMargin / 100)) };
+      });
+      setOrdersByDay(dayData);
+      setProfitByDay(dayData);
 
       // Status distribution
       const statusCount: Record<string, number> = {};
@@ -67,13 +96,14 @@ export default function AdminDashboard() {
       products.forEach(p => { catCount[p.category] = (catCount[p.category] || 0) + 1; });
       setCategoryData(Object.entries(catCount).map(([name, value]) => ({ name, value })));
 
-      // Top products
-      const { data: items } = await supabase.from("order_items").select("product_name, quantity, total_price");
-      const productMap: Record<string, { sold: number; revenue: number }> = {};
-      (items || []).forEach((item) => {
-        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0 };
+      // Top products with profit
+      const productMap: Record<string, { sold: number; revenue: number; profit: number }> = {};
+      items.forEach((item) => {
+        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0, profit: 0 };
         productMap[item.product_name].sold += item.quantity;
         productMap[item.product_name].revenue += item.total_price;
+        const costPerUnit = costMap[item.product_name] || 0;
+        productMap[item.product_name].profit += (item.unit_price - costPerUnit) * item.quantity;
       });
       setTopProducts(Object.entries(productMap).map(([name, data]) => ({ name, ...data })).sort((a, b) => b.revenue - a.revenue).slice(0, 5));
     };
@@ -97,7 +127,9 @@ export default function AdminDashboard() {
 
   const statCards = [
     { label: "Chiffre d'affaires", value: formatPrice(stats.revenue), icon: DollarSign, sub: `${stats.deliveredOrders} commandes livrées`, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-400" },
+    { label: "Bénéfice Net", value: formatPrice(stats.netProfit), icon: PiggyBank, sub: `Marge: ${stats.profitMargin}%`, color: "from-green-500/20 to-green-500/5", iconColor: "text-green-400" },
     { label: "Commandes", value: stats.orders.toString(), icon: ShoppingCart, sub: `${stats.pendingOrders} en attente`, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-400" },
+    { label: "Coût Total", value: formatPrice(stats.totalCost), icon: Wallet, sub: "Prix d'achat cumulé", color: "from-red-500/20 to-red-500/5", iconColor: "text-red-400" },
     { label: "Produits", value: stats.products.toString(), icon: Package, sub: "Dans le catalogue", color: "from-purple-500/20 to-purple-500/5", iconColor: "text-purple-400" },
     { label: "Clients", value: stats.clients.toString(), icon: Users, sub: `Panier moyen: ${formatPrice(stats.avgOrderValue)}`, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-400" },
   ];
@@ -109,7 +141,7 @@ export default function AdminDashboard() {
           <p className="text-xs font-heading font-bold mb-1">{label}</p>
           {payload.map((p: any) => (
             <p key={p.dataKey} className="text-xs text-muted-foreground">
-              {p.dataKey === 'revenue' ? formatPrice(p.value) : `${p.value} commande(s)`}
+              {p.dataKey === 'revenue' || p.dataKey === 'profit' ? formatPrice(p.value) : `${p.value} commande(s)`}
             </p>
           ))}
         </div>
@@ -124,14 +156,14 @@ export default function AdminDashboard() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-primary/10 via-card to-card border border-border rounded-xl p-5 flex items-center justify-between">
         <div>
           <h2 className="font-heading text-xl font-bold">Bienvenue sur Vitaluxyne Admin 👋</h2>
-          <p className="text-sm text-muted-foreground mt-1">Voici un résumé de votre activité aujourd'hui</p>
+          <p className="text-sm text-muted-foreground mt-1">Voici un résumé de votre activité</p>
         </div>
         <div className="hidden md:flex items-center gap-3">
           <button onClick={() => exportDashboardPDF(stats, topProducts, ordersByDay)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors">
-            <FileText size={14} className="text-red-400" /> Rapport PDF
+            <FileText size={14} className="text-red-400" /> PDF
           </button>
           <button onClick={() => exportDashboardExcel(stats, topProducts, ordersByDay, categoryData, statusData)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary text-xs font-medium hover:bg-secondary/80 transition-colors">
-            <FileSpreadsheet size={14} className="text-emerald-400" /> Rapport Excel
+            <FileSpreadsheet size={14} className="text-emerald-400" /> Excel
           </button>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Activity size={14} className="text-emerald-400" />
@@ -141,16 +173,16 @@ export default function AdminDashboard() {
         </div>
       </motion.div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      {/* Stat cards — 6 cards with profit */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {statCards.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="bg-card border border-border rounded-xl p-4 md:p-5 hover:border-primary/20 transition-all hover:shadow-lg hover:shadow-primary/5 group">
+            <motion.div key={stat.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="bg-card border border-border rounded-xl p-4 md:p-5 hover:border-primary/20 transition-all hover:shadow-lg hover:shadow-primary/5 group">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <Icon size={18} className={stat.iconColor} />
               </div>
-              <p className="font-heading text-2xl md:text-3xl font-bold tracking-tight">{stat.value}</p>
+              <p className="font-heading text-xl md:text-2xl font-bold tracking-tight">{stat.value}</p>
               <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
               <p className="text-[10px] text-muted-foreground/70 mt-0.5">{stat.sub}</p>
             </motion.div>
@@ -160,14 +192,17 @@ export default function AdminDashboard() {
 
       {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-        {/* Revenue Area chart */}
+        {/* Revenue + Profit chart */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar size={16} className="text-blue-400" />
-              <h3 className="font-heading font-bold text-base">Revenus & Commandes (7j)</h3>
+              <h3 className="font-heading font-bold text-base">Revenus & Bénéfice (7j)</h3>
             </div>
-            <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-md">Cette semaine</span>
+            <div className="flex gap-3 text-xs">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Revenus</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Bénéfice</span>
+            </div>
           </div>
           <div className="h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +212,7 @@ export default function AdminDashboard() {
                     <stop offset="5%" stopColor="hsl(217,70%,55%)" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="hsl(217,70%,55%)" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(142,60%,45%)" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="hsl(142,60%,45%)" stopOpacity={0}/>
                   </linearGradient>
@@ -185,8 +220,8 @@ export default function AdminDashboard() {
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'hsl(0,0%,52%)' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'hsl(0,0%,52%)' }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="commandes" stroke="hsl(142,60%,45%)" fill="url(#colorOrders)" strokeWidth={2} />
                 <Area type="monotone" dataKey="revenue" stroke="hsl(217,70%,55%)" fill="url(#colorRevenue)" strokeWidth={2} />
+                <Area type="monotone" dataKey="profit" stroke="hsl(142,60%,45%)" fill="url(#colorProfit)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -231,14 +266,43 @@ export default function AdminDashboard() {
         </motion.div>
       </div>
 
+      {/* Profit margin banner */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="bg-gradient-to-r from-emerald-500/10 via-card to-card border border-emerald-500/20 rounded-xl p-5">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <PiggyBank size={24} className="text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Marge bénéficiaire nette</p>
+              <p className="font-heading text-3xl font-bold text-emerald-400">{stats.profitMargin}%</p>
+            </div>
+          </div>
+          <div className="flex gap-8">
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Revenus</p>
+              <p className="font-heading font-bold text-lg">{formatPrice(stats.revenue)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Coûts</p>
+              <p className="font-heading font-bold text-lg text-red-400">{formatPrice(stats.totalCost)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">Bénéfice</p>
+              <p className="font-heading font-bold text-lg text-emerald-400">{formatPrice(stats.netProfit)}</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Middle row */}
       <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-        {/* Top Products */}
+        {/* Top Products with profit */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <TrendingUp size={16} className="text-emerald-400" />
-              <h3 className="font-heading font-bold text-base">Top Produits Vendus</h3>
+              <h3 className="font-heading font-bold text-base">Top Produits (Ventes & Bénéfice)</h3>
             </div>
             <button onClick={() => navigate("/admin/products")} className="text-xs text-primary flex items-center gap-1 hover:underline">Catalogue <ArrowUpRight size={12} /></button>
           </div>
@@ -253,8 +317,8 @@ export default function AdminDashboard() {
                 const maxRevenue = topProducts[0]?.revenue || 1;
                 const medals = ['🥇', '🥈', '🥉'];
                 return (
-                  <div key={p.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/30 transition-colors">
-                    <span className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-sm shrink-0">
+                  <div key={p.name} className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors">
+                    <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm shrink-0">
                       {i < 3 ? medals[i] : <span className="text-xs font-bold text-muted-foreground">{i + 1}</span>}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -266,7 +330,10 @@ export default function AdminDashboard() {
                         <p className="text-[10px] text-muted-foreground shrink-0">{p.sold} vendus</p>
                       </div>
                     </div>
-                    <span className="text-xs font-heading font-bold text-emerald-400 shrink-0">{formatPrice(p.revenue)}</span>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-heading font-bold text-foreground block">{formatPrice(p.revenue)}</span>
+                      <span className="text-[10px] font-medium text-emerald-400">+{formatPrice(p.profit)} net</span>
+                    </div>
                   </div>
                 );
               })}
@@ -274,9 +341,8 @@ export default function AdminDashboard() {
           )}
         </motion.div>
 
-        {/* Low stock alert + Category */}
+        {/* Low stock + Category */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="space-y-4">
-          {/* Low Stock Alert */}
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
               <AlertCircle size={16} className="text-amber-400" />
@@ -298,7 +364,6 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* Category Distribution */}
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
               <Package size={16} className="text-purple-400" />

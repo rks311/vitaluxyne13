@@ -5,9 +5,24 @@ import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2 } from "lucide-
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-const defaultProduct = { name: "", brand: "", category: "whey", price: 0, old_price: null as number | null, description: "", flavors: [] as string[], weights: [] as string[], objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false, image_url: null as string | null, stock_qty: 0 };
+const defaultProduct = {
+  name: "", brand: "", category: "immunite", price: 0, old_price: null as number | null,
+  cost_price: 0, description: "", flavors: [] as string[], weights: [] as string[],
+  objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false,
+  image_url: null as string | null, stock_qty: 0,
+};
 
-const categoryOptions = ["whey", "creatine", "gainer", "preworkout", "bcaa", "fatburner"];
+const categoryOptions = [
+  { value: "beaute", label: "Beauté" },
+  { value: "cerveau", label: "Cerveau & Concentration" },
+  { value: "stress", label: "Stress & Sommeil" },
+  { value: "muscles", label: "Muscles" },
+  { value: "os", label: "Os & Articulations" },
+  { value: "coeur", label: "Cœur" },
+  { value: "immunite", label: "Immunité" },
+  { value: "hormones", label: "Hormones" },
+  { value: "perte-de-poids", label: "Perte de poids" },
+];
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<DbProduct[]>([]);
@@ -40,7 +55,14 @@ export default function AdminProducts() {
 
   const openEdit = (p: DbProduct) => {
     setEditing(p);
-    setForm({ name: p.name, brand: p.brand, category: p.category, price: p.price, old_price: p.old_price, description: p.description || "", flavors: p.flavors || [], weights: p.weights || [], objectives: p.objectives || [], in_stock: p.in_stock ?? true, is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false, image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0 });
+    setForm({
+      name: p.name, brand: p.brand, category: p.category, price: p.price,
+      old_price: p.old_price, cost_price: (p as any).cost_price ?? 0,
+      description: p.description || "", flavors: p.flavors || [], weights: p.weights || [],
+      objectives: p.objectives || [], in_stock: p.in_stock ?? true,
+      is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false,
+      image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0,
+    });
     setFlavorsInput((p.flavors || []).join(", "));
     setWeightsInput((p.weights || []).join(", "));
     setObjectivesInput((p.objectives || []).join(", "));
@@ -68,13 +90,15 @@ export default function AdminProducts() {
   const handleSave = async () => {
     if (!form.name || !form.brand || !form.price) { toast.error("Remplissez les champs requis"); return; }
     setSaving(true);
-    const data = {
-      name: form.name, brand: form.brand, category: form.category, price: form.price, old_price: form.old_price || null,
+    const data: any = {
+      name: form.name, brand: form.brand, category: form.category, price: form.price,
+      old_price: form.old_price || null, cost_price: form.cost_price || 0,
       description: form.description || null,
       flavors: flavorsInput.split(",").map(s => s.trim()).filter(Boolean),
       weights: weightsInput.split(",").map(s => s.trim()).filter(Boolean),
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
-      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo, image_url: form.image_url, stock_qty: form.stock_qty,
+      in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo,
+      image_url: form.image_url, stock_qty: form.stock_qty,
     };
 
     if (editing) {
@@ -98,6 +122,9 @@ export default function AdminProducts() {
     toast.success("Produit supprimé");
     loadProducts();
   };
+
+  const profit = form.price - (form.cost_price || 0);
+  const margin = form.price > 0 ? Math.round((profit / form.price) * 100) : 0;
 
   return (
     <div className="space-y-4">
@@ -124,7 +151,7 @@ export default function AdminProducts() {
                 <label className="text-xs text-muted-foreground mb-1 block">Image du produit</label>
                 <div className="flex items-center gap-3 flex-wrap">
                   {form.image_url && (
-                    <div className="w-24 h-24 rounded-xl overflow-hidden border border-border product-image-bg">
+                    <div className="w-24 h-24 rounded-xl overflow-hidden border border-border bg-secondary/30">
                       <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
                     </div>
                   )}
@@ -143,20 +170,49 @@ export default function AdminProducts() {
 
               <div><label className="text-xs text-muted-foreground mb-1 block">Catégorie</label>
                 <select value={form.category} onChange={(e) => setForm(f => ({ ...f, category: e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm">
-                  {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  {categoryOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-xs text-muted-foreground mb-1 block">Prix *</label><input type="number" value={form.price} onChange={(e) => setForm(f => ({ ...f, price: +e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
-                <div><label className="text-xs text-muted-foreground mb-1 block">Ancien prix</label><input type="number" value={form.old_price || ""} onChange={(e) => setForm(f => ({ ...f, old_price: e.target.value ? +e.target.value : null }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              {/* Pricing section with profit preview */}
+              <div className="bg-secondary/50 rounded-xl p-4 space-y-3">
+                <p className="text-xs font-heading font-bold text-foreground">💰 Tarification</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Prix d'achat</label>
+                    <input type="number" value={form.cost_price || ""} onChange={(e) => setForm(f => ({ ...f, cost_price: +e.target.value }))} placeholder="0" className="w-full h-10 rounded-md bg-card border border-border px-3 text-sm" min={0} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Prix de vente *</label>
+                    <input type="number" value={form.price || ""} onChange={(e) => setForm(f => ({ ...f, price: +e.target.value }))} className="w-full h-10 rounded-md bg-card border border-border px-3 text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Ancien prix</label>
+                    <input type="number" value={form.old_price || ""} onChange={(e) => setForm(f => ({ ...f, old_price: e.target.value ? +e.target.value : null }))} placeholder="Facultatif" className="w-full h-10 rounded-md bg-card border border-border px-3 text-sm" />
+                  </div>
+                </div>
+                {/* Live profit preview */}
+                <div className="flex items-center gap-4 pt-2 border-t border-border/50">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Bénéfice unitaire:</span>
+                    <span className={`text-sm font-heading font-bold ${profit > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                      {formatPrice(profit)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Marge:</span>
+                    <span className={`text-sm font-heading font-bold ${margin > 20 ? 'text-emerald-500' : margin > 0 ? 'text-amber-500' : 'text-red-400'}`}>
+                      {margin}%
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div><label className="text-xs text-muted-foreground mb-1 block">Description</label><textarea value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full rounded-md bg-secondary border border-border px-3 py-2 text-sm resize-none" maxLength={500} /></div>
 
               <div><label className="text-xs text-muted-foreground mb-1 block">Goûts (séparés par virgule)</label><input value={flavorsInput} onChange={(e) => setFlavorsInput(e.target.value)} placeholder="Chocolat, Vanille, Fraise" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Poids (séparés par virgule)</label><input value={weightsInput} onChange={(e) => setWeightsInput(e.target.value)} placeholder="1kg, 2.5kg" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
-              <div><label className="text-xs text-muted-foreground mb-1 block">Objectifs (séparés par virgule)</label><input value={objectivesInput} onChange={(e) => setObjectivesInput(e.target.value)} placeholder="Prise de masse, Force" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
+              <div><label className="text-xs text-muted-foreground mb-1 block">Objectifs (séparés par virgule)</label><input value={objectivesInput} onChange={(e) => setObjectivesInput(e.target.value)} placeholder="Immunité, Énergie" className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" /></div>
               <div><label className="text-xs text-muted-foreground mb-1 block">Quantité en stock</label><input type="number" value={form.stock_qty} onChange={(e) => setForm(f => ({ ...f, stock_qty: +e.target.value }))} className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm" min={0} /></div>
 
               <div className="flex flex-wrap gap-4 py-2">
@@ -181,48 +237,60 @@ export default function AdminProducts() {
                 <th className="text-left px-4 py-3 font-medium">Produit</th>
                 <th className="text-left px-3 py-3 font-medium hidden md:table-cell">Marque</th>
                 <th className="text-left px-3 py-3 font-medium">Prix</th>
+                <th className="text-left px-3 py-3 font-medium hidden lg:table-cell">Bénéfice</th>
                 <th className="text-left px-3 py-3 font-medium hidden md:table-cell">Stock</th>
                 <th className="text-left px-3 py-3 font-medium hidden lg:table-cell">Catégorie</th>
                 <th className="text-right px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p) => (
-                <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-lg overflow-hidden border border-border shrink-0 product-image-bg">
-                        <img src={getStorageUrl(p.image_url)} alt="" className="w-full h-full object-contain p-0.5" />
+              {filtered.map((p) => {
+                const costPrice = (p as any).cost_price || 0;
+                const unitProfit = p.price - costPrice;
+                const unitMargin = p.price > 0 ? Math.round((unitProfit / p.price) * 100) : 0;
+                return (
+                  <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-lg overflow-hidden border border-border shrink-0 bg-secondary/30">
+                          <img src={getStorageUrl(p.image_url)} alt="" className="w-full h-full object-contain p-0.5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{p.name}</p>
+                          <p className="text-[10px] text-muted-foreground md:hidden">{p.brand}</p>
+                        </div>
                       </div>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground hidden md:table-cell">{p.brand}</td>
+                    <td className="px-3 py-3">
+                      <span className="font-heading font-bold text-primary">{formatPrice(p.price)}</span>
+                      {p.old_price && <span className="text-[10px] text-muted-foreground line-through ms-1">{formatPrice(p.old_price)}</span>}
+                    </td>
+                    <td className="px-3 py-3 hidden lg:table-cell">
                       <div>
-                        <p className="font-medium text-sm">{p.name}</p>
-                        <p className="text-[10px] text-muted-foreground md:hidden">{p.brand}</p>
+                        <span className={`text-xs font-bold ${unitProfit > 0 ? 'text-emerald-500' : 'text-red-400'}`}>{formatPrice(unitProfit)}</span>
+                        <span className="text-[10px] text-muted-foreground ms-1">({unitMargin}%)</span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 text-muted-foreground hidden md:table-cell">{p.brand}</td>
-                  <td className="px-3 py-3">
-                    <span className="font-heading font-bold text-primary">{formatPrice(p.price)}</span>
-                    {p.old_price && <span className="text-[10px] text-muted-foreground line-through ms-1">{formatPrice(p.old_price)}</span>}
-                  </td>
-                  <td className="px-3 py-3 hidden md:table-cell">
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
-                        {p.in_stock ? "En stock" : "Rupture"}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-mono">{(p as any).stock_qty ?? 0}</span>
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 text-muted-foreground text-xs hidden lg:table-cell capitalize">{p.category}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
-                      <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Aucun produit</td></tr>}
+                    </td>
+                    <td className="px-3 py-3 hidden md:table-cell">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                          {p.in_stock ? "En stock" : "Rupture"}
+                        </span>
+                        <span className="text-xs text-muted-foreground font-mono">{(p as any).stock_qty ?? 0}</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground text-xs hidden lg:table-cell capitalize">{p.category}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={14} /></button>
+                        <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">Aucun produit</td></tr>}
             </tbody>
           </table>
         </div>
@@ -230,4 +298,3 @@ export default function AdminProducts() {
     </div>
   );
 }
-
