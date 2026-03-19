@@ -220,6 +220,7 @@ export type Database = {
         Row: {
           brand: string
           category: string
+          cost_price: number | null
           created_at: string
           description: string | null
           flavors: string[] | null
@@ -242,6 +243,7 @@ export type Database = {
         Insert: {
           brand: string
           category: string
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           flavors?: string[] | null
@@ -264,6 +266,7 @@ export type Database = {
         Update: {
           brand?: string
           category?: string
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           flavors?: string[] | null
