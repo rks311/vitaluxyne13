@@ -1,92 +1,57 @@
+import { lazy, Suspense } from "react";
 import HeroSection from "@/components/home/HeroSection";
 import CategoryGrid from "@/components/home/CategoryGrid";
-import FeaturedSection from "@/components/home/FeaturedSection";
-import TrustBadges from "@/components/home/TrustBadges";
-import Testimonials from "@/components/home/Testimonials";
-import { TrendingUp, Flame, Sparkles, Brain, Moon, Dumbbell, Heart, Shield } from "lucide-react";
+import { TrendingUp, Flame, Sparkles, Brain, Moon, Dumbbell, Shield } from "lucide-react";
+
+const FeaturedSection = lazy(() => import("@/components/home/FeaturedSection"));
+const TrustBadges = lazy(() => import("@/components/home/TrustBadges"));
+const Testimonials = lazy(() => import("@/components/home/Testimonials"));
+
+const Loader = () => <div className="py-8" />;
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16 md:pb-0">
       <HeroSection />
       <CategoryGrid />
 
-      {/* Les plus demandés */}
-      <FeaturedSection
-        type="top"
-        title="Les plus demandés"
-        subtitle="Nos best-sellers plébiscités par nos clients"
-        icon={<TrendingUp size={20} />}
-      />
+      <Suspense fallback={<Loader />}>
+        <FeaturedSection type="top" title="Les plus demandés" subtitle="Nos best-sellers plébiscités par nos clients" icon={<TrendingUp size={18} />} />
+      </Suspense>
 
-      {/* En promo */}
-      <div className="bg-secondary/30">
-        <FeaturedSection
-          type="promo"
-          title="Offres & Promotions"
-          subtitle="Profitez de nos réductions en cours"
-          icon={<Flame size={20} />}
-        />
-      </div>
+      <Suspense fallback={<Loader />}>
+        <div className="bg-secondary/20">
+          <FeaturedSection type="promo" title="Offres & Promotions" subtitle="Profitez de nos réductions" icon={<Flame size={18} />} />
+        </div>
+      </Suspense>
 
-      {/* Sections par catégorie */}
-      <FeaturedSection
-        type="category"
-        category="cerveau"
-        title="Cerveau & Concentration"
-        subtitle="Boostez votre focus et mémoire"
-        icon={<Brain size={20} />}
-      />
+      <Suspense fallback={<Loader />}>
+        <FeaturedSection type="category" category="immunite" title="Immunité & Vitalité" icon={<Shield size={18} />} />
+      </Suspense>
 
-      <div className="bg-secondary/20">
-        <FeaturedSection
-          type="category"
-          category="stress"
-          title="Stress & Sommeil"
-          subtitle="Retrouvez calme et sérénité"
-          icon={<Moon size={20} />}
-        />
-      </div>
+      <Suspense fallback={<Loader />}>
+        <div className="bg-secondary/20">
+          <FeaturedSection type="category" category="muscles" title="Performance Musculaire" icon={<Dumbbell size={18} />} />
+        </div>
+      </Suspense>
 
-      <FeaturedSection
-        type="category"
-        category="muscles"
-        title="Performance Musculaire"
-        subtitle="Force, endurance et récupération"
-        icon={<Dumbbell size={20} />}
-      />
+      <Suspense fallback={<Loader />}>
+        <FeaturedSection type="category" category="cerveau" title="Cerveau & Focus" icon={<Brain size={18} />} />
+      </Suspense>
 
-      <div className="bg-secondary/20">
-        <FeaturedSection
-          type="category"
-          category="beaute"
-          title="Beauté & Anti-âge"
-          subtitle="Peau, cheveux et ongles sublimés"
-          icon={<Sparkles size={20} />}
-        />
-      </div>
+      <Suspense fallback={<Loader />}>
+        <div className="bg-secondary/20">
+          <FeaturedSection type="new" title="Nouveautés" subtitle="Derniers produits ajoutés" icon={<Sparkles size={18} />} limit={4} />
+        </div>
+      </Suspense>
 
-      <FeaturedSection
-        type="category"
-        category="immunite"
-        title="Immunité & Vitalité"
-        subtitle="Renforcez vos défenses naturelles"
-        icon={<Shield size={20} />}
-      />
+      <Suspense fallback={<Loader />}>
+        <TrustBadges />
+      </Suspense>
 
-      {/* Nouveautés */}
-      <div className="bg-secondary/30">
-        <FeaturedSection
-          type="new"
-          title="Nouveautés"
-          subtitle="Nos derniers produits ajoutés"
-          icon={<Sparkles size={20} />}
-          limit={4}
-        />
-      </div>
-
-      <TrustBadges />
-      <Testimonials />
+      <Suspense fallback={<Loader />}>
+        <Testimonials />
+      </Suspense>
     </div>
   );
 };
