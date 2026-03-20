@@ -6,32 +6,34 @@ export default function TrustBadges() {
   const { t } = useLang();
 
   const badges = [
-    { icon: Truck, title: t("trust.delivery"), desc: t("trust.deliveryDesc"), color: "bg-blue-50 text-blue-600" },
-    { icon: CreditCard, title: t("trust.cod"), desc: t("trust.codDesc"), color: "bg-emerald-50 text-emerald-600" },
-    { icon: ShieldCheck, title: t("trust.original"), desc: t("trust.originalDesc"), color: "bg-amber-50 text-amber-600" },
-    { icon: Phone, title: t("trust.support"), desc: t("trust.supportDesc"), color: "bg-purple-50 text-purple-600" },
+    { icon: Truck, title: t("trust.delivery"), desc: t("trust.deliveryDesc") },
+    { icon: CreditCard, title: t("trust.cod"), desc: t("trust.codDesc") },
+    { icon: ShieldCheck, title: t("trust.original"), desc: t("trust.originalDesc") },
+    { icon: Phone, title: t("trust.support"), desc: t("trust.supportDesc") },
   ];
 
   return (
-    <section className="py-12 md:py-16 bg-secondary/50">
+    <section className="py-8 md:py-12 bg-secondary/30">
       <div className="container">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
           {badges.map((b, i) => {
             const Icon = b.icon;
             return (
               <motion.div
-                key={b.title}
-                initial={{ opacity: 0, y: 20 }}
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="text-center p-4 md:p-6"
+                transition={{ delay: i * 0.06 }}
+                className="flex items-center gap-3 bg-card rounded-xl p-3.5 md:p-4 border border-border min-w-[220px] md:min-w-0 shrink-0 md:shrink"
               >
-                <div className={`w-12 h-12 rounded-2xl ${b.color} flex items-center justify-center mx-auto mb-3`}>
-                  <Icon size={22} />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Icon size={18} className="text-primary" />
                 </div>
-                <h3 className="font-heading font-semibold text-sm md:text-base text-foreground">{b.title}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{b.desc}</p>
+                <div>
+                  <h3 className="font-heading font-semibold text-xs md:text-sm text-foreground">{b.title}</h3>
+                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 leading-tight">{b.desc}</p>
+                </div>
               </motion.div>
             );
           })}

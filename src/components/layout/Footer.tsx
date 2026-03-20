@@ -8,42 +8,39 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary text-primary-foreground pb-20 md:pb-0">
-      <div className="container py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="container py-8 md:py-10">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
           <div className="col-span-2 md:col-span-1">
-            <h3 className="font-heading text-xl font-bold mb-4">Vitaluxyne</h3>
-            <p className="text-sm text-primary-foreground/70">{t("footer.desc")}</p>
+            <h3 className="font-heading text-lg font-bold mb-2">Vitaluxyne</h3>
+            <p className="text-xs text-primary-foreground/60 leading-relaxed">{t("footer.desc")}</p>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider text-primary-foreground/80">{t("footer.navigation")}</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Navigation</h4>
+            <ul className="space-y-1.5 text-xs text-primary-foreground/60">
               <li><Link to="/catalogue" className="hover:text-primary-foreground transition-colors">{t("nav.catalog")}</Link></li>
-              <li><Link to="/catalogue?cat=muscles" className="hover:text-primary-foreground transition-colors">{t("cat.muscles")}</Link></li>
-              <li><Link to="/catalogue?cat=immunite" className="hover:text-primary-foreground transition-colors">{t("cat.immunite")}</Link></li>
+              <li><Link to="/catalogue?cat=muscles" className="hover:text-primary-foreground transition-colors">Muscles</Link></li>
+              <li><Link to="/catalogue?cat=immunite" className="hover:text-primary-foreground transition-colors">Immunité</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider text-primary-foreground/80">{t("footer.info")}</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Info</h4>
+            <ul className="space-y-1.5 text-xs text-primary-foreground/60">
               <li>{t("footer.faq")}</li>
               <li>{t("footer.returns")}</li>
               <li>{t("footer.shipping")}</li>
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-3 text-sm uppercase tracking-wider text-primary-foreground/80">{t("footer.contact")}</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li className="flex items-center gap-2"><Phone size={14} /> 0555 12 34 56</li>
-              <li className="flex items-center gap-2"><Mail size={14} /> contact@vitaluxyne.com</li>
-              <li className="flex items-center gap-2"><MapPin size={14} /> Alger, Algérie</li>
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Contact</h4>
+            <ul className="space-y-1.5 text-xs text-primary-foreground/60">
+              <li className="flex items-center gap-1.5"><Phone size={12} /> 0555 12 34 56</li>
+              <li className="flex items-center gap-1.5"><Mail size={12} /> contact@vitaluxyne.com</li>
+              <li className="flex items-center gap-1.5"><MapPin size={12} /> Alger, Algérie</li>
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-primary-foreground/20 text-center text-xs text-primary-foreground/50">
-          <span
-            onClick={() => navigate("/admin/login")}
-            className="cursor-text select-none"
-          >
+        <div className="mt-6 pt-4 border-t border-primary-foreground/15 text-center text-[10px] text-primary-foreground/40">
+          <span onClick={() => navigate("/admin/login")} className="cursor-text select-none">
             {t("footer.rights")}
           </span>
         </div>
