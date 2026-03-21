@@ -110,6 +110,12 @@
   }
 }
 
+@layer components {
+  .field-input {
+    @apply w-full h-11 rounded-xl bg-card border border-border px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
