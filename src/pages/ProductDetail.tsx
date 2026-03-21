@@ -6,6 +6,8 @@ import { ShoppingCart, Star, ChevronLeft, Check, Loader2, Truck, Phone, MessageC
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
 import OrderForm from "@/components/product/OrderForm";
+import UrgencyBadges from "@/components/product/UrgencyBadges";
+import ComplementaryProducts from "@/components/product/ComplementaryProducts";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
