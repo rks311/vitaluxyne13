@@ -94,6 +94,14 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
                       <span className="badge-promo text-[10px]">-{discount}%</span>
                     )}
                   </div>
+                  {/* Low stock urgency */}
+                  {(p.stock_qty ?? 0) > 0 && (p.stock_qty ?? 0) <= 15 && (
+                    <div className="absolute bottom-[calc(100%-2rem)] right-2 z-10">
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded-full border border-destructive/20">
+                        Plus que {p.stock_qty}!
+                      </span>
+                    </div>
+                  )}
 
                   {/* Image with gradient bg */}
                   <div className="aspect-square overflow-hidden relative bg-gradient-to-br from-secondary to-mint">

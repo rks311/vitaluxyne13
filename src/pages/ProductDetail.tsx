@@ -6,6 +6,8 @@ import { ShoppingCart, Star, ChevronLeft, Check, Loader2, Truck, Phone, MessageC
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
 import OrderForm from "@/components/product/OrderForm";
+import UrgencyBadges from "@/components/product/UrgencyBadges";
+import ComplementaryProducts from "@/components/product/ComplementaryProducts";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -130,6 +132,8 @@ export default function ProductDetail() {
               </div>
             </div>
 
+            <UrgencyBadges product={product} />
+
             <div className="flex items-center gap-1.5 text-sm mb-6">
               {product.in_stock ? (
                 <><Check size={14} className="text-primary" /><span className="text-primary font-medium">{t("product.inStock")}</span></>
@@ -220,10 +224,13 @@ export default function ProductDetail() {
           </div>
         </div>
 
+        {/* Complementary products */}
+        <ComplementaryProducts product={product} />
+
         {/* Similar products */}
         {similar.length > 0 && (
-          <div className="mt-12 md:mt-16">
-            <h2 className="font-heading text-xl md:text-2xl font-bold mb-6 text-foreground">{t("product.similar")}</h2>
+          <div className="mt-10 md:mt-14">
+            <h2 className="font-heading text-base md:text-xl font-bold mb-4 text-foreground">{t("product.similar")}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {similar.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
