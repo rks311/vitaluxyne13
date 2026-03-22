@@ -223,6 +223,7 @@ export type Database = {
         Row: {
           brand: string
           category: string
+          conseils: string | null
           cost_price: number | null
           created_at: string
           description: string | null
@@ -241,11 +242,13 @@ export type Database = {
           reviews_count: number | null
           stock_qty: number | null
           updated_at: string
+          usage_instructions: string | null
           weights: string[] | null
         }
         Insert: {
           brand: string
           category: string
+          conseils?: string | null
           cost_price?: number | null
           created_at?: string
           description?: string | null
@@ -264,11 +267,13 @@ export type Database = {
           reviews_count?: number | null
           stock_qty?: number | null
           updated_at?: string
+          usage_instructions?: string | null
           weights?: string[] | null
         }
         Update: {
           brand?: string
           category?: string
+          conseils?: string | null
           cost_price?: number | null
           created_at?: string
           description?: string | null
@@ -287,6 +292,7 @@ export type Database = {
           reviews_count?: number | null
           stock_qty?: number | null
           updated_at?: string
+          usage_instructions?: string | null
           weights?: string[] | null
         }
         Relationships: []

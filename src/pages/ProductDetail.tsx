@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Star, ChevronLeft, Check, Loader2, Truck, Phone, MessageCircle } from "lucide-react";
+import { ShoppingCart, Star, ChevronLeft, Check, Loader2, Truck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
 import OrderForm from "@/components/product/OrderForm";
@@ -56,11 +56,13 @@ export default function ProductDetail() {
   const flavor = selectedFlavor || flavors[0] || "";
   const weight = selectedWeight || weights[0] || "";
   const nutritionFacts = (product.nutrition_facts as any[] || []);
+  const usageInstructions = (product as any).usage_instructions || "";
+  const conseils = (product as any).conseils || "";
 
   const tabs = [
     { key: "description", label: t("product.description") },
-    { key: "composition", label: t("product.composition") },
     { key: "usage", label: t("product.usage") },
+    { key: "conseils", label: "Conseils" },
   ];
 
   return (
@@ -176,12 +178,12 @@ export default function ProductDetail() {
 
         {/* Tabs */}
         <div className="mt-10 md:mt-16">
-          <div className="flex gap-1 border-b border-border">
+          <div className="flex gap-1 border-b border-border overflow-x-auto scrollbar-none">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-3 text-sm font-heading font-medium transition-colors relative ${activeTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-4 py-3 text-sm font-heading font-medium transition-colors relative whitespace-nowrap ${activeTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {tab.label}
                 {activeTab === tab.key && (
@@ -209,17 +211,23 @@ export default function ProductDetail() {
                 )}
               </div>
             )}
-            {activeTab === "composition" && (
-              <p className="text-sm text-muted-foreground">
-                {/* REPLACE WITH REAL COMPOSITION DATA */}
-                Composition détaillée à venir. Consultez l'étiquette du produit pour les informations complètes.
-              </p>
-            )}
             {activeTab === "usage" && (
-              <p className="text-sm text-muted-foreground">
-                {/* REPLACE WITH REAL USAGE INSTRUCTIONS */}
-                Mode d'emploi : consultez les recommandations sur l'emballage ou contactez notre équipe pour des conseils personnalisés.
-              </p>
+              <div className="prose prose-sm max-w-none text-muted-foreground">
+                {usageInstructions ? (
+                  <p className="whitespace-pre-line">{usageInstructions}</p>
+                ) : (
+                  <p>Mode d'emploi : consultez les recommandations sur l'emballage ou contactez notre équipe pour des conseils personnalisés.</p>
+                )}
+              </div>
+            )}
+            {activeTab === "conseils" && (
+              <div className="prose prose-sm max-w-none text-muted-foreground">
+                {conseils ? (
+                  <p className="whitespace-pre-line">{conseils}</p>
+                ) : (
+                  <p>Nos conseillers sont disponibles pour vous guider. Contactez-nous par WhatsApp pour des conseils personnalisés.</p>
+                )}
+              </div>
             )}
           </div>
         </div>
