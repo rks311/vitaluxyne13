@@ -30,7 +30,6 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
   const subtotal = product.price * form.qty;
   const total = subtotal + deliveryFee;
 
-  // Auto-select cheapest when wilaya changes
   const handleWilayaChange = (wilayaName: string) => {
     const opts = getDeliveryOptions(wilayaName);
     setForm(f => ({
@@ -82,7 +81,6 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
         wilaya: form.wilaya,
       }, { onConflict: "phone" });
 
-      // Decrement stock
       await supabase.rpc("decrement_stock", { p_product_id: product.id, p_quantity: form.qty });
 
       setOrderNumber(order.order_number);
@@ -112,162 +110,162 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="bg-background/95 backdrop-blur-xl border-l border-primary/20 w-full max-w-md h-full overflow-y-auto shadow-2xl"
+        className="bg-background/95 backdrop-blur-xl border-l border-primary/20 w-full max-w-sm h-full flex flex-col shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-md border-b border-border px-5 py-4 flex items-center justify-between">
-          <h2 className="font-heading text-lg font-bold text-foreground">Commander</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><X size={18} /></button>
+        <div className="shrink-0 bg-background/90 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
+          <h2 className="font-heading text-base font-bold text-foreground">Commander</h2>
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><X size={16} /></button>
         </div>
 
         {step === "form" ? (
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            {/* Product summary */}
-            <div className="p-3 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3">
-              <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden shrink-0">
-                <img src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_url}`} alt="" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-heading font-semibold text-sm truncate">{product.name}</p>
-                <p className="text-xs text-muted-foreground">{formatPrice(product.price)} × {form.qty}</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => setForm(f => ({ ...f, qty: Math.max(1, f.qty - 1) }))} className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-sm font-bold">-</button>
-                <span className="w-5 text-center text-sm font-medium">{form.qty}</span>
-                <button type="button" onClick={() => setForm(f => ({ ...f, qty: f.qty + 1 }))} className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-sm font-bold">+</button>
-              </div>
-            </div>
-
-            {/* Name */}
-            <FieldGroup icon={<User size={16} />} label="Nom complet" required>
-              <input
-                type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="Ahmed Benali"
-                className="field-input" required maxLength={100}
-              />
-              {form.name.trim().length >= 2 && <Check size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary" />}
-            </FieldGroup>
-
-            {/* Phone */}
-            <FieldGroup icon={<Phone size={16} />} label="Téléphone" required>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">+213</span>
-                <input
-                  type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value.replace(/[^\d]/g, "").slice(0, 10) }))}
-                  placeholder="0770 12 34 56"
-                  className="field-input !pl-12" required maxLength={10}
-                />
-              </div>
-              {form.phone.trim().length >= 10 && <Check size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary" />}
-            </FieldGroup>
-
-            {/* Wilaya */}
-            <FieldGroup icon={<MapPin size={16} />} label="Wilaya" required>
-              <div className="relative">
-                <select
-                  value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)}
-                  className="field-input appearance-none pr-8" required
-                >
-                  <option value="">Sélectionner une wilaya</option>
-                  {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              </div>
-            </FieldGroup>
-
-            {/* Commune */}
-            <FieldGroup icon={<MapPin size={16} />} label="Commune" required>
-              <input
-                type="text" value={form.commune} onChange={e => setForm(f => ({ ...f, commune: e.target.value }))}
-                placeholder="Centre, Hai..."
-                className="field-input" required maxLength={100}
-              />
-            </FieldGroup>
-
-            {/* Address */}
-            <FieldGroup icon={<MapPin size={16} />} label="Adresse complète" required>
-              <textarea
-                value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                placeholder="Rue, numéro, bâtiment, étage..."
-                className="field-input !h-20 resize-none py-2.5" required maxLength={200}
-              />
-            </FieldGroup>
-
-            {/* Delivery options */}
-            {form.wilaya && deliveryOptions.length > 0 && (
-              <div className="space-y-2">
-                <label className="flex items-center gap-1.5 text-xs font-heading font-medium text-muted-foreground uppercase tracking-wider">
-                  <Truck size={14} /> Service de livraison
-                </label>
-                <div className="space-y-2">
-                  {deliveryOptions.map(opt => (
-                    <button
-                      key={opt.id} type="button"
-                      onClick={() => setForm(f => ({ ...f, deliveryOption: opt.id }))}
-                      className={`w-full p-3 rounded-xl border text-left transition-all text-sm ${form.deliveryOption === opt.id ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="font-medium">{opt.type === "bureau" ? "📦" : "🏠"} {opt.label}</span>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {opt.type === "bureau" ? "Retrait en bureau (moins cher)" : "Livraison à votre porte"}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading font-bold text-primary">{formatPrice(opt.price)}</span>
-                          {form.deliveryOption === opt.id && <Check size={16} className="text-primary" />}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto flex flex-col">
+            <div className="p-4 space-y-3 flex-1">
+              {/* Product summary - compact */}
+              <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-md bg-secondary overflow-hidden shrink-0">
+                  <img src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_url}`} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-xs truncate">{product.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{formatPrice(product.price)} × {form.qty}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={() => setForm(f => ({ ...f, qty: Math.max(1, f.qty - 1) }))} className="w-6 h-6 rounded bg-secondary flex items-center justify-center text-xs font-bold">-</button>
+                  <span className="w-4 text-center text-xs font-medium">{form.qty}</span>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, qty: f.qty + 1 }))} className="w-6 h-6 rounded bg-secondary flex items-center justify-center text-xs font-bold">+</button>
                 </div>
               </div>
-            )}
 
-            {/* Comment */}
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Commentaire (optionnel)</label>
-              <textarea value={form.comment} onChange={e => setForm(f => ({ ...f, comment: e.target.value }))} className="field-input !h-16 resize-none py-2.5" maxLength={500} placeholder="Instructions spéciales..." />
-            </div>
+              {/* Name */}
+              <div>
+                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Nom complet *</label>
+                <input
+                  type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Ahmed Benali"
+                  className="w-full h-9 rounded-lg bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" required maxLength={100}
+                />
+              </div>
 
-            {/* Price summary */}
-            <div className="p-3 rounded-xl bg-secondary/50 border border-border space-y-1.5 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Sous-total</span><span>{formatPrice(subtotal)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Livraison</span><span>{deliveryFee > 0 ? formatPrice(deliveryFee) : "—"}</span></div>
-              <div className="flex justify-between font-heading font-bold text-base pt-1.5 border-t border-border">
-                <span>Total</span><span className="text-primary">{formatPrice(total)}</span>
+              {/* Phone */}
+              <div>
+                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Téléphone *</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">+213</span>
+                  <input
+                    type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value.replace(/[^\d]/g, "").slice(0, 10) }))}
+                    placeholder="0770 12 34 56"
+                    className="w-full h-9 rounded-lg bg-secondary border border-border pl-11 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" required maxLength={10}
+                  />
+                </div>
+              </div>
+
+              {/* Wilaya + Commune on same row */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Wilaya *</label>
+                  <select
+                    value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)}
+                    className="w-full h-9 rounded-lg bg-secondary border border-border px-2 text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary" required
+                  >
+                    <option value="">Wilaya</option>
+                    {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code}-{w.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Commune *</label>
+                  <input
+                    type="text" value={form.commune} onChange={e => setForm(f => ({ ...f, commune: e.target.value }))}
+                    placeholder="Centre"
+                    className="w-full h-9 rounded-lg bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" required maxLength={100}
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Adresse *</label>
+                <textarea
+                  value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                  placeholder="Rue, numéro, bâtiment..."
+                  className="w-full h-14 rounded-lg bg-secondary border border-border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary" required maxLength={200}
+                />
+              </div>
+
+              {/* Delivery options - compact */}
+              {form.wilaya && deliveryOptions.length > 0 && (
+                <div>
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Livraison</label>
+                  <div className="space-y-1.5">
+                    {deliveryOptions.map(opt => (
+                      <button
+                        key={opt.id} type="button"
+                        onClick={() => setForm(f => ({ ...f, deliveryOption: opt.id }))}
+                        className={`w-full p-2.5 rounded-lg border text-left transition-all text-xs ${form.deliveryOption === opt.id ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/30"}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{opt.type === "bureau" ? "📦" : "🏠"} {opt.label}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-heading font-bold text-primary">{formatPrice(opt.price)}</span>
+                            {form.deliveryOption === opt.id && <Check size={12} className="text-primary" />}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Comment */}
+              <div>
+                <label className="text-[10px] text-muted-foreground mb-1 block">Note (optionnel)</label>
+                <input value={form.comment} onChange={e => setForm(f => ({ ...f, comment: e.target.value }))} className="w-full h-9 rounded-lg bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" maxLength={500} placeholder="Instructions..." />
               </div>
             </div>
 
-            <Button type="submit" disabled={loading || !isValid} className="w-full h-12 font-heading text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg shadow-primary/20 disabled:opacity-50">
-              {loading ? <><Loader2 size={16} className="animate-spin me-2" /> Envoi en cours...</> : `✅ Confirmer commande · ${formatPrice(total)}`}
-            </Button>
+            {/* Sticky bottom - price + button */}
+            <div className="shrink-0 border-t border-border bg-background/95 backdrop-blur-md p-4 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Sous-total</span>
+                <span>{formatPrice(subtotal)}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Livraison</span>
+                <span>{deliveryFee > 0 ? formatPrice(deliveryFee) : "—"}</span>
+              </div>
+              <div className="flex items-center justify-between font-heading font-bold text-sm pt-1.5 border-t border-border">
+                <span>Total</span>
+                <span className="text-primary">{formatPrice(total)}</span>
+              </div>
 
-            <p className="text-[10px] text-center text-muted-foreground">💳 Paiement à la livraison · Un conseiller vous appellera pour confirmer</p>
+              <Button type="submit" disabled={loading || !isValid} className="w-full h-11 font-heading text-sm bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg shadow-primary/20 disabled:opacity-50">
+                {loading ? <><Loader2 size={14} className="animate-spin me-2" /> Envoi...</> : `✅ Confirmer · ${formatPrice(total)}`}
+              </Button>
+              <p className="text-[9px] text-center text-muted-foreground">💳 Paiement à la livraison</p>
+            </div>
           </form>
         ) : (
-          <div className="p-6 text-center flex flex-col items-center justify-center min-h-[60vh]">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-              <Check size={40} className="text-primary" />
+          <div className="flex-1 overflow-y-auto p-5 flex flex-col items-center justify-center">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Check size={32} className="text-primary" />
             </motion.div>
-            <h3 className="font-heading text-2xl font-bold text-foreground mb-2">Commande {orderNumber} reçue !</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-xs">Un conseiller Vitaluxyne vous appellera sous 24h pour confirmation finale.</p>
+            <h3 className="font-heading text-xl font-bold text-foreground mb-2">Commande {orderNumber} reçue !</h3>
+            <p className="text-xs text-muted-foreground mb-4 max-w-xs text-center">Un conseiller vous appellera sous 24h pour confirmation.</p>
 
-            <div className="w-full p-4 rounded-xl bg-secondary/50 border border-border text-left text-sm space-y-1.5 mb-6">
+            <div className="w-full p-3 rounded-lg bg-secondary/50 border border-border text-left text-xs space-y-1 mb-4">
               <p><span className="text-muted-foreground">Produit:</span> {product.name} × {form.qty}</p>
               <p><span className="text-muted-foreground">Livraison:</span> {selectedDelivery?.label}</p>
-              <p><span className="text-muted-foreground">Frais:</span> {formatPrice(deliveryFee)}</p>
               <p className="font-heading font-bold pt-1 border-t border-border"><span className="text-muted-foreground font-normal">Total:</span> {formatPrice(total)}</p>
             </div>
 
-            <div className="flex flex-col gap-3 w-full">
-              <Button asChild className="h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading">
+            <div className="flex flex-col gap-2.5 w-full">
+              <Button asChild className="h-10 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading text-sm">
                 <a href={`https://wa.me/213555123456?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle size={18} className="me-2" /> Contacter sur WhatsApp
+                  <MessageCircle size={16} className="me-2" /> WhatsApp
                 </a>
               </Button>
-              <Button variant="outline" onClick={onClose} className="h-11 rounded-xl border-border">
+              <Button variant="outline" onClick={onClose} className="h-10 rounded-xl border-border text-sm">
                 Continuer mes achats
               </Button>
             </div>
@@ -275,17 +273,5 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
         )}
       </motion.div>
     </motion.div>
-  );
-}
-
-// ─── Reusable field wrapper ──────────────────────────────────
-function FieldGroup({ icon, label, required, children }: { icon: React.ReactNode; label: string; required?: boolean; children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      <label className="flex items-center gap-1.5 text-xs font-heading font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-        {icon} {label} {required && <span className="text-destructive">*</span>}
-      </label>
-      {children}
-    </div>
   );
 }
