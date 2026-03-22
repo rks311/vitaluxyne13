@@ -9,14 +9,15 @@ import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   "Livrée": "bg-emerald-500/10 text-emerald-400",
-  "Confirmé": "bg-blue-500/10 text-blue-400",
+  "Confirmée": "bg-blue-500/10 text-blue-400",
   "En préparation": "bg-amber-500/10 text-amber-400",
-  "En cours": "bg-purple-500/10 text-purple-400",
+  "Expédiée": "bg-purple-500/10 text-purple-400",
   "Annulée": "bg-red-500/10 text-red-400",
+  "Retour": "bg-orange-500/10 text-orange-400",
 };
 
-const statuses = ["Toutes", "En préparation", "En cours", "Confirmé", "Livrée", "Annulée"];
-const statusFlow = ["En préparation", "En cours", "Confirmé", "Livrée"];
+const statuses = ["Toutes", "En préparation", "Confirmée", "Expédiée", "Livrée", "Retour", "Annulée"];
+const statusFlow = ["En préparation", "Confirmée", "Expédiée", "Livrée"];
 
 function formatServiceLabel(s: string | null) {
   if (!s) return "—";
