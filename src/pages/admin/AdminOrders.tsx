@@ -204,6 +204,7 @@ export default function AdminOrders() {
                   {s}
                 </button>
               ))}
+              <button onClick={() => updateStatus(selectedOrder.id, "Retour")} className="px-3 py-1.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 hover:bg-orange-500/20">Retour</button>
               <button onClick={() => updateStatus(selectedOrder.id, "Annulée")} className="px-3 py-1.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive/20">Annuler</button>
             </div>
           </div>
