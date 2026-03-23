@@ -251,6 +251,18 @@ export default function ProductDetail() {
         )}
       </div>
 
+      {/* Floating mobile CTA */}
+      {product.in_stock && !showOrderForm && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-background/95 backdrop-blur-xl border-t border-border safe-area-bottom">
+          <Button
+            onClick={() => setShowOrderForm(true)}
+            className="w-full h-12 font-heading text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg shadow-primary/20"
+          >
+            Commander · {formatPrice(product.price * qty)}
+          </Button>
+        </div>
+      )}
+
       {/* Order Form Slide-over */}
       <AnimatePresence>
         {showOrderForm && product && (
