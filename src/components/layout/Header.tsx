@@ -33,18 +33,21 @@ export default function Header() {
           <button
             onClick={() => navigate("/catalogue")}
             className="p-2 text-muted-foreground hover:text-primary transition-colors md:hidden"
+            aria-label="Rechercher"
           >
             <Search size={18} />
           </button>
           <button
             onClick={() => setLang(lang === "fr" ? "ar" : "fr")}
             className="p-2 text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Changer la langue"
           >
             <Globe size={16} />
           </button>
           <button
             onClick={() => setIsOpen(true)}
             className="relative p-2 text-muted-foreground hover:text-primary transition-colors"
+            aria-label={`Panier (${itemCount} articles)`}
           >
             <ShoppingCart size={18} />
             {itemCount > 0 && (
@@ -57,7 +60,7 @@ export default function Header() {
               </motion.span>
             )}
           </button>
-          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-muted-foreground">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-muted-foreground" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}>
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>

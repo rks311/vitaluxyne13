@@ -48,10 +48,10 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <button onClick={() => scroll("left")} className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors hidden md:flex">
+            <button onClick={() => scroll("left")} aria-label="Défiler à gauche" className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors hidden md:flex">
               <ChevronLeft size={14} />
             </button>
-            <button onClick={() => scroll("right")} className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors hidden md:flex">
+            <button onClick={() => scroll("right")} aria-label="Défiler à droite" className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors hidden md:flex">
               <ChevronRight size={14} />
             </button>
             <Link

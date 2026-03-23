@@ -14,7 +14,7 @@ export default function HeroSection() {
     <section className="relative overflow-hidden">
       {/* Full image background */}
       <div className="absolute inset-0">
-        <img src={heroBg} alt="" className="w-full h-full object-cover" loading="eager" />
+        <img src={heroBg} alt="Compléments alimentaires Vitaluxyne" className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       </div>
 
