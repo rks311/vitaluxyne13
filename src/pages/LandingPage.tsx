@@ -35,6 +35,7 @@ export default function LandingPage() {
         data = (all || []).find(p => p.name.toLowerCase().replace(/\s+/g, "-").includes(slug!)) || null;
       }
       setProduct(data);
+      if (data) trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
       setLoading(false);
     };
     if (slug) fetchProduct();
