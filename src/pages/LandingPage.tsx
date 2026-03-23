@@ -7,6 +7,7 @@ import { Loader2, MessageCircle, Star, Truck, ShieldCheck, Phone } from "lucide-
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/product/OrderForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackViewContent } from "@/lib/metaPixel";
 
 // REPLACE WITH REAL TESTIMONIALS
 const landingTestimonials = [
