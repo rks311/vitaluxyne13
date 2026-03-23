@@ -11,6 +11,7 @@ import ComplementaryProducts from "@/components/product/ComplementaryProducts";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -31,6 +32,7 @@ export default function ProductDetail() {
       const { data } = await supabase.from("products").select("*").eq("id", id!).single();
       setProduct(data);
       if (data) {
+        trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
         const { data: sim } = await supabase.from("products").select("*").eq("category", data.category).neq("id", data.id).limit(4);
         setSimilar(sim || []);
       }
@@ -153,7 +155,10 @@ export default function ProductDetail() {
                 {t("product.orderNow")}
               </Button>
               <Button
-                onClick={() => addItem(product, flavor, weight, qty)}
+                onClick={() => {
+                  addItem(product, flavor, weight, qty);
+                  trackAddToCart({ id: product.id, name: product.name, price: product.price }, qty);
+                }}
                 disabled={!product.in_stock}
                 variant="outline"
                 className="h-12 px-4 rounded-xl border-primary text-primary hover:bg-primary/5"
