@@ -11,7 +11,7 @@ const Loader = () => <div className="py-8" />;
 
 const Index = () => {
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen">
       <HeroSection />
       <CategoryGrid />
 

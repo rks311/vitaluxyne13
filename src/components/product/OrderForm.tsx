@@ -7,6 +7,7 @@ import { formatPrice, type DbProduct } from "@/types/database";
 import { WILAYAS, getDeliveryOptions, type DeliveryOption } from "@/data/wilayas";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
 
 interface OrderFormProps {
   product: DbProduct;
@@ -45,6 +46,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
     e.preventDefault();
     if (!isValid) { toast.error("Veuillez remplir tous les champs obligatoires."); return; }
 
+    trackInitiateCheckout(total, form.qty);
     setLoading(true);
     try {
       const phone = form.phone.trim().startsWith("0") ? form.phone.trim() : `0${form.phone.trim()}`;
@@ -84,6 +86,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
       await supabase.rpc("decrement_stock", { p_product_id: product.id, p_quantity: form.qty });
 
       setOrderNumber(order.order_number);
+      trackPurchase(total, order.order_number);
       setStep("success");
     } catch (err: any) {
       toast.error("Erreur lors de l'envoi. Réessayez.");
