@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import Header from "@/components/layout/Header";
-import MobileNav from "@/components/layout/MobileNav";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { initMetaPixel } from "@/lib/metaPixel";
 
 // Lazy-loaded pages
 const Index = lazy(() => import("./pages/Index"));
@@ -48,6 +48,11 @@ function PageLoader() {
   );
 }
 
+function PixelInit() {
+  useEffect(() => { initMetaPixel(); }, []);
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -57,9 +62,10 @@ const App = () => (
         <LanguageProvider>
           <CartProvider>
             <ErrorBoundary>
+              <PixelInit />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
-                  {/* Landing pages for Facebook/Instagram ads — lightweight, no header/footer */}
+                  {/* Landing pages for Facebook/Instagram ads */}
                   <Route path="/l/:slug" element={<LandingPage />} />
 
                   {/* Admin routes */}
@@ -91,7 +97,6 @@ const App = () => (
                           </Routes>
                         </main>
                         <Footer />
-                        <MobileNav />
                         <WhatsAppButton />
                       </>
                     }

@@ -7,6 +7,7 @@ import { Loader2, MessageCircle, Star, Truck, ShieldCheck, Phone } from "lucide-
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/product/OrderForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackViewContent } from "@/lib/metaPixel";
 
 // REPLACE WITH REAL TESTIMONIALS
 const landingTestimonials = [
@@ -34,6 +35,7 @@ export default function LandingPage() {
         data = (all || []).find(p => p.name.toLowerCase().replace(/\s+/g, "-").includes(slug!)) || null;
       }
       setProduct(data);
+      if (data) trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
       setLoading(false);
     };
     if (slug) fetchProduct();

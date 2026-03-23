@@ -11,6 +11,7 @@ import ComplementaryProducts from "@/components/product/ComplementaryProducts";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -31,6 +32,7 @@ export default function ProductDetail() {
       const { data } = await supabase.from("products").select("*").eq("id", id!).single();
       setProduct(data);
       if (data) {
+        trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
         const { data: sim } = await supabase.from("products").select("*").eq("category", data.category).neq("id", data.id).limit(4);
         setSimilar(sim || []);
       }
@@ -153,7 +155,10 @@ export default function ProductDetail() {
                 {t("product.orderNow")}
               </Button>
               <Button
-                onClick={() => addItem(product, flavor, weight, qty)}
+                onClick={() => {
+                  addItem(product, flavor, weight, qty);
+                  trackAddToCart({ id: product.id, name: product.name, price: product.price }, qty);
+                }}
                 disabled={!product.in_stock}
                 variant="outline"
                 className="h-12 px-4 rounded-xl border-primary text-primary hover:bg-primary/5"
@@ -245,6 +250,18 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
+
+      {/* Floating mobile CTA */}
+      {product.in_stock && !showOrderForm && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-background/95 backdrop-blur-xl border-t border-border safe-area-bottom">
+          <Button
+            onClick={() => setShowOrderForm(true)}
+            className="w-full h-12 font-heading text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg shadow-primary/20"
+          >
+            Commander · {formatPrice(product.price * qty)}
+          </Button>
+        </div>
+      )}
 
       {/* Order Form Slide-over */}
       <AnimatePresence>

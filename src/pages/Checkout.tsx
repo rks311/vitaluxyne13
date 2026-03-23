@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
+import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -34,6 +35,7 @@ export default function Checkout() {
 
   const handleConfirm = async () => {
     setSubmitting(true);
+    trackInitiateCheckout(grandTotal, items.length);
     try {
       const phone = form.phone.startsWith("0") ? form.phone : `0${form.phone}`;
       const { data: order, error } = await supabase.from("orders").insert({
@@ -52,6 +54,7 @@ export default function Checkout() {
       await supabase.from("clients").upsert({ name: form.name.trim().slice(0, 100), phone: phone.slice(0, 15), wilaya: form.wilaya }, { onConflict: "phone" });
 
       setOrderResult({ number: order.order_number, total: grandTotal });
+      trackPurchase(grandTotal, order.order_number);
       clearCart();
       setStep(4);
     } catch (err) {
