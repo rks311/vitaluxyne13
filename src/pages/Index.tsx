@@ -51,9 +51,6 @@ const Index = () => {
         <TrustBadges />
       </Suspense>
 
-      <Suspense fallback={<SectionPlaceholder height="250px" />}>
-        <Testimonials />
-      </Suspense>
     </div>
   );
 };
