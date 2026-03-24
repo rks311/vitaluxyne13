@@ -344,7 +344,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      products_public: {
+        Row: {
+          brand: string | null
+          category: string | null
+          conseils: string | null
+          created_at: string | null
+          description: string | null
+          flavors: string[] | null
+          id: string | null
+          image_url: string | null
+          in_stock: boolean | null
+          is_promo: boolean | null
+          is_top_sale: boolean | null
+          name: string | null
+          nutrition_facts: Json | null
+          objectives: string[] | null
+          old_price: number | null
+          price: number | null
+          rating: number | null
+          reviews_count: number | null
+          updated_at: string | null
+          usage_instructions: string | null
+          weights: string[] | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          conseils?: string | null
+          created_at?: string | null
+          description?: string | null
+          flavors?: string[] | null
+          id?: string | null
+          image_url?: string | null
+          in_stock?: boolean | null
+          is_promo?: boolean | null
+          is_top_sale?: boolean | null
+          name?: string | null
+          nutrition_facts?: Json | null
+          objectives?: string[] | null
+          old_price?: number | null
+          price?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          updated_at?: string | null
+          usage_instructions?: string | null
+          weights?: string[] | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          conseils?: string | null
+          created_at?: string | null
+          description?: string | null
+          flavors?: string[] | null
+          id?: string | null
+          image_url?: string | null
+          in_stock?: boolean | null
+          is_promo?: boolean | null
+          is_top_sale?: boolean | null
+          name?: string | null
+          nutrition_facts?: Json | null
+          objectives?: string[] | null
+          old_price?: number | null
+          price?: number | null
+          rating?: number | null
+          reviews_count?: number | null
+          updated_at?: string | null
+          usage_instructions?: string | null
+          weights?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       decrement_stock: {

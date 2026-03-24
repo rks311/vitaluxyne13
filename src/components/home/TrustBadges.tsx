@@ -13,21 +13,22 @@ export default function TrustBadges() {
   ];
 
   return (
-    <section className="py-8 md:py-12 bg-secondary/30">
+    <section className="py-8 md:py-12 bg-secondary/30" aria-label="Nos garanties">
       <div className="container">
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible" role="list">
           {badges.map((b, i) => {
             const Icon = b.icon;
             return (
               <motion.div
                 key={i}
+                role="listitem"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06 }}
                 className="flex items-center gap-3 bg-card rounded-xl p-3.5 md:p-4 border border-border min-w-[220px] md:min-w-0 shrink-0 md:shrink"
               >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0" aria-hidden="true">
                   <Icon size={18} className="text-primary" />
                 </div>
                 <div>

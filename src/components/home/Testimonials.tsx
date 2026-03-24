@@ -13,37 +13,38 @@ export default function Testimonials() {
   const { t } = useLang();
 
   return (
-    <section className="py-8 md:py-12 bg-background">
+    <section className="py-8 md:py-12 bg-background" aria-label="Avis clients">
       <div className="container">
         <div className="text-center mb-6 md:mb-8">
           <h2 className="font-heading text-lg md:text-2xl font-bold text-foreground">{t("reviews.title")}</h2>
-          <div className="w-10 h-0.5 bg-accent mx-auto mt-2 rounded-full" />
+          <div className="w-10 h-0.5 bg-accent mx-auto mt-2 rounded-full" aria-hidden="true" />
         </div>
 
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible" role="list">
           {testimonials.map((review, i) => (
-            <motion.div
+            <motion.blockquote
               key={i}
+              role="listitem"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06 }}
               className="min-w-[260px] md:min-w-0 shrink-0 md:shrink p-4 rounded-xl border border-border bg-card"
             >
-              <div className="flex gap-0.5 mb-2">
+              <div className="flex gap-0.5 mb-2" aria-label={`${review.rating} étoiles sur 5`}>
                 {Array.from({ length: 5 }).map((_, j) => (
-                  <Star key={j} size={12} className={j < review.rating ? "fill-accent text-accent" : "text-muted"} />
+                  <Star key={j} size={12} className={j < review.rating ? "fill-accent text-accent" : "text-muted"} aria-hidden="true" />
                 ))}
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">"{review.text}"</p>
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">{review.name.charAt(0)}</div>
+              <footer className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary" aria-hidden="true">{review.name.charAt(0)}</div>
                 <div>
                   <p className="font-heading font-semibold text-xs">{review.name}</p>
                   <p className="text-[10px] text-muted-foreground">{review.location}</p>
                 </div>
-              </div>
-            </motion.div>
+              </footer>
+            </motion.blockquote>
           ))}
         </div>
       </div>
