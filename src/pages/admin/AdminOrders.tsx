@@ -53,6 +53,28 @@ function copyColisInfo(order: any) {
   navigator.clipboard.writeText(text).then(() => toast.success("Infos colis copiées !"));
 }
 
+// Stock management: adjust stock when order status changes
+async function adjustStock(orderItems: any[], direction: "decrement" | "increment") {
+  for (const item of orderItems) {
+    // Try to find product by name match
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, stock_qty")
+      .eq("name", item.product_name)
+      .limit(1);
+    
+    if (products && products.length > 0) {
+      const product = products[0];
+      const currentQty = product.stock_qty ?? 0;
+      const newQty = direction === "decrement"
+        ? Math.max(0, currentQty - item.quantity)
+        : currentQty + item.quantity;
+      
+      await supabase.from("products").update({ stock_qty: newQty }).eq("id", product.id);
+    }
+  }
+}
+
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -86,6 +108,30 @@ export default function AdminOrders() {
   const wilayas = useMemo(() => [...new Set(orders.map(o => o.wilaya))].sort(), [orders]);
 
   const updateStatus = async (orderId: string, newStatus: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    const oldStatus = order.status;
+    const items = order._items || [];
+
+    // Stock logic:
+    // Confirmée → decrement stock (reserved for this order)
+    // Retour → increment stock back (order returned)
+    // If going FROM Confirmée/Expédiée/Livrée TO Annulée before expedition → increment back
+    
+    const wasConfirmed = ["Confirmée", "Expédiée", "Livrée"].includes(oldStatus);
+    const isBeingConfirmed = newStatus === "Confirmée" && oldStatus === "En préparation";
+    const isBeingReturned = newStatus === "Retour" && wasConfirmed;
+    const isBeingCancelled = newStatus === "Annulée" && wasConfirmed;
+
+    if (isBeingConfirmed && items.length > 0) {
+      await adjustStock(items, "decrement");
+      toast.info(`📦 Stock mis à jour: -${items.reduce((s: number, i: any) => s + i.quantity, 0)} unité(s)`);
+    } else if ((isBeingReturned || isBeingCancelled) && items.length > 0) {
+      await adjustStock(items, "increment");
+      toast.info(`📦 Stock restauré: +${items.reduce((s: number, i: any) => s + i.quantity, 0)} unité(s)`);
+    }
+
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (error) { toast.error("Erreur"); return; }
     toast.success(`Statut → ${newStatus}`);
@@ -206,6 +252,13 @@ export default function AdminOrders() {
               ))}
               <button onClick={() => updateStatus(selectedOrder.id, "Retour")} className="px-3 py-1.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 hover:bg-orange-500/20">Retour</button>
               <button onClick={() => updateStatus(selectedOrder.id, "Annulée")} className="px-3 py-1.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive/20">Annuler</button>
+            </div>
+
+            {/* Stock info notice */}
+            <div className="mt-3 p-2 bg-secondary/30 rounded-lg">
+              <p className="text-[10px] text-muted-foreground">
+                📦 <strong>Gestion stock auto:</strong> Confirmée → stock déduit · Retour/Annulée → stock restauré
+              </p>
             </div>
           </div>
         </div>
