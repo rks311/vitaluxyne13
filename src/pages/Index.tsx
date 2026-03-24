@@ -5,7 +5,7 @@ import { TrendingUp, Flame, Sparkles, Brain, Moon, Dumbbell, Shield } from "luci
 
 const FeaturedSection = lazy(() => import("@/components/home/FeaturedSection"));
 const TrustBadges = lazy(() => import("@/components/home/TrustBadges"));
-const Testimonials = lazy(() => import("@/components/home/Testimonials"));
+
 
 const SectionPlaceholder = ({ height = "500px" }: { height?: string }) => (
   <div style={{ minHeight: height }} aria-hidden="true" />
@@ -51,9 +51,6 @@ const Index = () => {
         <TrustBadges />
       </Suspense>
 
-      <Suspense fallback={<SectionPlaceholder height="250px" />}>
-        <Testimonials />
-      </Suspense>
     </div>
   );
 };
