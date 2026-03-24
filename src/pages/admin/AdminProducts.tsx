@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List } from "lucide-react";
+import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -25,6 +25,11 @@ const categoryOptions = [
   { value: "perte-de-poids", label: "🔥 Perte de poids" },
 ];
 
+function copyProductUrl(id: string) {
+  const url = `${window.location.origin}/produit/${id}`;
+  navigator.clipboard.writeText(url).then(() => toast.success("🔗 Lien produit copié !"));
+}
+
 export default function AdminProducts() {
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [search, setSearch] = useState("");
@@ -38,6 +43,8 @@ export default function AdminProducts() {
   const [weightsInput, setWeightsInput] = useState("");
   const [objectivesInput, setObjectivesInput] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [showStockModal, setShowStockModal] = useState<DbProduct | null>(null);
+  const [stockDeduct, setStockDeduct] = useState(1);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const loadProducts = async () => {
@@ -53,7 +60,6 @@ export default function AdminProducts() {
     return matchSearch && matchCategory;
   });
 
-  // Group by category for stats
   const categoryCounts = products.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
     return acc;
@@ -141,6 +147,18 @@ export default function AdminProducts() {
     loadProducts();
   };
 
+  const handleStockDeduct = async () => {
+    if (!showStockModal || stockDeduct < 1) return;
+    const currentQty = (showStockModal as any).stock_qty ?? 0;
+    const newQty = Math.max(0, currentQty - stockDeduct);
+    const { error } = await supabase.from("products").update({ stock_qty: newQty }).eq("id", showStockModal.id);
+    if (error) { toast.error("Erreur"); return; }
+    toast.success(`✅ ${stockDeduct} unité(s) retirée(s) — Stock: ${newQty}`);
+    setShowStockModal(null);
+    setStockDeduct(1);
+    loadProducts();
+  };
+
   const profit = form.price - (form.cost_price || 0);
   const margin = form.price > 0 ? Math.round((profit / form.price) * 100) : 0;
 
@@ -170,8 +188,8 @@ export default function AdminProducts() {
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher..." className="w-full h-9 rounded-lg bg-card border border-border pl-8 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary" maxLength={100} />
           </div>
           <div className="flex items-center border border-border rounded-lg overflow-hidden">
-            <button onClick={() => setViewMode("table")} className={`p-2 ${viewMode === "table" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}><List size={14} /></button>
-            <button onClick={() => setViewMode("grid")} className={`p-2 ${viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}><Grid3X3 size={14} /></button>
+            <button onClick={() => setViewMode("table")} className={`p-2 ${viewMode === "table" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`} aria-label="Vue tableau"><List size={14} /></button>
+            <button onClick={() => setViewMode("grid")} className={`p-2 ${viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground"}`} aria-label="Vue grille"><Grid3X3 size={14} /></button>
           </div>
           <button onClick={openAdd} className="h-9 px-3 rounded-lg gradient-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5 shrink-0">
             <Plus size={14} /> Ajouter
@@ -195,6 +213,26 @@ export default function AdminProducts() {
         </div>
       </div>
 
+      {/* In-store stock deduction modal */}
+      {showStockModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowStockModal(null)}>
+          <div className="bg-card border border-border rounded-xl p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="font-heading font-bold text-base mb-1">🏪 Vente en présentiel</h3>
+            <p className="text-xs text-muted-foreground mb-4">{showStockModal.name} — Stock actuel: <strong>{(showStockModal as any).stock_qty ?? 0}</strong></p>
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Quantité vendue</label>
+            <div className="flex items-center gap-2 mb-4">
+              <button onClick={() => setStockDeduct(Math.max(1, stockDeduct - 1))} className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-foreground hover:bg-muted">-</button>
+              <input type="number" value={stockDeduct} onChange={e => setStockDeduct(Math.max(1, +e.target.value))} min={1} max={(showStockModal as any).stock_qty ?? 0} className="w-20 h-9 rounded-lg bg-secondary border border-border text-center text-sm" />
+              <button onClick={() => setStockDeduct(stockDeduct + 1)} className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-foreground hover:bg-muted">+</button>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setShowStockModal(null)} className="flex-1 h-9 rounded-lg bg-secondary text-xs font-medium">Annuler</button>
+              <button onClick={handleStockDeduct} className="flex-1 h-9 rounded-lg gradient-primary text-primary-foreground text-xs font-bold">✅ Retirer du stock</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Product Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-2 pt-8 md:items-center md:p-4" onClick={() => setShowForm(false)}>
@@ -206,6 +244,22 @@ export default function AdminProducts() {
             </div>
 
             <div className="p-4 space-y-4">
+              {/* Ad URL helper — at top for easy access */}
+              {editing && (
+                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
+                  <p className="text-[10px] font-heading font-bold text-blue-400 uppercase mb-1.5">🔗 Lien pour publicité Facebook/Instagram</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xs text-foreground bg-secondary px-2.5 py-1.5 rounded block break-all select-all">
+                      {window.location.origin}/produit/{editing.id}
+                    </code>
+                    <button onClick={() => copyProductUrl(editing.id)} className="shrink-0 h-8 px-3 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium flex items-center gap-1.5 hover:bg-blue-500/20 transition-colors">
+                      <Link2 size={12} /> Copier
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5">Utilisez ce lien dans vos carousel ads Facebook/Instagram</p>
+                </div>
+              )}
+
               {/* Image upload */}
               <div className="flex items-center gap-3">
                 {form.image_url && (
@@ -284,17 +338,6 @@ export default function AdminProducts() {
                 <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={form.is_promo} onChange={(e) => setForm(f => ({ ...f, is_promo: e.target.checked }))} className="accent-primary" /> 🔥 Promo</label>
               </div>
 
-              {/* Ad URL helper */}
-              {editing && (
-                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
-                  <p className="text-[10px] font-heading font-bold text-blue-400 uppercase mb-1">🔗 Lien pour publicité Facebook/Instagram</p>
-                  <code className="text-xs text-foreground bg-secondary px-2 py-1 rounded block break-all select-all">
-                    {window.location.origin}/l/{editing.id}
-                  </code>
-                  <p className="text-[10px] text-muted-foreground mt-1">Copiez ce lien dans votre campagne publicitaire</p>
-                </div>
-              )}
-
               <button onClick={handleSave} disabled={saving} className="w-full h-10 rounded-lg gradient-primary text-primary-foreground font-heading font-bold text-sm">
                 {saving ? "Enregistrement..." : editing ? "✅ Modifier" : "✅ Ajouter"}
               </button>
@@ -327,9 +370,11 @@ export default function AdminProducts() {
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                       {p.in_stock ? `${(p as any).stock_qty ?? 0} en stock` : "Rupture"}
                     </span>
-                    <div className="flex gap-1">
-                      <button onClick={() => openEdit(p)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-primary"><Edit size={12} /></button>
-                      <button onClick={() => handleDelete(p.id)} className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 size={12} /></button>
+                    <div className="flex gap-0.5">
+                      <button onClick={() => copyProductUrl(p.id)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-blue-400" title="Copier lien ads"><Link2 size={11} /></button>
+                      <button onClick={() => { setShowStockModal(p); setStockDeduct(1); }} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-orange-400" title="Vente présentiel"><Minus size={11} /></button>
+                      <button onClick={() => openEdit(p)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-primary"><Edit size={11} /></button>
+                      <button onClick={() => handleDelete(p.id)} className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 size={11} /></button>
                     </div>
                   </div>
                 </div>
@@ -391,6 +436,8 @@ export default function AdminProducts() {
                       <td className="px-2 py-2.5 text-[10px] text-muted-foreground hidden lg:table-cell">{catLabel}</td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center justify-end gap-0.5">
+                          <button onClick={() => copyProductUrl(p.id)} className="p-1.5 rounded hover:bg-secondary text-muted-foreground hover:text-blue-400 transition-colors" title="Copier lien ads"><Link2 size={13} /></button>
+                          <button onClick={() => { setShowStockModal(p); setStockDeduct(1); }} className="p-1.5 rounded hover:bg-secondary text-muted-foreground hover:text-orange-400 transition-colors" title="Vente présentiel"><Minus size={13} /></button>
                           <button onClick={() => openEdit(p)} className="p-1.5 rounded hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"><Edit size={13} /></button>
                           <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
                         </div>
@@ -408,7 +455,6 @@ export default function AdminProducts() {
   );
 }
 
-// ─── Reusable form field ──────────────────────────────────
 function FormField({ label, value, onChange, type = "text", placeholder, maxLength }: {
   label: string; value: any; onChange: (v: string) => void;
   type?: string; placeholder?: string; maxLength?: number;
