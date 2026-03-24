@@ -5,7 +5,6 @@ import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { motion } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
-// Category complementarity map
 const COMPLEMENTS: Record<string, string[]> = {
   muscles: ["immunite", "os", "coeur"],
   beaute: ["immunite", "stress", "hormones"],
@@ -32,12 +31,12 @@ export default function ComplementaryProducts({ product }: Props) {
 
     supabase
       .from("products")
-      .select("*")
+      .select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock")
       .in("category", cats)
       .neq("id", product.id)
       .eq("in_stock", true)
       .limit(8)
-      .then(({ data }) => setProducts(data || []));
+      .then(({ data }) => setProducts((data as DbProduct[]) || []));
   }, [product.id, product.category]);
 
   const scroll = (dir: "left" | "right") => {
@@ -47,7 +46,7 @@ export default function ComplementaryProducts({ product }: Props) {
   if (products.length === 0) return null;
 
   return (
-    <section className="mt-10 md:mt-14">
+    <section className="mt-10 md:mt-14" aria-label="Produits complémentaires">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-heading text-base md:text-xl font-bold text-foreground">
@@ -58,11 +57,11 @@ export default function ComplementaryProducts({ product }: Props) {
           </p>
         </div>
         <div className="hidden md:flex items-center gap-1.5">
-          <button onClick={() => scroll("left")} className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors">
-            <ChevronLeft size={14} />
+          <button onClick={() => scroll("left")} aria-label="Défiler à gauche" className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors">
+            <ChevronLeft size={14} aria-hidden="true" />
           </button>
-          <button onClick={() => scroll("right")} className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors">
-            <ChevronRight size={14} />
+          <button onClick={() => scroll("right")} aria-label="Défiler à droite" className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors">
+            <ChevronRight size={14} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -70,12 +69,14 @@ export default function ComplementaryProducts({ product }: Props) {
       <div
         ref={scrollRef}
         className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible"
+        role="list"
       >
         {products.map((p, i) => {
           const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
           return (
-            <motion.div
+            <motion.article
               key={p.id}
+              role="listitem"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -85,6 +86,7 @@ export default function ComplementaryProducts({ product }: Props) {
               <Link
                 to={`/produit/${p.id}`}
                 className="group block rounded-2xl border border-border bg-card overflow-hidden card-hover relative"
+                aria-label={`${p.name} — ${formatPrice(p.price)}`}
               >
                 {discount > 0 && (
                   <span className="absolute top-2 left-2 z-10 badge-promo text-[10px]">-{discount}%</span>
@@ -95,6 +97,8 @@ export default function ComplementaryProducts({ product }: Props) {
                     alt={p.name}
                     className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
+                    width={300}
+                    height={300}
                   />
                 </div>
                 <div className="p-2.5 md:p-3.5">
@@ -103,7 +107,7 @@ export default function ComplementaryProducts({ product }: Props) {
                   </h3>
                   {p.rating && p.rating > 0 && (
                     <div className="flex items-center gap-1 mt-1">
-                      <Star size={10} className="fill-accent text-accent" />
+                      <Star size={10} className="fill-accent text-accent" aria-hidden="true" />
                       <span className="text-[10px] font-medium text-foreground">{Number(p.rating).toFixed(1)}</span>
                     </div>
                   )}
@@ -115,7 +119,7 @@ export default function ComplementaryProducts({ product }: Props) {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </motion.article>
           );
         })}
       </div>

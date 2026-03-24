@@ -30,7 +30,7 @@ export default function CategoryGrid() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section id="categories" className="py-5 md:py-10 bg-background">
+    <section id="categories" className="py-5 md:py-10 bg-background" aria-label="Catégories de produits">
       <div className="container">
         <h2 className="font-heading text-base md:text-xl font-bold text-foreground mb-3 md:mb-5">
           {t("cat.title")}
@@ -39,10 +39,12 @@ export default function CategoryGrid() {
         <div
           ref={scrollRef}
           className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory -mx-1 px-1"
+          role="list"
         >
           {categories.map((cat, i) => (
             <motion.div
               key={cat.key}
+              role="listitem"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -52,12 +54,16 @@ export default function CategoryGrid() {
               <Link
                 to={`/catalogue?cat=${cat.slug}`}
                 className="group block relative w-[100px] md:w-[140px] rounded-2xl overflow-hidden aspect-[3/4] shadow-sm hover:shadow-lg transition-shadow duration-300"
+                aria-label={`Voir les produits ${t(`cat.${cat.key}`)}`}
               >
                 <img
                   src={cat.image}
-                  alt={t(`cat.${cat.key}`)}
+                  alt=""
+                  role="presentation"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
+                  width={140}
+                  height={187}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-2.5 md:p-3">

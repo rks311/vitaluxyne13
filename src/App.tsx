@@ -42,8 +42,9 @@ const queryClient = new QueryClient({
 
 function PageLoader() {
   return (
-    <div className="min-h-[50vh] flex items-center justify-center">
-      <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+    <div className="min-h-[50vh] flex items-center justify-center" role="status" aria-label="Chargement">
+      <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" aria-hidden="true" />
+      <span className="sr-only">Chargement en cours...</span>
     </div>
   );
 }
@@ -87,7 +88,7 @@ const App = () => (
                       <>
                         <Header />
                         <CartDrawer />
-                        <main>
+                        <main id="main-content">
                           <Routes>
                             <Route path="/" element={<Index />} />
                             <Route path="/catalogue" element={<Catalog />} />

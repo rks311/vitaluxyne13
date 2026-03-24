@@ -12,7 +12,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { t } = useLang();
 
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -21,6 +21,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       <Link
         to={`/produit/${product.id}`}
         className="block rounded-xl border border-border bg-card overflow-hidden card-hover group"
+        aria-label={`${product.name} — ${formatPrice(product.price)}`}
       >
         <div className="aspect-square bg-secondary/50 overflow-hidden relative">
           <img
@@ -28,6 +29,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             alt={product.name}
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
             loading="lazy"
+            width={400}
+            height={400}
           />
           {product.is_promo && (
             <span className="absolute top-2 start-2 badge-promo">Promo</span>
@@ -55,6 +58,6 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </motion.article>
   );
 }

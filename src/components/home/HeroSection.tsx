@@ -11,15 +11,23 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden" aria-label="Bannière principale">
       {/* Full image background */}
       <div className="absolute inset-0">
-        <img src={heroBg} alt="Compléments alimentaires Vitaluxyne" className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
+        <img
+          src={heroBg}
+          alt=""
+          role="presentation"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          width={1920}
+          height={1080}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       </div>
 
       <div className="container relative z-10 pt-12 pb-10 md:pt-24 md:pb-20 flex flex-col items-center text-center">
-        {/* Minimal text overlay */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,7 +47,6 @@ export default function HeroSection() {
           Compléments alimentaires premium livrés partout en Algérie
         </motion.p>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,27 +58,28 @@ export default function HeroSection() {
             className="flex-1 h-11 font-heading text-sm font-semibold gradient-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 flex items-center justify-center gap-1.5 active:scale-[0.97] transition-transform"
           >
             Découvrir
-            <ArrowDown size={14} />
+            <ArrowDown size={14} aria-hidden="true" />
           </button>
           <a
             href="https://wa.me/213555123456"
             target="_blank"
             rel="noopener noreferrer"
             className="h-11 px-5 font-heading text-sm font-semibold rounded-full bg-white/15 backdrop-blur-sm text-white border border-white/20 flex items-center justify-center gap-1.5 active:scale-[0.97] transition-all"
+            aria-label="Contacter sur WhatsApp"
           >
-            <MessageCircle size={14} />
+            <MessageCircle size={14} aria-hidden="true" />
             WhatsApp
           </a>
         </motion.div>
 
-        {/* Social proof mini */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           className="flex items-center gap-2 mt-5"
+          aria-label="Note moyenne 5 étoiles, plus de 500 clients satisfaits"
         >
-          <div className="flex gap-0.5">
+          <div className="flex gap-0.5" aria-hidden="true">
             {[1,2,3,4,5].map(i => <Star key={i} size={10} className="fill-accent text-accent" />)}
           </div>
           <span className="text-[11px] text-white/60">+500 clients satisfaits</span>
