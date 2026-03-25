@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
@@ -8,7 +9,7 @@ interface ProductCardProps {
   index?: number;
 }
 
-export default function ProductCard({ product, index = 0 }: ProductCardProps) {
+const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, index = 0 }, ref) => {
   const { t } = useLang();
 
   return (
@@ -60,4 +61,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       </Link>
     </motion.article>
   );
-}
+});
+
+ProductCard.displayName = "ProductCard";
+export default ProductCard;
