@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type PackWithItems } from "@/types/database";
+import { compressImage } from "@/lib/imageUtils";
 import { Plus, Edit, Trash2, Boxes, X, Upload, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -40,12 +41,19 @@ export default function AdminPacks() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const path = `packs/${Date.now()}.${file.name.split(".").pop()}`;
-    const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
-    if (error) { toast.error("Erreur upload"); setUploading(false); return; }
-    setForm((f) => ({ ...f, image_url: path }));
-    toast.success("Image uploadée !");
-    setUploading(false);
+    try {
+      const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+      const path = `packs/${Date.now()}.webp`;
+      const { error } = await supabase.storage.from("product-images").upload(path, blob, { contentType: "image/webp", upsert: true });
+      if (error) throw error;
+      setForm((f) => ({ ...f, image_url: path }));
+      const sizeKB = Math.round(blob.size / 1024);
+      toast.success(`Image compressée (${sizeKB} Ko) et uploadée !`);
+    } catch {
+      toast.error("Erreur upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {

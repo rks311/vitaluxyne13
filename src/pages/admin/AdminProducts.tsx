@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
+import { compressImage } from "@/lib/imageUtils";
 import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -96,11 +97,23 @@ export default function AdminProducts() {
     if (!file) return;
     setUploading(true);
     try {
-      const path = `products/${Date.now()}.${file.name.split(".").pop()}`;
-      const { error } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type, upsert: true });
-      if (error) throw error;
-      setForm((f) => ({ ...f, image_url: path }));
-      toast.success("Image uploadée !");
+      // Compress & convert to WebP client-side (max 1200px, <300KB)
+      const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+      const mainPath = `products/${Date.now()}.webp`;
+
+      // Also create thumbnail (400px)
+      const { blob: thumbBlob } = await compressImage(file, { maxWidth: 400, quality: 0.7, format: "webp" });
+      const thumbPath = `products/${Date.now()}_thumb.webp`;
+
+      // Upload both in parallel
+      const [mainRes, thumbRes] = await Promise.all([
+        supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true }),
+        supabase.storage.from("product-images").upload(thumbPath, thumbBlob, { contentType: "image/webp", upsert: true }),
+      ]);
+      if (mainRes.error) throw mainRes.error;
+      setForm((f) => ({ ...f, image_url: mainPath }));
+      const sizeKB = Math.round(blob.size / 1024);
+      toast.success(`Image compressée (${sizeKB} Ko) et uploadée !`);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de l'upload");
@@ -272,7 +285,7 @@ export default function AdminProducts() {
                     {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
                     {uploading ? "Upload..." : "📸 Choisir image"}
                   </button>
-                  <p className="text-[10px] text-muted-foreground mt-1">PNG/JPG recommandé, fond transparent idéal</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
               </div>
