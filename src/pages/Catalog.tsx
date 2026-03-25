@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -22,7 +22,7 @@ const categoryList = [
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "popular";
 
-export default function Catalog() {
+const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -135,4 +135,6 @@ export default function Catalog() {
       </div>
     </div>
   );
-}
+});
+
+export default Catalog;
