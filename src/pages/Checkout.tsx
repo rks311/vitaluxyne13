@@ -37,29 +37,32 @@ export default function Checkout() {
     setSubmitting(true);
     trackInitiateCheckout(grandTotal, items.length);
     try {
+      const orderId = crypto.randomUUID();
+      const orderNumber = `CMD-WEB-${Date.now().toString().slice(-8)}`;
       const phone = form.phone.startsWith("0") ? form.phone : `0${form.phone}`;
-      const { data: order, error } = await supabase.from("orders").insert({
-        order_number: "PENDING", client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
+      const { error } = await supabase.from("orders").insert({
+        id: orderId,
+        order_number: orderNumber, client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
         wilaya: form.wilaya, commune: form.commune.trim().slice(0, 100), address: form.address.trim().slice(0, 200),
         delivery_type: selectedDelivery?.type || "domicile", delivery_fee: deliveryFee,
         service_livraison: form.delivery, subtotal: total, total: grandTotal,
         notes: form.notes.trim().slice(0, 300) || null, status: "En préparation",
-      }).select("id, order_number").single();
+      });
 
       if (error) throw error;
 
-      const orderItems = items.map(item => ({ order_id: order.id, product_name: item.name, flavor: item.flavor, weight: item.weight, quantity: item.quantity, unit_price: item.price, total_price: item.price * item.quantity }));
+      const orderItems = items.map(item => ({ order_id: orderId, product_name: item.name, flavor: item.flavor, weight: item.weight, quantity: item.quantity, unit_price: item.price, total_price: item.price * item.quantity }));
       await supabase.from("order_items").insert(orderItems);
       await Promise.all(items.map(item => supabase.rpc("decrement_stock", { p_product_id: item.productId, p_quantity: item.quantity })));
       await supabase.from("clients").upsert({ name: form.name.trim().slice(0, 100), phone: phone.slice(0, 15), wilaya: form.wilaya }, { onConflict: "phone" });
 
-      setOrderResult({ number: order.order_number, total: grandTotal });
-      trackPurchase(grandTotal, order.order_number);
+      setOrderResult({ number: orderNumber, total: grandTotal });
+      trackPurchase(grandTotal, orderNumber);
       clearCart();
       setStep(4);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Erreur lors de l'envoi.");
+      toast.error(err?.message || "Erreur lors de l'envoi.");
     } finally {
       setSubmitting(false);
     }
