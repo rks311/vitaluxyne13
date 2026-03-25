@@ -285,7 +285,7 @@ export default function AdminProducts() {
                     {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
                     {uploading ? "Upload..." : "📸 Choisir image"}
                   </button>
-                  <p className="text-[10px] text-muted-foreground mt-1">PNG/JPG recommandé, fond transparent idéal</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
               </div>
