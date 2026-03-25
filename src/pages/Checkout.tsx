@@ -39,7 +39,7 @@ export default function Checkout() {
     try {
       const phone = form.phone.startsWith("0") ? form.phone : `0${form.phone}`;
       const { data: order, error } = await supabase.from("orders").insert({
-        order_number: "TEMP", client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
+        order_number: "PENDING", client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
         wilaya: form.wilaya, commune: form.commune.trim().slice(0, 100), address: form.address.trim().slice(0, 200),
         delivery_type: selectedDelivery?.type || "domicile", delivery_fee: deliveryFee,
         service_livraison: form.delivery, subtotal: total, total: grandTotal,
