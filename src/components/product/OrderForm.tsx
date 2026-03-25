@@ -49,10 +49,13 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
     trackInitiateCheckout(total, form.qty);
     setLoading(true);
     try {
+      const orderId = crypto.randomUUID();
+      const orderNumber = `CMD-WEB-${Date.now().toString().slice(-8)}`;
       const phone = form.phone.trim().startsWith("0") ? form.phone.trim() : `0${form.phone.trim()}`;
 
-      const { data: order, error: orderError } = await supabase.from("orders").insert({
-        order_number: "TEMP",
+      const { error: orderError } = await supabase.from("orders").insert({
+        id: orderId,
+        order_number: orderNumber,
         client_name: form.name.trim().slice(0, 100),
         client_phone: phone.slice(0, 15),
         wilaya: form.wilaya,
@@ -65,12 +68,12 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
         total,
         notes: form.comment.trim().slice(0, 500) || null,
         status: "En préparation",
-      }).select("id, order_number").single();
+      });
 
       if (orderError) throw orderError;
 
       await supabase.from("order_items").insert({
-        order_id: order.id,
+        order_id: orderId,
         product_name: product.name,
         quantity: form.qty,
         unit_price: product.price,
@@ -85,11 +88,11 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
 
       await supabase.rpc("decrement_stock", { p_product_id: product.id, p_quantity: form.qty });
 
-      setOrderNumber(order.order_number);
-      trackPurchase(total, order.order_number);
+      setOrderNumber(orderNumber);
+      trackPurchase(total, orderNumber);
       setStep("success");
     } catch (err: any) {
-      toast.error("Erreur lors de l'envoi. Réessayez.");
+      toast.error(err?.message || "Erreur lors de l'envoi. Réessayez.");
       console.error(err);
     } finally {
       setLoading(false);
