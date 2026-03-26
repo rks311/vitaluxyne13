@@ -11,7 +11,7 @@ const defaultProduct = {
   description: "", usage_instructions: "", conseils: "",
   flavors: [] as string[], weights: [] as string[],
   objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false,
-  image_url: null as string | null, stock_qty: 0,
+  image_url: null as string | null, stock_qty: 0, gallery: [] as string[],
 };
 
 const categoryOptions = [
@@ -85,6 +85,7 @@ export default function AdminProducts() {
       objectives: p.objectives || [], in_stock: p.in_stock ?? true,
       is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false,
       image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0,
+      gallery: (p as any).gallery || [],
     });
     setFlavorsInput((p.flavors || []).join(", "));
     setWeightsInput((p.weights || []).join(", "));
@@ -97,28 +98,43 @@ export default function AdminProducts() {
     if (!file) return;
     setUploading(true);
     try {
-      // Compress & convert to WebP client-side (max 1200px, <300KB)
       const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
       const mainPath = `products/${Date.now()}.webp`;
-
-      // Also create thumbnail (400px)
-      const { blob: thumbBlob } = await compressImage(file, { maxWidth: 400, quality: 0.7, format: "webp" });
-      const thumbPath = `products/${Date.now()}_thumb.webp`;
-
-      // Upload both in parallel
-      const [mainRes, thumbRes] = await Promise.all([
-        supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true }),
-        supabase.storage.from("product-images").upload(thumbPath, thumbBlob, { contentType: "image/webp", upsert: true }),
-      ]);
-      if (mainRes.error) throw mainRes.error;
+      const { error } = await supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true });
+      if (error) throw error;
       setForm((f) => ({ ...f, image_url: mainPath }));
       const sizeKB = Math.round(blob.size / 1024);
-      toast.success(`Image compressée (${sizeKB} Ko) et uploadée !`);
+      toast.success(`Image principale compressée (${sizeKB} Ko) !`);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de l'upload");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      const uploads = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+          const path = `products/${Date.now()}_${Math.random().toString(36).slice(2, 6)}.webp`;
+          const { error } = await supabase.storage.from("product-images").upload(path, blob, { contentType: "image/webp", upsert: true });
+          if (error) throw error;
+          return path;
+        })
+      );
+      setForm((f) => ({ ...f, gallery: [...f.gallery, ...uploads] }));
+      toast.success(`${uploads.length} photo(s) ajoutée(s) à la galerie !`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de l'upload galerie");
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
     }
   };
 
@@ -136,6 +152,7 @@ export default function AdminProducts() {
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
       in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo,
       image_url: form.image_url, stock_qty: form.stock_qty,
+      gallery: form.gallery,
     };
 
     if (editing) {
