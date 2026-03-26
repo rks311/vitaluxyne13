@@ -25,6 +25,7 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
