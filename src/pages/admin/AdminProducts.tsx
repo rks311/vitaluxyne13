@@ -289,20 +289,42 @@ export default function AdminProducts() {
               )}
 
               {/* Image upload */}
-              <div className="flex items-center gap-3">
-                {form.image_url && (
-                  <div className="w-20 h-20 rounded-xl overflow-hidden border border-border bg-secondary/30">
-                    <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  {form.image_url && (
+                    <div className="w-20 h-20 rounded-xl overflow-hidden border border-border bg-secondary/30">
+                      <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
+                    </div>
+                  )}
+                  <div>
+                    <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="h-8 px-3 rounded-lg bg-secondary text-xs flex items-center gap-1.5 hover:bg-muted transition-colors">
+                      {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      {uploading ? "Upload..." : "📸 Image principale"}
+                    </button>
+                    <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
                   </div>
-                )}
-                <div>
-                  <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-8 px-3 rounded-lg bg-secondary text-xs flex items-center gap-1.5 hover:bg-muted transition-colors">
-                    {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                    {uploading ? "Upload..." : "📸 Choisir image"}
-                  </button>
-                  <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
+                  <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                 </div>
-                <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+
+                {/* Gallery */}
+                <div>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">📷 Galerie photos ({form.gallery.length})</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {form.gallery.map((img, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border bg-secondary/30 group">
+                        <img src={getStorageUrl(img)} alt="" className="w-full h-full object-contain p-0.5" />
+                        <button type="button" onClick={() => setForm(f => ({ ...f, gallery: f.gallery.filter((_, i) => i !== idx) }))} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <X size={14} className="text-white" />
+                        </button>
+                      </div>
+                    ))}
+                    <label className="w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center cursor-pointer transition-colors">
+                      <Plus size={16} className="text-muted-foreground" />
+                      <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+                    </label>
+                  </div>
+                  <p className="text-[9px] text-muted-foreground">Ajoutez des photos (dos, ingrédients, etc.)</p>
+                </div>
               </div>
 
               {/* Basic info */}
