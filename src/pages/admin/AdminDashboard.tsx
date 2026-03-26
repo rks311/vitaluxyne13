@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/types/database";
-import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, Wallet, PiggyBank, RotateCcw } from "lucide-react";
+import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, RotateCcw } from "lucide-react";
 import { exportDashboardPDF, exportDashboardExcel } from "@/lib/exportUtils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     revenue: 0, orders: 0, products: 0, clients: 0,
     pendingOrders: 0, avgOrderValue: 0, deliveredOrders: 0, confirmedOrders: 0,
-    returnOrders: 0, totalCost: 0, netProfit: 0, profitMargin: 0,
+    returnOrders: 0,
   });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
@@ -31,23 +31,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const load = async () => {
-      const [ordersRes, productsRes, clientsRes, orderItemsRes] = await Promise.all([
+      const [ordersRes, productsRes, clientsRes] = await Promise.all([
         supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("products").select("id, name, category, price, cost_price, stock_qty, image_url"),
+        supabase.from("products").select("id, name, category, price, stock_qty, image_url"),
         supabase.from("clients").select("id"),
-        supabase.from("order_items").select("product_name, quantity, total_price, unit_price, order_id"),
       ]);
 
       const orders = ordersRes.data || [];
       const products = productsRes.data || [];
-      const items = orderItemsRes.data || [];
 
-      // Build order status map
-      const orderStatusMap: Record<string, string> = {};
-      orders.forEach(o => { orderStatusMap[o.id] = o.status; });
-
-      // Revenue = subtotal (NOT total) of Confirmée + Livrée orders, minus delivery fees
-      // We exclude delivery fees because they don't go to the admin
+      // Revenue = subtotal of Confirmée + Livrée orders (excluding delivery fees)
       const revenueOrders = orders.filter(o => o.status === "Livrée" || o.status === "Confirmée");
       const returnOrders = orders.filter(o => o.status === "Retour");
       
@@ -61,34 +54,10 @@ export default function AdminDashboard() {
       const returnCount = returnOrders.length;
       const avgOrderValue = orders.length > 0 ? Math.round(orders.reduce((s, o) => s + o.total, 0) / orders.length) : 0;
 
-      // Build product cost map
-      const costMap: Record<string, number> = {};
-      products.forEach(p => { costMap[p.name] = (p as any).cost_price || 0; });
-
-      // Calculate cost only for revenue-generating orders
-      const revenueOrderIds = new Set(revenueOrders.map(o => o.id));
-      const returnOrderIds = new Set(returnOrders.map(o => o.id));
-
-      let totalCost = 0;
-      items.forEach(item => {
-        if (revenueOrderIds.has(item.order_id)) {
-          const costPerUnit = costMap[item.product_name] || 0;
-          totalCost += costPerUnit * item.quantity;
-        }
-        if (returnOrderIds.has(item.order_id)) {
-          const costPerUnit = costMap[item.product_name] || 0;
-          totalCost -= costPerUnit * item.quantity;
-        }
-      });
-
-      const netProfit = revenue - Math.max(0, totalCost);
-      const profitMargin = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
-
       setStats({
         revenue, orders: orders.length, products: products.length,
         clients: (clientsRes.data || []).length, pendingOrders, avgOrderValue,
         deliveredOrders, confirmedOrders, returnOrders: returnCount,
-        totalCost: Math.max(0, totalCost), netProfit, profitMargin,
       });
       setRecentOrders(orders.slice(0, 8));
 
