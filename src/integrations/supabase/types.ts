@@ -228,6 +228,7 @@ export type Database = {
           created_at: string
           description: string | null
           flavors: string[] | null
+          gallery: string[] | null
           id: string
           image_url: string | null
           in_stock: boolean | null
@@ -253,6 +254,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           flavors?: string[] | null
+          gallery?: string[] | null
           id?: string
           image_url?: string | null
           in_stock?: boolean | null
@@ -278,6 +280,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           flavors?: string[] | null
+          gallery?: string[] | null
           id?: string
           image_url?: string | null
           in_stock?: boolean | null
@@ -352,6 +355,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           flavors: string[] | null
+          gallery: string[] | null
           id: string | null
           image_url: string | null
           in_stock: boolean | null
@@ -375,6 +379,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           flavors?: string[] | null
+          gallery?: string[] | null
           id?: string | null
           image_url?: string | null
           in_stock?: boolean | null
@@ -398,6 +403,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           flavors?: string[] | null
+          gallery?: string[] | null
           id?: string | null
           image_url?: string | null
           in_stock?: boolean | null
