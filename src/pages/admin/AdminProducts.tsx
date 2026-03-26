@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const defaultProduct = {
   name: "", brand: "", category: "immunite", price: 0, old_price: null as number | null,
-  cost_price: 0, description: "", usage_instructions: "", conseils: "",
+  description: "", usage_instructions: "", conseils: "",
   flavors: [] as string[], weights: [] as string[],
   objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false,
   image_url: null as string | null, stock_qty: 0,
@@ -77,7 +77,7 @@ export default function AdminProducts() {
     setEditing(p);
     setForm({
       name: p.name, brand: p.brand, category: p.category, price: p.price,
-      old_price: p.old_price, cost_price: (p as any).cost_price ?? 0,
+      old_price: p.old_price,
       description: p.description || "",
       usage_instructions: (p as any).usage_instructions || "",
       conseils: (p as any).conseils || "",
@@ -127,7 +127,7 @@ export default function AdminProducts() {
     setSaving(true);
     const data: any = {
       name: form.name, brand: form.brand, category: form.category, price: form.price,
-      old_price: form.old_price || null, cost_price: form.cost_price || 0,
+      old_price: form.old_price || null,
       description: form.description || null,
       usage_instructions: form.usage_instructions || null,
       conseils: form.conseils || null,
