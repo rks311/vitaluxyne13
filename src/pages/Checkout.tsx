@@ -59,7 +59,7 @@ export default function Checkout() {
       const { data: orderData } = await supabase.from("orders").select("order_number").eq("id", orderId).maybeSingle();
       const finalOrderNumber = orderData?.order_number || orderId.slice(0, 8);
       setOrderResult({ number: finalOrderNumber, total: grandTotal });
-      trackPurchase(grandTotal, orderNumber);
+      trackPurchase(grandTotal, finalOrderNumber);
       clearCart();
       setStep(4);
     } catch (err: any) {
