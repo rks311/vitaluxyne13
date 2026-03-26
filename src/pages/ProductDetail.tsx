@@ -30,6 +30,7 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setSelectedImageIdx(0);
       const { data } = await supabase.from("products").select("*").eq("id", id!).single();
       setProduct(data);
       if (data) {
