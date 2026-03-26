@@ -306,14 +306,9 @@ export default function AdminProducts() {
               {/* Pricing */}
               <div className="bg-secondary/50 rounded-xl p-3 space-y-3">
                 <p className="text-xs font-heading font-bold">💰 Tarification</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <FormField label="Prix d'achat" value={form.cost_price || ""} onChange={v => setForm(f => ({ ...f, cost_price: +v }))} type="number" />
+                <div className="grid grid-cols-2 gap-2">
                   <FormField label="Prix de vente *" value={form.price || ""} onChange={v => setForm(f => ({ ...f, price: +v }))} type="number" />
                   <FormField label="Ancien prix" value={form.old_price || ""} onChange={v => setForm(f => ({ ...f, old_price: v ? +v : null }))} type="number" placeholder="Facultatif" />
-                </div>
-                <div className="flex items-center gap-4 pt-2 border-t border-border/50 text-xs">
-                  <span className="text-muted-foreground">Bénéfice: <strong className={profit > 0 ? 'text-emerald-500' : 'text-red-400'}>{formatPrice(profit)}</strong></span>
-                  <span className="text-muted-foreground">Marge: <strong className={margin > 20 ? 'text-emerald-500' : 'text-amber-500'}>{margin}%</strong></span>
                 </div>
               </div>
 
@@ -363,8 +358,6 @@ export default function AdminProducts() {
       {viewMode === "grid" ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {filtered.map((p) => {
-            const costPrice = (p as any).cost_price || 0;
-            const unitProfit = p.price - costPrice;
             return (
               <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/20 transition-all group">
                 <div className="aspect-square bg-secondary/30 relative overflow-hidden">
@@ -377,7 +370,6 @@ export default function AdminProducts() {
                   <p className="text-[10px] text-muted-foreground">{p.brand}</p>
                   <div className="flex items-center justify-between mt-1.5">
                     <span className="font-heading font-bold text-sm text-primary">{formatPrice(p.price)}</span>
-                    <span className={`text-[10px] font-bold ${unitProfit > 0 ? 'text-emerald-400' : 'text-red-400'}`}>+{formatPrice(unitProfit)}</span>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
@@ -404,7 +396,6 @@ export default function AdminProducts() {
                   <th className="text-left px-3 py-2.5 font-medium">Produit</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden md:table-cell">Marque</th>
                   <th className="text-left px-2 py-2.5 font-medium">Prix</th>
-                  <th className="text-left px-2 py-2.5 font-medium hidden lg:table-cell">Bénéfice</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden md:table-cell">Stock</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden lg:table-cell">Cat.</th>
                   <th className="text-right px-3 py-2.5 font-medium">Actions</th>
@@ -412,9 +403,7 @@ export default function AdminProducts() {
               </thead>
               <tbody>
                 {filtered.map((p) => {
-                  const costPrice = (p as any).cost_price || 0;
-                  const unitProfit = p.price - costPrice;
-                  const unitMargin = p.price > 0 ? Math.round((unitProfit / p.price) * 100) : 0;
+                  const catLabel = categoryOptions.find(c => c.value === p.category)?.label || p.category;
                   const catLabel = categoryOptions.find(c => c.value === p.category)?.label || p.category;
                   return (
                     <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
@@ -436,10 +425,6 @@ export default function AdminProducts() {
                       <td className="px-2 py-2.5">
                         <span className="font-heading font-bold text-xs text-primary">{formatPrice(p.price)}</span>
                         {p.old_price && <span className="text-[9px] text-muted-foreground line-through ms-1 block">{formatPrice(p.old_price)}</span>}
-                      </td>
-                      <td className="px-2 py-2.5 hidden lg:table-cell">
-                        <span className={`text-xs font-bold ${unitProfit > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{formatPrice(unitProfit)}</span>
-                        <span className="text-[9px] text-muted-foreground ms-1">({unitMargin}%)</span>
                       </td>
                       <td className="px-2 py-2.5 hidden md:table-cell">
                         <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>

@@ -292,7 +292,6 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-right shrink-0">
                       <span className="text-[10px] font-heading font-bold block">{formatPrice(p.revenue)}</span>
-                      <span className="text-[9px] font-medium text-emerald-400">+{formatPrice(p.profit)} net</span>
                     </div>
                   </div>
                 );
