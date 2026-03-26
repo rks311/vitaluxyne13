@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       });
       const dayData = Object.entries(dayMap).map(([date, data]) => {
         const d = new Date(date);
-        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue, profit: Math.round(data.revenue * (profitMargin / 100)) };
+        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue };
       });
       setOrdersByDay(dayData);
 
@@ -96,16 +96,16 @@ export default function AdminDashboard() {
       products.forEach(p => { catCount[p.category] = (catCount[p.category] || 0) + 1; });
       setCategoryData(Object.entries(catCount).map(([name, value]) => ({ name, value })));
 
-      // Top products
-      const productMap: Record<string, { sold: number; revenue: number; profit: number }> = {};
+      // Top products - use order_items to calculate
+      const orderItemsRes = await supabase.from("order_items").select("product_name, quantity, total_price, order_id");
+      const items = orderItemsRes.data || [];
+      const revenueOrderIds = new Set(revenueOrders.map(o => o.id));
+      const productMap: Record<string, { sold: number; revenue: number }> = {};
       items.forEach((item) => {
-        // Only count items from revenue orders
         if (!revenueOrderIds.has(item.order_id)) return;
-        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0, profit: 0 };
+        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0 };
         productMap[item.product_name].sold += item.quantity;
         productMap[item.product_name].revenue += item.total_price;
-        const costPerUnit = costMap[item.product_name] || 0;
-        productMap[item.product_name].profit += (item.unit_price - costPerUnit) * item.quantity;
       });
       setTopProducts(Object.entries(productMap).map(([name, data]) => ({ name, ...data })).sort((a, b) => b.revenue - a.revenue).slice(0, 5));
     };
@@ -132,7 +132,6 @@ export default function AdminDashboard() {
 
   const statCards = [
     { label: "Chiffre d'affaires", value: formatPrice(stats.revenue), icon: DollarSign, sub: `${stats.deliveredOrders} livrées · ${stats.confirmedOrders} confirmées`, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-400" },
-    { label: "Bénéfice Net", value: formatPrice(stats.netProfit), icon: PiggyBank, sub: `Marge: ${stats.profitMargin}% (hors livraison)`, color: "from-green-500/20 to-green-500/5", iconColor: "text-green-400" },
     { label: "Commandes", value: stats.orders.toString(), icon: ShoppingCart, sub: `${stats.pendingOrders} en attente`, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-400" },
     { label: "Retours", value: stats.returnOrders.toString(), icon: RotateCcw, sub: "Commandes retournées", color: "from-orange-500/20 to-orange-500/5", iconColor: "text-orange-400" },
     { label: "Produits", value: stats.products.toString(), icon: Package, sub: "Dans le catalogue", color: "from-purple-500/20 to-purple-500/5", iconColor: "text-purple-400" },
@@ -146,7 +145,7 @@ export default function AdminDashboard() {
           <p className="text-xs font-heading font-bold mb-1">{label}</p>
           {payload.map((p: any) => (
             <p key={p.dataKey} className="text-xs text-muted-foreground">
-              {p.dataKey === 'revenue' || p.dataKey === 'profit' ? formatPrice(p.value) : `${p.value} commande(s)`}
+              {p.dataKey === 'revenue' ? formatPrice(p.value) : `${p.value} commande(s)`}
             </p>
           ))}
         </div>
@@ -195,10 +194,9 @@ export default function AdminDashboard() {
         {/* Revenue chart */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-heading font-bold text-sm">Revenus & Bénéfice (7j)</h3>
+            <h3 className="font-heading font-bold text-sm">Chiffre d'affaires (7j)</h3>
             <div className="flex gap-3 text-[10px]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Revenus</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Bénéfice</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> CA</span>
             </div>
           </div>
           <div className="h-[200px]">
@@ -209,16 +207,11 @@ export default function AdminDashboard() {
                     <stop offset="5%" stopColor="hsl(217,70%,55%)" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="hsl(217,70%,55%)" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(142,60%,45%)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(142,60%,45%)" stopOpacity={0}/>
-                  </linearGradient>
                 </defs>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(0,0%,52%)' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(0,0%,52%)' }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="revenue" stroke="hsl(217,70%,55%)" fill="url(#colorRevenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="profit" stroke="hsl(142,60%,45%)" fill="url(#colorProfit)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -261,34 +254,6 @@ export default function AdminDashboard() {
         </motion.div>
       </div>
 
-      {/* Profit banner */}
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="bg-gradient-to-r from-emerald-500/10 via-card to-card border border-emerald-500/20 rounded-xl p-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <PiggyBank size={20} className="text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Marge nette (hors livraison)</p>
-              <p className="font-heading text-2xl font-bold text-emerald-400">{stats.profitMargin}%</p>
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Revenus</p>
-              <p className="font-heading font-bold text-sm">{formatPrice(stats.revenue)}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Coûts</p>
-              <p className="font-heading font-bold text-sm text-red-400">{formatPrice(stats.totalCost)}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Bénéfice</p>
-              <p className="font-heading font-bold text-sm text-emerald-400">{formatPrice(stats.netProfit)}</p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Middle row */}
       <div className="grid lg:grid-cols-3 gap-4">
