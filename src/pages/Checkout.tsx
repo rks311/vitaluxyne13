@@ -38,11 +38,10 @@ export default function Checkout() {
     trackInitiateCheckout(grandTotal, items.length);
     try {
       const orderId = crypto.randomUUID();
-      const orderNumber = `CMD-WEB-${Date.now().toString().slice(-8)}`;
       const phone = form.phone.startsWith("0") ? form.phone : `0${form.phone}`;
       const { error } = await supabase.from("orders").insert({
         id: orderId,
-        order_number: orderNumber, client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
+        order_number: "TEMP", client_name: form.name.trim().slice(0, 100), client_phone: phone.slice(0, 15),
         wilaya: form.wilaya, commune: form.commune.trim().slice(0, 100), address: form.address.trim().slice(0, 200),
         delivery_type: selectedDelivery?.type || "domicile", delivery_fee: deliveryFee,
         service_livraison: form.delivery, subtotal: total, total: grandTotal,
@@ -56,7 +55,10 @@ export default function Checkout() {
       await Promise.all(items.map(item => supabase.rpc("decrement_stock", { p_product_id: item.productId, p_quantity: item.quantity })));
       await supabase.from("clients").upsert({ name: form.name.trim().slice(0, 100), phone: phone.slice(0, 15), wilaya: form.wilaya }, { onConflict: "phone" });
 
-      setOrderResult({ number: orderNumber, total: grandTotal });
+      // Fetch real order number from DB trigger
+      const { data: orderData } = await supabase.from("orders").select("order_number").eq("id", orderId).maybeSingle();
+      const finalOrderNumber = orderData?.order_number || orderId.slice(0, 8);
+      setOrderResult({ number: finalOrderNumber, total: grandTotal });
       trackPurchase(grandTotal, orderNumber);
       clearCart();
       setStep(4);
