@@ -172,8 +172,6 @@ export default function AdminProducts() {
     loadProducts();
   };
 
-  const profit = form.price - (form.cost_price || 0);
-  const margin = form.price > 0 ? Math.round((profit / form.price) * 100) : 0;
 
   return (
     <div className="space-y-4">
