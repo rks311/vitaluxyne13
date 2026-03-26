@@ -404,7 +404,6 @@ export default function AdminProducts() {
               <tbody>
                 {filtered.map((p) => {
                   const catLabel = categoryOptions.find(c => c.value === p.category)?.label || p.category;
-                  const catLabel = categoryOptions.find(c => c.value === p.category)?.label || p.category;
                   return (
                     <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                       <td className="px-3 py-2.5">
