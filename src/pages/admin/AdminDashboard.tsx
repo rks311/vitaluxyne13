@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/types/database";
-import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, Wallet, PiggyBank, RotateCcw } from "lucide-react";
+import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, RotateCcw } from "lucide-react";
 import { exportDashboardPDF, exportDashboardExcel } from "@/lib/exportUtils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     revenue: 0, orders: 0, products: 0, clients: 0,
     pendingOrders: 0, avgOrderValue: 0, deliveredOrders: 0, confirmedOrders: 0,
-    returnOrders: 0, totalCost: 0, netProfit: 0, profitMargin: 0,
+    returnOrders: 0,
   });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
@@ -31,23 +31,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const load = async () => {
-      const [ordersRes, productsRes, clientsRes, orderItemsRes] = await Promise.all([
+      const [ordersRes, productsRes, clientsRes] = await Promise.all([
         supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("products").select("id, name, category, price, cost_price, stock_qty, image_url"),
+        supabase.from("products").select("id, name, category, price, stock_qty, image_url"),
         supabase.from("clients").select("id"),
-        supabase.from("order_items").select("product_name, quantity, total_price, unit_price, order_id"),
       ]);
 
       const orders = ordersRes.data || [];
       const products = productsRes.data || [];
-      const items = orderItemsRes.data || [];
 
-      // Build order status map
-      const orderStatusMap: Record<string, string> = {};
-      orders.forEach(o => { orderStatusMap[o.id] = o.status; });
-
-      // Revenue = subtotal (NOT total) of Confirmée + Livrée orders, minus delivery fees
-      // We exclude delivery fees because they don't go to the admin
+      // Revenue = subtotal of Confirmée + Livrée orders (excluding delivery fees)
       const revenueOrders = orders.filter(o => o.status === "Livrée" || o.status === "Confirmée");
       const returnOrders = orders.filter(o => o.status === "Retour");
       
@@ -61,34 +54,10 @@ export default function AdminDashboard() {
       const returnCount = returnOrders.length;
       const avgOrderValue = orders.length > 0 ? Math.round(orders.reduce((s, o) => s + o.total, 0) / orders.length) : 0;
 
-      // Build product cost map
-      const costMap: Record<string, number> = {};
-      products.forEach(p => { costMap[p.name] = (p as any).cost_price || 0; });
-
-      // Calculate cost only for revenue-generating orders
-      const revenueOrderIds = new Set(revenueOrders.map(o => o.id));
-      const returnOrderIds = new Set(returnOrders.map(o => o.id));
-
-      let totalCost = 0;
-      items.forEach(item => {
-        if (revenueOrderIds.has(item.order_id)) {
-          const costPerUnit = costMap[item.product_name] || 0;
-          totalCost += costPerUnit * item.quantity;
-        }
-        if (returnOrderIds.has(item.order_id)) {
-          const costPerUnit = costMap[item.product_name] || 0;
-          totalCost -= costPerUnit * item.quantity;
-        }
-      });
-
-      const netProfit = revenue - Math.max(0, totalCost);
-      const profitMargin = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
-
       setStats({
         revenue, orders: orders.length, products: products.length,
         clients: (clientsRes.data || []).length, pendingOrders, avgOrderValue,
         deliveredOrders, confirmedOrders, returnOrders: returnCount,
-        totalCost: Math.max(0, totalCost), netProfit, profitMargin,
       });
       setRecentOrders(orders.slice(0, 8));
 
@@ -113,7 +82,7 @@ export default function AdminDashboard() {
       });
       const dayData = Object.entries(dayMap).map(([date, data]) => {
         const d = new Date(date);
-        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue, profit: Math.round(data.revenue * (profitMargin / 100)) };
+        return { name: dayNames[d.getDay()], commandes: data.count, revenue: data.revenue };
       });
       setOrdersByDay(dayData);
 
@@ -127,16 +96,16 @@ export default function AdminDashboard() {
       products.forEach(p => { catCount[p.category] = (catCount[p.category] || 0) + 1; });
       setCategoryData(Object.entries(catCount).map(([name, value]) => ({ name, value })));
 
-      // Top products
-      const productMap: Record<string, { sold: number; revenue: number; profit: number }> = {};
+      // Top products - use order_items to calculate
+      const orderItemsRes = await supabase.from("order_items").select("product_name, quantity, total_price, order_id");
+      const items = orderItemsRes.data || [];
+      const revenueOrderIds = new Set(revenueOrders.map(o => o.id));
+      const productMap: Record<string, { sold: number; revenue: number }> = {};
       items.forEach((item) => {
-        // Only count items from revenue orders
         if (!revenueOrderIds.has(item.order_id)) return;
-        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0, profit: 0 };
+        if (!productMap[item.product_name]) productMap[item.product_name] = { sold: 0, revenue: 0 };
         productMap[item.product_name].sold += item.quantity;
         productMap[item.product_name].revenue += item.total_price;
-        const costPerUnit = costMap[item.product_name] || 0;
-        productMap[item.product_name].profit += (item.unit_price - costPerUnit) * item.quantity;
       });
       setTopProducts(Object.entries(productMap).map(([name, data]) => ({ name, ...data })).sort((a, b) => b.revenue - a.revenue).slice(0, 5));
     };
@@ -163,7 +132,6 @@ export default function AdminDashboard() {
 
   const statCards = [
     { label: "Chiffre d'affaires", value: formatPrice(stats.revenue), icon: DollarSign, sub: `${stats.deliveredOrders} livrées · ${stats.confirmedOrders} confirmées`, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-400" },
-    { label: "Bénéfice Net", value: formatPrice(stats.netProfit), icon: PiggyBank, sub: `Marge: ${stats.profitMargin}% (hors livraison)`, color: "from-green-500/20 to-green-500/5", iconColor: "text-green-400" },
     { label: "Commandes", value: stats.orders.toString(), icon: ShoppingCart, sub: `${stats.pendingOrders} en attente`, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-400" },
     { label: "Retours", value: stats.returnOrders.toString(), icon: RotateCcw, sub: "Commandes retournées", color: "from-orange-500/20 to-orange-500/5", iconColor: "text-orange-400" },
     { label: "Produits", value: stats.products.toString(), icon: Package, sub: "Dans le catalogue", color: "from-purple-500/20 to-purple-500/5", iconColor: "text-purple-400" },
@@ -177,7 +145,7 @@ export default function AdminDashboard() {
           <p className="text-xs font-heading font-bold mb-1">{label}</p>
           {payload.map((p: any) => (
             <p key={p.dataKey} className="text-xs text-muted-foreground">
-              {p.dataKey === 'revenue' || p.dataKey === 'profit' ? formatPrice(p.value) : `${p.value} commande(s)`}
+              {p.dataKey === 'revenue' ? formatPrice(p.value) : `${p.value} commande(s)`}
             </p>
           ))}
         </div>
@@ -226,10 +194,9 @@ export default function AdminDashboard() {
         {/* Revenue chart */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-heading font-bold text-sm">Revenus & Bénéfice (7j)</h3>
+            <h3 className="font-heading font-bold text-sm">Chiffre d'affaires (7j)</h3>
             <div className="flex gap-3 text-[10px]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Revenus</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Bénéfice</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> CA</span>
             </div>
           </div>
           <div className="h-[200px]">
@@ -240,16 +207,11 @@ export default function AdminDashboard() {
                     <stop offset="5%" stopColor="hsl(217,70%,55%)" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="hsl(217,70%,55%)" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(142,60%,45%)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(142,60%,45%)" stopOpacity={0}/>
-                  </linearGradient>
                 </defs>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(0,0%,52%)' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(0,0%,52%)' }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="revenue" stroke="hsl(217,70%,55%)" fill="url(#colorRevenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="profit" stroke="hsl(142,60%,45%)" fill="url(#colorProfit)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -292,34 +254,6 @@ export default function AdminDashboard() {
         </motion.div>
       </div>
 
-      {/* Profit banner */}
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="bg-gradient-to-r from-emerald-500/10 via-card to-card border border-emerald-500/20 rounded-xl p-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <PiggyBank size={20} className="text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Marge nette (hors livraison)</p>
-              <p className="font-heading text-2xl font-bold text-emerald-400">{stats.profitMargin}%</p>
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Revenus</p>
-              <p className="font-heading font-bold text-sm">{formatPrice(stats.revenue)}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Coûts</p>
-              <p className="font-heading font-bold text-sm text-red-400">{formatPrice(stats.totalCost)}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground">Bénéfice</p>
-              <p className="font-heading font-bold text-sm text-emerald-400">{formatPrice(stats.netProfit)}</p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Middle row */}
       <div className="grid lg:grid-cols-3 gap-4">
@@ -358,7 +292,6 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-right shrink-0">
                       <span className="text-[10px] font-heading font-bold block">{formatPrice(p.revenue)}</span>
-                      <span className="text-[9px] font-medium text-emerald-400">+{formatPrice(p.profit)} net</span>
                     </div>
                   </div>
                 );

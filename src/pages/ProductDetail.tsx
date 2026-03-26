@@ -25,10 +25,12 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setSelectedImageIdx(0);
       const { data } = await supabase.from("products").select("*").eq("id", id!).single();
       setProduct(data);
       if (data) {
@@ -75,9 +77,38 @@ export default function ProductDetail() {
         </Link>
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-12">
-          {/* Image */}
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border">
-            <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover" />
+          {/* Image Gallery */}
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-3">
+            <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border">
+              <img
+                src={getStorageUrl(
+                  selectedImageIdx === 0
+                    ? product.image_url
+                    : ((product as any).gallery || [])[selectedImageIdx - 1]
+                )}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            {(() => {
+              const gallery: string[] = (product as any).gallery || [];
+              const allImages = [product.image_url, ...gallery].filter(Boolean);
+              if (allImages.length <= 1) return null;
+              return (
+                <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+                  {allImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImageIdx(idx)}
+                      className={`w-16 h-16 rounded-lg overflow-hidden border-2 shrink-0 transition-all ${selectedImageIdx === idx ? "border-primary" : "border-border hover:border-primary/40"}`}
+                    >
+                      <img src={getStorageUrl(img)} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </motion.div>
 
           {/* Info */}

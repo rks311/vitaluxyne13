@@ -8,10 +8,10 @@ import { toast } from "sonner";
 
 const defaultProduct = {
   name: "", brand: "", category: "immunite", price: 0, old_price: null as number | null,
-  cost_price: 0, description: "", usage_instructions: "", conseils: "",
+  description: "", usage_instructions: "", conseils: "",
   flavors: [] as string[], weights: [] as string[],
   objectives: [] as string[], in_stock: true, is_top_sale: false, is_promo: false,
-  image_url: null as string | null, stock_qty: 0,
+  image_url: null as string | null, stock_qty: 0, gallery: [] as string[],
 };
 
 const categoryOptions = [
@@ -77,7 +77,7 @@ export default function AdminProducts() {
     setEditing(p);
     setForm({
       name: p.name, brand: p.brand, category: p.category, price: p.price,
-      old_price: p.old_price, cost_price: (p as any).cost_price ?? 0,
+      old_price: p.old_price,
       description: p.description || "",
       usage_instructions: (p as any).usage_instructions || "",
       conseils: (p as any).conseils || "",
@@ -85,6 +85,7 @@ export default function AdminProducts() {
       objectives: p.objectives || [], in_stock: p.in_stock ?? true,
       is_top_sale: p.is_top_sale ?? false, is_promo: p.is_promo ?? false,
       image_url: p.image_url, stock_qty: (p as any).stock_qty ?? 0,
+      gallery: (p as any).gallery || [],
     });
     setFlavorsInput((p.flavors || []).join(", "));
     setWeightsInput((p.weights || []).join(", "));
@@ -97,23 +98,13 @@ export default function AdminProducts() {
     if (!file) return;
     setUploading(true);
     try {
-      // Compress & convert to WebP client-side (max 1200px, <300KB)
       const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
       const mainPath = `products/${Date.now()}.webp`;
-
-      // Also create thumbnail (400px)
-      const { blob: thumbBlob } = await compressImage(file, { maxWidth: 400, quality: 0.7, format: "webp" });
-      const thumbPath = `products/${Date.now()}_thumb.webp`;
-
-      // Upload both in parallel
-      const [mainRes, thumbRes] = await Promise.all([
-        supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true }),
-        supabase.storage.from("product-images").upload(thumbPath, thumbBlob, { contentType: "image/webp", upsert: true }),
-      ]);
-      if (mainRes.error) throw mainRes.error;
+      const { error } = await supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true });
+      if (error) throw error;
       setForm((f) => ({ ...f, image_url: mainPath }));
       const sizeKB = Math.round(blob.size / 1024);
-      toast.success(`Image compressée (${sizeKB} Ko) et uploadée !`);
+      toast.success(`Image principale compressée (${sizeKB} Ko) !`);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de l'upload");
@@ -122,12 +113,37 @@ export default function AdminProducts() {
     }
   };
 
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      const uploads = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+          const path = `products/${Date.now()}_${Math.random().toString(36).slice(2, 6)}.webp`;
+          const { error } = await supabase.storage.from("product-images").upload(path, blob, { contentType: "image/webp", upsert: true });
+          if (error) throw error;
+          return path;
+        })
+      );
+      setForm((f) => ({ ...f, gallery: [...f.gallery, ...uploads] }));
+      toast.success(`${uploads.length} photo(s) ajoutée(s) à la galerie !`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de l'upload galerie");
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
   const handleSave = async () => {
     if (!form.name || !form.brand || !form.price) { toast.error("Remplissez les champs requis"); return; }
     setSaving(true);
     const data: any = {
       name: form.name, brand: form.brand, category: form.category, price: form.price,
-      old_price: form.old_price || null, cost_price: form.cost_price || 0,
+      old_price: form.old_price || null,
       description: form.description || null,
       usage_instructions: form.usage_instructions || null,
       conseils: form.conseils || null,
@@ -136,6 +152,7 @@ export default function AdminProducts() {
       objectives: objectivesInput.split(",").map(s => s.trim()).filter(Boolean),
       in_stock: form.in_stock, is_top_sale: form.is_top_sale, is_promo: form.is_promo,
       image_url: form.image_url, stock_qty: form.stock_qty,
+      gallery: form.gallery,
     };
 
     if (editing) {
@@ -172,8 +189,6 @@ export default function AdminProducts() {
     loadProducts();
   };
 
-  const profit = form.price - (form.cost_price || 0);
-  const margin = form.price > 0 ? Math.round((profit / form.price) * 100) : 0;
 
   return (
     <div className="space-y-4">
@@ -274,20 +289,42 @@ export default function AdminProducts() {
               )}
 
               {/* Image upload */}
-              <div className="flex items-center gap-3">
-                {form.image_url && (
-                  <div className="w-20 h-20 rounded-xl overflow-hidden border border-border bg-secondary/30">
-                    <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  {form.image_url && (
+                    <div className="w-20 h-20 rounded-xl overflow-hidden border border-border bg-secondary/30">
+                      <img src={getStorageUrl(form.image_url)} alt="" className="w-full h-full object-contain p-1" />
+                    </div>
+                  )}
+                  <div>
+                    <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="h-8 px-3 rounded-lg bg-secondary text-xs flex items-center gap-1.5 hover:bg-muted transition-colors">
+                      {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      {uploading ? "Upload..." : "📸 Image principale"}
+                    </button>
+                    <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
                   </div>
-                )}
-                <div>
-                  <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-8 px-3 rounded-lg bg-secondary text-xs flex items-center gap-1.5 hover:bg-muted transition-colors">
-                    {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                    {uploading ? "Upload..." : "📸 Choisir image"}
-                  </button>
-                  <p className="text-[10px] text-muted-foreground mt-1">Auto-converti en WebP &lt; 300 Ko</p>
+                  <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                 </div>
-                <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+
+                {/* Gallery */}
+                <div>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">📷 Galerie photos ({form.gallery.length})</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {form.gallery.map((img, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border bg-secondary/30 group">
+                        <img src={getStorageUrl(img)} alt="" className="w-full h-full object-contain p-0.5" />
+                        <button type="button" onClick={() => setForm(f => ({ ...f, gallery: f.gallery.filter((_, i) => i !== idx) }))} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <X size={14} className="text-white" />
+                        </button>
+                      </div>
+                    ))}
+                    <label className="w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center cursor-pointer transition-colors">
+                      <Plus size={16} className="text-muted-foreground" />
+                      <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+                    </label>
+                  </div>
+                  <p className="text-[9px] text-muted-foreground">Ajoutez des photos (dos, ingrédients, etc.)</p>
+                </div>
               </div>
 
               {/* Basic info */}
@@ -306,14 +343,9 @@ export default function AdminProducts() {
               {/* Pricing */}
               <div className="bg-secondary/50 rounded-xl p-3 space-y-3">
                 <p className="text-xs font-heading font-bold">💰 Tarification</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <FormField label="Prix d'achat" value={form.cost_price || ""} onChange={v => setForm(f => ({ ...f, cost_price: +v }))} type="number" />
+                <div className="grid grid-cols-2 gap-2">
                   <FormField label="Prix de vente *" value={form.price || ""} onChange={v => setForm(f => ({ ...f, price: +v }))} type="number" />
                   <FormField label="Ancien prix" value={form.old_price || ""} onChange={v => setForm(f => ({ ...f, old_price: v ? +v : null }))} type="number" placeholder="Facultatif" />
-                </div>
-                <div className="flex items-center gap-4 pt-2 border-t border-border/50 text-xs">
-                  <span className="text-muted-foreground">Bénéfice: <strong className={profit > 0 ? 'text-emerald-500' : 'text-red-400'}>{formatPrice(profit)}</strong></span>
-                  <span className="text-muted-foreground">Marge: <strong className={margin > 20 ? 'text-emerald-500' : 'text-amber-500'}>{margin}%</strong></span>
                 </div>
               </div>
 
@@ -363,8 +395,6 @@ export default function AdminProducts() {
       {viewMode === "grid" ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {filtered.map((p) => {
-            const costPrice = (p as any).cost_price || 0;
-            const unitProfit = p.price - costPrice;
             return (
               <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/20 transition-all group">
                 <div className="aspect-square bg-secondary/30 relative overflow-hidden">
@@ -377,7 +407,6 @@ export default function AdminProducts() {
                   <p className="text-[10px] text-muted-foreground">{p.brand}</p>
                   <div className="flex items-center justify-between mt-1.5">
                     <span className="font-heading font-bold text-sm text-primary">{formatPrice(p.price)}</span>
-                    <span className={`text-[10px] font-bold ${unitProfit > 0 ? 'text-emerald-400' : 'text-red-400'}`}>+{formatPrice(unitProfit)}</span>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
@@ -404,7 +433,6 @@ export default function AdminProducts() {
                   <th className="text-left px-3 py-2.5 font-medium">Produit</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden md:table-cell">Marque</th>
                   <th className="text-left px-2 py-2.5 font-medium">Prix</th>
-                  <th className="text-left px-2 py-2.5 font-medium hidden lg:table-cell">Bénéfice</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden md:table-cell">Stock</th>
                   <th className="text-left px-2 py-2.5 font-medium hidden lg:table-cell">Cat.</th>
                   <th className="text-right px-3 py-2.5 font-medium">Actions</th>
@@ -412,9 +440,6 @@ export default function AdminProducts() {
               </thead>
               <tbody>
                 {filtered.map((p) => {
-                  const costPrice = (p as any).cost_price || 0;
-                  const unitProfit = p.price - costPrice;
-                  const unitMargin = p.price > 0 ? Math.round((unitProfit / p.price) * 100) : 0;
                   const catLabel = categoryOptions.find(c => c.value === p.category)?.label || p.category;
                   return (
                     <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
@@ -436,10 +461,6 @@ export default function AdminProducts() {
                       <td className="px-2 py-2.5">
                         <span className="font-heading font-bold text-xs text-primary">{formatPrice(p.price)}</span>
                         {p.old_price && <span className="text-[9px] text-muted-foreground line-through ms-1 block">{formatPrice(p.old_price)}</span>}
-                      </td>
-                      <td className="px-2 py-2.5 hidden lg:table-cell">
-                        <span className={`text-xs font-bold ${unitProfit > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{formatPrice(unitProfit)}</span>
-                        <span className="text-[9px] text-muted-foreground ms-1">({unitMargin}%)</span>
                       </td>
                       <td className="px-2 py-2.5 hidden md:table-cell">
                         <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
