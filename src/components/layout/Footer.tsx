@@ -1,17 +1,24 @@
 import { Phone, MapPin, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function Footer() {
   const navigate = useNavigate();
   const { t } = useLang();
+  const { data: settings } = useSiteSettings();
+
+  const storeName = settings?.store_name || "Vitaluxyne";
+  const phone = settings?.phone || "0555 12 34 56";
+  const email = settings?.email || "contact@vitaluxyne.com";
+  const address = settings?.address || "Alger, Algérie";
 
   return (
     <footer className="bg-primary text-primary-foreground" role="contentinfo">
       <div className="container py-8 md:py-10">
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
           <div className="col-span-2 md:col-span-1">
-            <h3 className="font-heading text-lg font-bold mb-2">Vitaluxyne</h3>
+            <h3 className="font-heading text-lg font-bold mb-2">{storeName}</h3>
             <p className="text-xs text-primary-foreground/60 leading-relaxed">{t("footer.desc")}</p>
           </div>
           <div>
@@ -33,9 +40,9 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Contact</h4>
             <ul className="space-y-1.5 text-xs text-primary-foreground/60">
-              <li className="flex items-center gap-1.5"><Phone size={12} aria-hidden="true" /> <a href="tel:+213555123456">0555 12 34 56</a></li>
-              <li className="flex items-center gap-1.5"><Mail size={12} aria-hidden="true" /> <a href="mailto:contact@vitaluxyne.com">contact@vitaluxyne.com</a></li>
-              <li className="flex items-center gap-1.5"><MapPin size={12} aria-hidden="true" /> Alger, Algérie</li>
+              <li className="flex items-center gap-1.5"><Phone size={12} aria-hidden="true" /> <a href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a></li>
+              <li className="flex items-center gap-1.5"><Mail size={12} aria-hidden="true" /> <a href={`mailto:${email}`}>{email}</a></li>
+              <li className="flex items-center gap-1.5"><MapPin size={12} aria-hidden="true" /> {address}</li>
             </ul>
           </div>
         </div>
