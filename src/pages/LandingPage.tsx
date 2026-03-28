@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Loader2, MessageCircle, Star, Truck, ShieldCheck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/product/OrderForm";
@@ -19,6 +20,9 @@ const landingTestimonials = [
 export default function LandingPage() {
   const { slug } = useParams();
   const { t } = useLang();
+  const { data: settings } = useSiteSettings();
+  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
+  const storeName = settings?.store_name || "Vitaluxyne";
   const [product, setProduct] = useState<DbProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [showOrderForm, setShowOrderForm] = useState(false);
@@ -61,7 +65,7 @@ export default function LandingPage() {
       {/* Minimal header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="container flex items-center justify-between h-14">
-          <Link to="/" className="font-heading text-lg font-bold text-primary">Vitaluxyne</Link>
+          <Link to="/" className="font-heading text-lg font-bold text-primary">{storeName}</Link>
           <Button onClick={scrollToOrder} size="sm" className="bg-primary text-primary-foreground rounded-full font-heading text-xs h-9 px-4">
             {t("landing.orderNow")}
           </Button>
@@ -112,7 +116,7 @@ export default function LandingPage() {
                 {t("landing.orderNow")}
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-8 font-heading text-base rounded-full border-[#25D366] text-[#25D366] hover:bg-[#25D366]/5">
-                <a href="https://wa.me/213555123456" target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={18} className="me-2" />
                   {t("landing.whatsapp")}
                 </a>
@@ -172,7 +176,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="py-6 text-center text-xs text-muted-foreground bg-background border-t border-border">
-        © 2026 Vitaluxyne. Tous droits réservés.
+        © {new Date().getFullYear()} {storeName}. Tous droits réservés.
       </footer>
 
       {/* Order Form */}

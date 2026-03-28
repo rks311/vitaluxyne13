@@ -56,21 +56,25 @@ function copyColisInfo(order: any) {
 // Stock management: adjust stock when order status changes
 async function adjustStock(orderItems: any[], direction: "decrement" | "increment") {
   for (const item of orderItems) {
-    // Try to find product by name match
-    const { data: products } = await supabase
-      .from("products")
-      .select("id, stock_qty")
-      .eq("name", item.product_name)
-      .limit(1);
+    let productId = item.product_id;
     
-    if (products && products.length > 0) {
-      const product = products[0];
-      const currentQty = product.stock_qty ?? 0;
+    // Fallback: find product by name if product_id is missing (old orders)
+    if (!productId) {
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, stock_qty")
+        .eq("name", item.product_name)
+        .limit(1);
+      if (products && products.length > 0) productId = products[0].id;
+    }
+
+    if (productId) {
+      const { data: prod } = await supabase.from("products").select("stock_qty").eq("id", productId).single();
+      const currentQty = prod?.stock_qty ?? 0;
       const newQty = direction === "decrement"
         ? Math.max(0, currentQty - item.quantity)
         : currentQty + item.quantity;
-      
-      await supabase.from("products").update({ stock_qty: newQty }).eq("id", product.id);
+      await supabase.from("products").update({ stock_qty: newQty }).eq("id", productId);
     }
   }
 }

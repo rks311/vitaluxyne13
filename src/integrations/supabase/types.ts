@@ -55,6 +55,7 @@ export type Database = {
           flavor: string | null
           id: string
           order_id: string
+          product_id: string | null
           product_name: string
           quantity: number
           total_price: number
@@ -65,6 +66,7 @@ export type Database = {
           flavor?: string | null
           id?: string
           order_id: string
+          product_id?: string | null
           product_name: string
           quantity?: number
           total_price: number
@@ -75,6 +77,7 @@ export type Database = {
           flavor?: string | null
           id?: string
           order_id?: string
+          product_id?: string | null
           product_name?: string
           quantity?: number
           total_price?: number
