@@ -31,15 +31,15 @@ export default function LandingPage() {
     const fetchProduct = async () => {
       setLoading(true);
       // Try by id first
-      let { data } = await supabase.from("products_public" as any).select("*").eq("id", slug!).maybeSingle();
+      let { data } = await supabase.from("products_public").select("*").eq("id", slug!).maybeSingle();
       if (!data) {
         // Try matching by name slug with ilike
         const slugClean = (slug || "").replace(/-/g, "%");
-        const { data: matched } = await supabase.from("products_public" as any).select("*").ilike("name", `%${slugClean}%`).limit(1);
-        data = (matched as any[])?.[0] || null;
+        const { data: matched } = await supabase.from("products_public").select("*").ilike("name", `%${slugClean}%`).limit(1);
+        data = matched?.[0] || null;
       }
-      setProduct(data as any);
-      if (data) trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
+      setProduct(data as unknown as DbProduct);
+      if (data) trackViewContent({ id: data.id!, name: data.name!, price: data.price!, category: data.category! });
       setLoading(false);
     };
     if (slug) fetchProduct();
