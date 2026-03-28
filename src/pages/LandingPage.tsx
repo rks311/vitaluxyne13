@@ -28,17 +28,17 @@ export default function LandingPage() {
   const [showOrderForm, setShowOrderForm] = useState(false);
 
   useEffect(() => {
-    // Try to find by id or name slug
     const fetchProduct = async () => {
       setLoading(true);
       // Try by id first
-      let { data } = await supabase.from("products").select("*").eq("id", slug!).maybeSingle();
+      let { data } = await supabase.from("products_public" as any).select("*").eq("id", slug!).maybeSingle();
       if (!data) {
-        // Try matching by name (basic slug match)
-        const { data: all } = await supabase.from("products").select("*").limit(100);
-        data = (all || []).find(p => p.name.toLowerCase().replace(/\s+/g, "-").includes(slug!)) || null;
+        // Try matching by name slug with ilike
+        const slugClean = (slug || "").replace(/-/g, "%");
+        const { data: matched } = await supabase.from("products_public" as any).select("*").ilike("name", `%${slugClean}%`).limit(1);
+        data = (matched as any[])?.[0] || null;
       }
-      setProduct(data);
+      setProduct(data as any);
       if (data) trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
       setLoading(false);
     };
