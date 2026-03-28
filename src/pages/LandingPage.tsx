@@ -140,23 +140,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="container py-10">
-        <h2 className="font-heading text-xl font-bold text-center mb-6 text-foreground">{t("landing.testimonials")}</h2>
-        <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {landingTestimonials.map((r, i) => (
-            <div key={i} className="p-4 rounded-xl border border-border bg-card">
-              <div className="flex gap-0.5 mb-2">
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <Star key={j} size={12} className={j < r.rating ? "fill-accent text-accent" : "text-muted"} />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">"{r.text}"</p>
-              <p className="text-xs font-heading font-semibold">{r.name}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Social proof - trust section replaces fake testimonials */}
 
       {/* Bottom CTA */}
       <section className="bg-primary py-10">
