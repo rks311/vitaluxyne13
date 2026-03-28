@@ -10,12 +10,7 @@ import OrderForm from "@/components/product/OrderForm";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackViewContent } from "@/lib/metaPixel";
 
-// REPLACE WITH REAL TESTIMONIALS
-const landingTestimonials = [
-  { name: "Amira B.", text: "Produit excellent, je recommande !", rating: 5 },
-  { name: "Karim M.", text: "Livraison rapide, qualité au top.", rating: 5 },
-  { name: "Sarah L.", text: "Très satisfaite, je recommande.", rating: 4 },
-];
+// Testimonials will be loaded from DB in future, using static placeholders for now
 
 export default function LandingPage() {
   const { slug } = useParams();

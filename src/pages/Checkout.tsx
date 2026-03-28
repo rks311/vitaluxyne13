@@ -134,21 +134,39 @@ export default function Checkout() {
               {step === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-3">
                   <h2 className="font-heading text-lg font-bold">{t("checkout.yourInfo")}</h2>
-                  <input placeholder={t("checkout.fullName")} value={form.name} onChange={e => update("name", e.target.value)} className="field-input" maxLength={100} />
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">+213</span>
-                    <input placeholder="0770 12 34 56" value={form.phone} onChange={e => update("phone", e.target.value.replace(/[^\d]/g, "").slice(0, 10))} type="tel" className="field-input !pl-12" maxLength={10} />
+                  <div>
+                    <label htmlFor="ck-name" className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">{t("checkout.fullName")} *</label>
+                    <input id="ck-name" placeholder={t("checkout.fullName")} value={form.name} onChange={e => update("name", e.target.value)} className="field-input" maxLength={100} autoComplete="name" />
                   </div>
-                  <div className="relative">
-                    <select value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)} className="field-input appearance-none pr-8">
-                      <option value="">{t("checkout.selectWilaya")}</option>
-                      {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <div>
+                    <label htmlFor="ck-phone" className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Téléphone *</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium" aria-hidden="true">+213</span>
+                      <input id="ck-phone" placeholder="0770 12 34 56" value={form.phone} onChange={e => update("phone", e.target.value.replace(/[^\d]/g, "").slice(0, 10))} type="tel" className="field-input !pl-12" maxLength={10} autoComplete="tel" />
+                    </div>
                   </div>
-                  <input placeholder={t("checkout.commune")} value={form.commune} onChange={e => update("commune", e.target.value)} className="field-input" maxLength={100} />
-                  <input placeholder={t("checkout.address")} value={form.address} onChange={e => update("address", e.target.value)} className="field-input" maxLength={200} />
-                  <textarea placeholder={t("checkout.notes")} value={form.notes} onChange={e => update("notes", e.target.value)} rows={2} className="field-input !h-auto resize-none py-3" maxLength={300} />
+                  <div>
+                    <label htmlFor="ck-wilaya" className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Wilaya *</label>
+                    <div className="relative">
+                      <select id="ck-wilaya" value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)} className="field-input appearance-none pr-8">
+                        <option value="">{t("checkout.selectWilaya")}</option>
+                        {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="ck-commune" className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Commune *</label>
+                    <input id="ck-commune" placeholder={t("checkout.commune")} value={form.commune} onChange={e => update("commune", e.target.value)} className="field-input" maxLength={100} autoComplete="address-level2" />
+                  </div>
+                  <div>
+                    <label htmlFor="ck-address" className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Adresse *</label>
+                    <input id="ck-address" placeholder={t("checkout.address")} value={form.address} onChange={e => update("address", e.target.value)} className="field-input" maxLength={200} autoComplete="street-address" />
+                  </div>
+                  <div>
+                    <label htmlFor="ck-notes" className="text-[10px] text-muted-foreground mb-1 block">Note (optionnel)</label>
+                    <textarea id="ck-notes" placeholder={t("checkout.notes")} value={form.notes} onChange={e => update("notes", e.target.value)} rows={2} className="field-input !h-auto resize-none py-3" maxLength={300} />
+                  </div>
                 </motion.div>
               )}
               {step === 2 && (

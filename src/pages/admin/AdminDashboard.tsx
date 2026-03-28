@@ -32,9 +32,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     const load = async () => {
       const [ordersRes, productsRes, clientsRes] = await Promise.all([
-        supabase.from("orders").select("*").order("created_at", { ascending: false }),
+        supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(500),
         supabase.from("products").select("id, name, category, price, stock_qty, image_url"),
-        supabase.from("clients").select("id"),
+        supabase.from("clients").select("id").limit(1000),
       ]);
 
       const orders = ordersRes.data || [];
