@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { formatPrice, getStorageUrl } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Check, MapPin, User, Truck, Phone, Loader2, ChevronDown, MessageCircle } from "lucide-react";
@@ -13,6 +14,9 @@ import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
+  const { t } = useLang();
+  const { data: settings } = useSiteSettings();
+  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
   const { t } = useLang();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -117,7 +121,7 @@ export default function Checkout() {
           </div>
           <div className="flex flex-col gap-3 max-w-sm mx-auto">
             <Button asChild className="h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading">
-              <a href={`https://wa.me/213555123456?text=${encodeURIComponent(`Bonjour, j'ai passé la commande ${orderResult.number}`)}`} target="_blank" rel="noopener noreferrer">
+              <a href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Bonjour, j'ai passé la commande ${orderResult.number}`)}`} target="_blank" rel="noopener noreferrer">
                 <MessageCircle size={18} className="me-2" /> Contacter sur WhatsApp
               </a>
             </Button>

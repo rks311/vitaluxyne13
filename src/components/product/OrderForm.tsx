@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { X, Check, MessageCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, type DbProduct } from "@/types/database";
 import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
@@ -17,6 +18,8 @@ interface OrderFormProps {
 
 export default function OrderForm({ product, quantity, onClose }: OrderFormProps) {
   const { t } = useLang();
+  const { data: settings } = useSiteSettings();
+  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
@@ -279,7 +282,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
 
             <div className="flex flex-col gap-2.5 w-full">
               <Button asChild className="h-10 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading text-sm">
-                <a href={`https://wa.me/213555123456?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={16} className="me-2" aria-hidden="true" /> WhatsApp
                 </a>
               </Button>
