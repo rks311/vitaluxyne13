@@ -17,7 +17,6 @@ export default function Checkout() {
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
   const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
-  const { t } = useLang();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
