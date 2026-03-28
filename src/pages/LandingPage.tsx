@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Loader2, MessageCircle, Star, Truck, ShieldCheck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/product/OrderForm";
