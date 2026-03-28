@@ -90,8 +90,13 @@ export default function AdminOrders() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const loadOrders = async () => {
-    const { data: ordersData } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
-    const { data: itemsData } = await supabase.from("order_items").select("*");
+    // Paginated: load last 200 orders max for performance
+    const { data: ordersData } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(200);
+    const orderIds = (ordersData || []).map(o => o.id);
+    // Load items only for fetched orders
+    const { data: itemsData } = orderIds.length > 0
+      ? await supabase.from("order_items").select("*").in("order_id", orderIds)
+      : { data: [] };
     const itemsByOrder = (itemsData || []).reduce((acc: any, item: any) => {
       (acc[item.order_id] = acc[item.order_id] || []).push(item);
       return acc;

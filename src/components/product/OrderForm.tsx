@@ -217,7 +217,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
               {form.wilaya && deliveryOptions.length > 0 && (
                 <fieldset>
                   <legend className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Livraison</legend>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5" role="radiogroup" aria-label="Options de livraison">
                     {deliveryOptions.map(opt => (
                       <button
                         key={opt.id} type="button"

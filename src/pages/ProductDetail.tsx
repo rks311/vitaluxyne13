@@ -31,12 +31,13 @@ export default function ProductDetail() {
     const fetchData = async () => {
       setLoading(true);
       setSelectedImageIdx(0);
-      const { data } = await supabase.from("products").select("*").eq("id", id!).single();
-      setProduct(data);
+      // Use products_public view (excludes cost_price and stock_qty)
+      const { data } = await supabase.from("products_public").select("*").eq("id", id!).single();
+      setProduct(data as unknown as DbProduct);
       if (data) {
-        trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
-        const { data: sim } = await supabase.from("products").select("*").eq("category", data.category).neq("id", data.id).limit(4);
-        setSimilar(sim || []);
+        trackViewContent({ id: data.id!, name: data.name!, price: data.price!, category: data.category! });
+        const { data: sim } = await supabase.from("products_public").select("*").eq("category", data.category!).neq("id", data.id!).limit(4);
+        setSimilar((sim as unknown as DbProduct[]) || []);
       }
       setLoading(false);
     };

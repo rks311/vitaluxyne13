@@ -10,12 +10,7 @@ import OrderForm from "@/components/product/OrderForm";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackViewContent } from "@/lib/metaPixel";
 
-// REPLACE WITH REAL TESTIMONIALS
-const landingTestimonials = [
-  { name: "Amira B.", text: "Produit excellent, je recommande !", rating: 5 },
-  { name: "Karim M.", text: "Livraison rapide, qualité au top.", rating: 5 },
-  { name: "Sarah L.", text: "Très satisfaite, je recommande.", rating: 4 },
-];
+// Testimonials will be loaded from DB in future, using static placeholders for now
 
 export default function LandingPage() {
   const { slug } = useParams();
@@ -28,18 +23,18 @@ export default function LandingPage() {
   const [showOrderForm, setShowOrderForm] = useState(false);
 
   useEffect(() => {
-    // Try to find by id or name slug
     const fetchProduct = async () => {
       setLoading(true);
       // Try by id first
-      let { data } = await supabase.from("products").select("*").eq("id", slug!).maybeSingle();
+      let { data } = await supabase.from("products_public").select("*").eq("id", slug!).maybeSingle();
       if (!data) {
-        // Try matching by name (basic slug match)
-        const { data: all } = await supabase.from("products").select("*").limit(100);
-        data = (all || []).find(p => p.name.toLowerCase().replace(/\s+/g, "-").includes(slug!)) || null;
+        // Try matching by name slug with ilike
+        const slugClean = (slug || "").replace(/-/g, "%");
+        const { data: matched } = await supabase.from("products_public").select("*").ilike("name", `%${slugClean}%`).limit(1);
+        data = matched?.[0] || null;
       }
-      setProduct(data);
-      if (data) trackViewContent({ id: data.id, name: data.name, price: data.price, category: data.category });
+      setProduct(data as unknown as DbProduct);
+      if (data) trackViewContent({ id: data.id!, name: data.name!, price: data.price!, category: data.category! });
       setLoading(false);
     };
     if (slug) fetchProduct();
@@ -145,23 +140,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="container py-10">
-        <h2 className="font-heading text-xl font-bold text-center mb-6 text-foreground">{t("landing.testimonials")}</h2>
-        <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {landingTestimonials.map((r, i) => (
-            <div key={i} className="p-4 rounded-xl border border-border bg-card">
-              <div className="flex gap-0.5 mb-2">
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <Star key={j} size={12} className={j < r.rating ? "fill-accent text-accent" : "text-muted"} />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">"{r.text}"</p>
-              <p className="text-xs font-heading font-semibold">{r.name}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Social proof - trust section replaces fake testimonials */}
 
       {/* Bottom CTA */}
       <section className="bg-primary py-10">
