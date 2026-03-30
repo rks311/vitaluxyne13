@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ProductCard from "@/components/product/ProductCard";
 import { Loader2, Search } from "lucide-react";
 import type { DbProduct } from "@/types/database";
+import { Button } from "@/components/ui/button";
+
+const PAGE_SIZE = 20;
 
 const categoryList = [
   { key: "all", label: "catalog.all" },
@@ -25,6 +28,8 @@ type SortOption = "newest" | "price-asc" | "price-desc" | "popular";
 const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
@@ -32,19 +37,42 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
 
   const activeCategory = searchParams.get("cat") || "all";
 
+  const fetchProducts = useCallback(async (offset: number, append: boolean) => {
+    if (append) setLoadingMore(true); else setLoading(true);
+    
+    let query = supabase.from("products")
+      .select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock,stock_qty")
+      .order("created_at", { ascending: false })
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (activeCategory !== "all") {
+      query = query.eq("category", activeCategory);
+    }
+
+    const { data } = await query;
+    const newProducts = (data || []) as DbProduct[];
+    
+    if (append) {
+      setProducts(prev => [...prev, ...newProducts]);
+    } else {
+      setProducts(newProducts);
+    }
+    setHasMore(newProducts.length === PAGE_SIZE);
+    setLoading(false);
+    setLoadingMore(false);
+  }, [activeCategory]);
+
   useEffect(() => {
-    supabase.from("products").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      setProducts(data || []);
-      setLoading(false);
-    });
-  }, []);
+    setHasMore(true);
+    fetchProducts(0, false);
+  }, [fetchProducts]);
+
+  const loadMore = () => {
+    fetchProducts(products.length, true);
+  };
 
   const filtered = useMemo(() => {
     let result = products;
-
-    if (activeCategory !== "all") {
-      result = result.filter(p => p.category === activeCategory);
-    }
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -59,7 +87,7 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
     }
 
     return result;
-  }, [products, activeCategory, search, sort]);
+  }, [products, search, sort]);
 
   const setCategory = (cat: string) => {
     if (cat === "all") {
@@ -105,12 +133,14 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
               placeholder={t("catalog.search")}
               className="w-full h-11 rounded-xl bg-card border border-border pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               maxLength={100}
+              aria-label={t("catalog.search")}
             />
           </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
             className="h-11 rounded-xl bg-card border border-border px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            aria-label="Trier les produits"
           >
             <option value="newest">{t("catalog.sortNewest")}</option>
             <option value="price-asc">{t("catalog.sortPriceAsc")}</option>
@@ -122,9 +152,24 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
         <p className="text-sm text-muted-foreground mb-4">{filtered.length} {t("catalog.results")}</p>
 
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
-          </div>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+            </div>
+            {hasMore && !search.trim() && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  variant="outline"
+                  className="rounded-full px-8"
+                >
+                  {loadingMore ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
+                  Voir plus de produits
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-16">
             <Search size={48} className="text-muted-foreground/30 mx-auto mb-4" />

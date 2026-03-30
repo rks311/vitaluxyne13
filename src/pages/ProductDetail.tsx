@@ -85,11 +85,15 @@ export default function ProductDetail() {
                 src={getStorageUrl(
                   selectedImageIdx === 0
                     ? product.image_url
-                    : ((product as any).gallery || [])[selectedImageIdx - 1]
+                    : ((product as any).gallery || [])[selectedImageIdx - 1],
+                  600
                 )}
                 alt={product.name}
                 className="w-full h-full object-cover"
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
+                width={600}
+                height={600}
               />
             </div>
             {(() => {
@@ -104,7 +108,7 @@ export default function ProductDetail() {
                       onClick={() => setSelectedImageIdx(idx)}
                       className={`w-16 h-16 rounded-lg overflow-hidden border-2 shrink-0 transition-all ${selectedImageIdx === idx ? "border-primary" : "border-border hover:border-primary/40"}`}
                     >
-                      <img src={getStorageUrl(img)} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <img src={getStorageUrl(img, 80)} alt="" className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
                     </button>
                   ))}
                 </div>
