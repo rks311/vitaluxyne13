@@ -1,5 +1,4 @@
 import { useLang } from "@/context/LanguageContext";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
 
@@ -41,16 +40,8 @@ export default function CategoryGrid() {
           className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory -mx-1 px-1"
           role="list"
         >
-          {categories.map((cat, i) => (
-            <motion.div
-              key={cat.key}
-              role="listitem"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.03 }}
-              className="snap-start shrink-0"
-            >
+          {categories.map((cat) => (
+            <div key={cat.key} role="listitem" className="snap-start shrink-0">
               <Link
                 to={`/catalogue?cat=${cat.slug}`}
                 className="group block relative w-[100px] md:w-[140px] rounded-2xl overflow-hidden aspect-[3/4] shadow-sm hover:shadow-lg transition-shadow duration-300"
@@ -60,8 +51,9 @@ export default function CategoryGrid() {
                   src={cat.image}
                   alt=""
                   role="presentation"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   loading="lazy"
+                  decoding="async"
                   width={140}
                   height={187}
                 />
@@ -72,7 +64,7 @@ export default function CategoryGrid() {
                   </h3>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
