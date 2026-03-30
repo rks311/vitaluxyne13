@@ -28,10 +28,11 @@ const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, 
           <img
             src={getStorageUrl(product.image_url, 400)}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+            className="w-full h-full object-contain p-2 transition-transform group-hover:scale-105"
             loading="lazy"
             width={400}
             height={400}
+            decoding="async"
           />
           {product.is_promo && (
             <span className="absolute top-2 start-2 badge-promo">Promo</span>
