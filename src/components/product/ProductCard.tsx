@@ -26,7 +26,7 @@ const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, 
       >
         <div className="aspect-square bg-secondary/50 overflow-hidden relative">
           <img
-            src={getStorageUrl(product.image_url)}
+            src={getStorageUrl(product.image_url, 400)}
             alt={product.name}
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
             loading="lazy"
