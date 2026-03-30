@@ -10,16 +10,14 @@ import UrgencyBadges from "@/components/product/UrgencyBadges";
 import ComplementaryProducts from "@/components/product/ComplementaryProducts";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence } from "framer-motion";
 import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { addItem } = useCart();
   const { t } = useLang();
-  const [product, setProduct] = useState<DbProduct | null>(null);
-  const [similar, setSimilar] = useState<DbProduct[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedFlavor, setSelectedFlavor] = useState("");
   const [selectedWeight, setSelectedWeight] = useState("");
   const [qty, setQty] = useState(1);
@@ -27,23 +25,38 @@ export default function ProductDetail() {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setSelectedImageIdx(0);
-      // Use products_public view (excludes cost_price and stock_qty)
+  const { data: product, isLoading: loading } = useQuery({
+    queryKey: ["product", id],
+    queryFn: async () => {
       const { data } = await supabase.from("products_public").select("*").eq("id", id!).single();
-      setProduct(data as unknown as DbProduct);
-      if (data) {
-        trackViewContent({ id: data.id!, name: data.name!, price: data.price!, category: data.category! });
-        const { data: sim } = await supabase.from("products_public").select("*").eq("category", data.category!).neq("id", data.id!).limit(4);
-        setSimilar((sim as unknown as DbProduct[]) || []);
-      }
-      setLoading(false);
-    };
-    if (id) fetchData();
+      return (data as unknown as DbProduct) || null;
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!id,
+  });
+
+  const { data: similar = [] } = useQuery({
+    queryKey: ["similar", product?.category, id],
+    queryFn: async () => {
+      const { data } = await supabase.from("products_public").select("*").eq("category", product!.category).neq("id", id!).limit(4);
+      return (data as unknown as DbProduct[]) || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!product?.category && !!id,
+  });
+
+  useEffect(() => {
+    setSelectedImageIdx(0);
+    setQty(1);
+    setActiveTab("description");
     window.scrollTo(0, 0);
   }, [id]);
+
+  useEffect(() => {
+    if (product) {
+      trackViewContent({ id: product.id, name: product.name, price: product.price, category: product.category });
+    }
+  }, [product]);
 
   if (loading) return <div className="container py-20 flex justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>;
 
@@ -79,7 +92,7 @@ export default function ProductDetail() {
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-12">
           {/* Image Gallery */}
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-3">
+          <div className="space-y-3">
             <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border">
               <img
                 src={getStorageUrl(
@@ -114,10 +127,10 @@ export default function ProductDetail() {
                 </div>
               );
             })()}
-          </motion.div>
+          </div>
 
           {/* Info */}
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col">
+          <div className="flex flex-col">
             <div className="flex gap-2 mb-2">
               {product.is_top_sale && <span className="badge-top">⭐ Populaire</span>}
               {product.is_promo && <span className="badge-promo">Promo</span>}
@@ -214,7 +227,7 @@ export default function ProductDetail() {
                 <span>{t("product.trustAdvice")}</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -224,12 +237,9 @@ export default function ProductDetail() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-3 text-sm font-heading font-medium transition-colors relative whitespace-nowrap ${activeTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-4 py-3 text-sm font-heading font-medium transition-colors relative whitespace-nowrap ${activeTab === tab.key ? "text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {tab.label}
-                {activeTab === tab.key && (
-                  <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-                )}
               </button>
             ))}
           </div>
@@ -286,7 +296,6 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
-
 
       {/* Order Form Slide-over */}
       <AnimatePresence>

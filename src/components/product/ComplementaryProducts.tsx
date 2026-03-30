@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { motion } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 const COMPLEMENTS: Record<string, string[]> = {
@@ -22,22 +22,24 @@ interface Props {
 }
 
 export default function ComplementaryProducts({ product }: Props) {
-  const [products, setProducts] = useState<DbProduct[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const cats = COMPLEMENTS[product.category] || [];
 
-  useEffect(() => {
-    const cats = COMPLEMENTS[product.category] || [];
-    if (cats.length === 0) return;
-
-    supabase
-      .from("products")
-      .select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock")
-      .in("category", cats)
-      .neq("id", product.id)
-      .eq("in_stock", true)
-      .limit(8)
-      .then(({ data }) => setProducts((data as DbProduct[]) || []));
-  }, [product.id, product.category]);
+  const { data: products = [] } = useQuery({
+    queryKey: ["complementary", product.id, product.category],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock")
+        .in("category", cats)
+        .neq("id", product.id)
+        .eq("in_stock", true)
+        .limit(8);
+      return (data as DbProduct[]) || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: cats.length > 0,
+  });
 
   const scroll = (dir: "left" | "right") => {
     scrollRef.current?.scrollBy({ left: dir === "left" ? -240 : 240, behavior: "smooth" });
@@ -71,16 +73,12 @@ export default function ComplementaryProducts({ product }: Props) {
         className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible"
         role="list"
       >
-        {products.map((p, i) => {
+        {products.map((p) => {
           const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
           return (
-            <motion.article
+            <article
               key={p.id}
               role="listitem"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.04 }}
               className="snap-start shrink-0 w-[44vw] sm:w-[42vw] md:w-auto"
             >
               <Link
@@ -93,10 +91,11 @@ export default function ComplementaryProducts({ product }: Props) {
                 )}
                 <div className="aspect-square overflow-hidden bg-gradient-to-br from-secondary to-mint">
                   <img
-                    src={getStorageUrl(p.image_url)}
+                    src={getStorageUrl(p.image_url, 300)}
                     alt={p.name}
-                    className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
                     width={300}
                     height={300}
                   />
@@ -119,7 +118,7 @@ export default function ComplementaryProducts({ product }: Props) {
                   </div>
                 </div>
               </Link>
-            </motion.article>
+            </article>
           );
         })}
       </div>

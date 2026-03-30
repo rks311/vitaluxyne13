@@ -1,16 +1,16 @@
 import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { useLang } from "@/context/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, MessageCircle, Star, Truck, ShieldCheck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/product/OrderForm";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { trackViewContent } from "@/lib/metaPixel";
-
-// Testimonials will be loaded from DB in future, using static placeholders for now
+import { useEffect } from "react";
 
 export default function LandingPage() {
   const { slug } = useParams();
@@ -18,27 +18,26 @@ export default function LandingPage() {
   const { data: settings } = useSiteSettings();
   const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
   const storeName = settings?.store_name || "Vitaluxyne";
-  const [product, setProduct] = useState<DbProduct | null>(null);
-  const [loading, setLoading] = useState(true);
   const [showOrderForm, setShowOrderForm] = useState(false);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      // Try by id first
+  const { data: product, isLoading: loading } = useQuery({
+    queryKey: ["landing-product", slug],
+    queryFn: async () => {
       let { data } = await supabase.from("products_public").select("*").eq("id", slug!).maybeSingle();
       if (!data) {
-        // Try matching by name slug with ilike
         const slugClean = (slug || "").replace(/-/g, "%");
         const { data: matched } = await supabase.from("products_public").select("*").ilike("name", `%${slugClean}%`).limit(1);
         data = matched?.[0] || null;
       }
-      setProduct(data as unknown as DbProduct);
-      if (data) trackViewContent({ id: data.id!, name: data.name!, price: data.price!, category: data.category! });
-      setLoading(false);
-    };
-    if (slug) fetchProduct();
-  }, [slug]);
+      return (data as unknown as DbProduct) || null;
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!slug,
+  });
+
+  useEffect(() => {
+    if (product) trackViewContent({ id: product.id, name: product.name, price: product.price, category: product.category });
+  }, [product]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="animate-spin text-primary" size={32} /></div>;
 
@@ -70,11 +69,11 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="container py-8 md:py-16">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border max-w-md mx-auto md:mx-0">
+          <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border max-w-md mx-auto md:mx-0">
             <img src={getStorageUrl(product.image_url, 600)} alt={product.name} className="w-full h-full object-cover" loading="eager" fetchPriority="high" width={600} height={600} />
-          </motion.div>
+          </div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+          <div>
             <p className="text-sm text-muted-foreground mb-1">{product.brand}</p>
             <h1 className="font-heading text-2xl md:text-4xl font-bold text-foreground mb-4">{product.name}</h1>
 
@@ -117,7 +116,7 @@ export default function LandingPage() {
                 </a>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -139,8 +138,6 @@ export default function LandingPage() {
           })}
         </div>
       </section>
-
-      {/* Social proof - trust section replaces fake testimonials */}
 
       {/* Bottom CTA */}
       <section className="bg-primary py-10">

@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getStorageUrl, formatPrice, type DbProduct } from "@/types/database";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Star, ShoppingCart, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 type SectionType = "top" | "promo" | "new" | "category";
 
@@ -17,17 +17,21 @@ interface FeaturedSectionProps {
 }
 
 export default function FeaturedSection({ type, category, title, subtitle, icon, limit = 8 }: FeaturedSectionProps) {
-  const [products, setProducts] = useState<DbProduct[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    let query = supabase.from("products").select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock,stock_qty").eq("in_stock", true);
-    if (type === "top") query = query.eq("is_top_sale", true);
-    else if (type === "promo") query = query.eq("is_promo", true);
-    else if (type === "new") query = query.order("created_at", { ascending: false });
-    else if (type === "category" && category) query = query.eq("category", category);
-    query.limit(limit).then(({ data }) => setProducts((data as DbProduct[]) || []));
-  }, [type, category, limit]);
+  const { data: products = [] } = useQuery({
+    queryKey: ["featured", type, category, limit],
+    queryFn: async () => {
+      let query = supabase.from("products").select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock,stock_qty").eq("in_stock", true);
+      if (type === "top") query = query.eq("is_top_sale", true);
+      else if (type === "promo") query = query.eq("is_promo", true);
+      else if (type === "new") query = query.order("created_at", { ascending: false });
+      else if (type === "category" && category) query = query.eq("category", category);
+      const { data } = await query.limit(limit);
+      return (data as DbProduct[]) || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const scroll = (dir: "left" | "right") => {
     scrollRef.current?.scrollBy({ left: dir === "left" ? -260 : 260, behavior: "smooth" });
@@ -53,10 +57,7 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
             <button onClick={() => scroll("right")} aria-label="Défiler à droite" className="w-7 h-7 rounded-full border border-border items-center justify-center text-muted-foreground hover:text-primary transition-colors hidden md:flex">
               <ChevronRight size={14} aria-hidden="true" />
             </button>
-            <Link
-              to={category ? `/catalogue?cat=${category}` : "/catalogue"}
-              className="text-xs font-medium text-primary hover:underline whitespace-nowrap"
-            >
+            <Link to={category ? `/catalogue?cat=${category}` : "/catalogue"} className="text-xs font-medium text-primary hover:underline whitespace-nowrap">
               Voir tout →
             </Link>
           </div>
@@ -67,16 +68,12 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
           className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible"
           role="list"
         >
-          {products.map((p, i) => {
+          {products.map((p) => {
             const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
             return (
-              <motion.article
+              <article
                 key={p.id}
                 role="listitem"
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
                 className="snap-start shrink-0 w-[44vw] sm:w-[42vw] md:w-auto"
               >
                 <Link
@@ -106,8 +103,9 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
                     <img
                       src={getStorageUrl(p.image_url, 300)}
                       alt={p.name}
-                      className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
                       width={300}
                       height={300}
                     />
@@ -136,7 +134,7 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
                     </div>
                   </div>
                 </Link>
-              </motion.article>
+              </article>
             );
           })}
         </div>
