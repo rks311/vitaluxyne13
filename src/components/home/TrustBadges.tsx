@@ -13,7 +13,7 @@ export default function TrustBadges() {
   ];
 
   return (
-    <section className="py-8 md:py-12 bg-secondary/30" aria-label="Nos garanties">
+    <section className="py-8 md:py-12 bg-secondary/30 min-h-[88px] md:min-h-[104px]" aria-label="Nos garanties">
       <div className="container">
         <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible" role="list">
           {badges.map((b, i) => {
