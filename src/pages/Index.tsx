@@ -1,10 +1,10 @@
 import { lazy, Suspense } from "react";
 import HeroSection from "@/components/home/HeroSection";
 import CategoryGrid from "@/components/home/CategoryGrid";
+import TrustBadges from "@/components/home/TrustBadges";
 import { TrendingUp, Flame, Sparkles, Brain, Moon, Dumbbell, Shield } from "lucide-react";
 
 const FeaturedSection = lazy(() => import("@/components/home/FeaturedSection"));
-const TrustBadges = lazy(() => import("@/components/home/TrustBadges"));
 
 
 const SectionPlaceholder = ({ height = "500px" }: { height?: string }) => (
@@ -47,9 +47,7 @@ const Index = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<SectionPlaceholder height="150px" />}>
-        <TrustBadges />
-      </Suspense>
+      <TrustBadges />
 
     </div>
   );
