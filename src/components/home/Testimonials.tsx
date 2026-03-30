@@ -1,5 +1,4 @@
 import { Star } from "lucide-react";
-import { motion } from "framer-motion";
 import { useLang } from "@/context/LanguageContext";
 
 const testimonials = [
@@ -22,13 +21,9 @@ export default function Testimonials() {
 
         <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible" role="list">
           {testimonials.map((review, i) => (
-            <motion.blockquote
+            <blockquote
               key={i}
               role="listitem"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06 }}
               className="min-w-[260px] md:min-w-0 shrink-0 md:shrink p-4 rounded-xl border border-border bg-card"
             >
               <div className="flex gap-0.5 mb-2" aria-label={`${review.rating} étoiles sur 5`}>
@@ -44,7 +39,7 @@ export default function Testimonials() {
                   <p className="text-[10px] text-muted-foreground">{review.location}</p>
                 </div>
               </footer>
-            </motion.blockquote>
+            </blockquote>
           ))}
         </div>
       </div>

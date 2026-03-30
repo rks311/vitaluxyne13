@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
 import { ArrowDown, MessageCircle, Star } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import heroBg from "@/assets/hero-lifestyle.jpg";
+import heroBg from "@/assets/hero-lifestyle.webp";
 
 export default function HeroSection() {
   const { t } = useLang();
@@ -11,7 +10,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden" aria-label="Bannière principale">
+    <section className="relative overflow-hidden min-h-[280px] md:min-h-[420px]" aria-label="Bannière principale">
       {/* Full image background */}
       <div className="absolute inset-0">
         <img
@@ -23,34 +22,26 @@ export default function HeroSection() {
           fetchPriority="high"
           width={1920}
           height={1080}
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       </div>
 
       <div className="container relative z-10 pt-12 pb-10 md:pt-24 md:pb-20 flex flex-col items-center text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <h1
           className="font-heading text-2xl md:text-5xl font-extrabold text-white leading-[1.15] mb-3 md:mb-4 max-w-lg md:max-w-2xl"
         >
           Votre santé,{" "}
           <span className="text-accent">notre priorité</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+        <p
           className="text-white/70 text-sm md:text-base mb-6 max-w-sm"
         >
           Compléments alimentaires premium livrés partout en Algérie
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <div
           className="flex gap-2.5 w-full max-w-xs md:max-w-sm"
         >
           <button
@@ -70,12 +61,9 @@ export default function HeroSection() {
             <MessageCircle size={14} aria-hidden="true" />
             WhatsApp
           </a>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+        <div
           className="flex items-center gap-2 mt-5"
           aria-label="Note moyenne 5 étoiles, plus de 500 clients satisfaits"
         >
@@ -83,7 +71,7 @@ export default function HeroSection() {
             {[1,2,3,4,5].map(i => <Star key={i} size={10} className="fill-accent text-accent" />)}
           </div>
           <span className="text-[11px] text-white/60">+500 clients satisfaits</span>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
