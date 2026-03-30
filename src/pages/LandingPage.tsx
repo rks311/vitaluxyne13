@@ -71,7 +71,7 @@ export default function LandingPage() {
       <section className="container py-8 md:py-16">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-2xl overflow-hidden bg-secondary/50 border border-border max-w-md mx-auto md:mx-0">
-            <img src={getStorageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover" />
+            <img src={getStorageUrl(product.image_url, 600)} alt={product.name} className="w-full h-full object-cover" />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>

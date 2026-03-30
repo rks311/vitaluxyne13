@@ -104,7 +104,7 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
 
                   <div className="aspect-square overflow-hidden relative bg-gradient-to-br from-secondary to-mint">
                     <img
-                      src={getStorageUrl(p.image_url)}
+                      src={getStorageUrl(p.image_url, 300)}
                       alt={p.name}
                       className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"

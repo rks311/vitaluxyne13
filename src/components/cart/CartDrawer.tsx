@@ -30,7 +30,7 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto space-y-4 py-4">
               {items.map((item) => (
                 <div key={`${item.productId}-${item.flavor}-${item.weight}`} className="flex gap-3 p-3 rounded-lg bg-card border border-border">
-                  <img src={getStorageUrl(item.imageUrl)} alt="" className="w-16 h-16 rounded-md object-cover bg-muted" width={64} height={64} />
+                  <img src={getStorageUrl(item.imageUrl, 80)} alt="" className="w-16 h-16 rounded-md object-cover bg-muted" width={64} height={64} />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm truncate">{item.name}</h4>
                     <p className="text-xs text-muted-foreground">{item.flavor} • {item.weight}</p>
