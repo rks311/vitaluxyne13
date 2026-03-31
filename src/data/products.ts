@@ -229,7 +229,7 @@ export const wilayas = [
 
 export const testimonials = [
   { name: "Karim B.", city: "Alger", text: "Produits 100% authentiques, livrés en 2 jours ! La meilleure boutique en Algérie.", rating: 5 },
-  { name: "Sofiane M.", city: "Oran", text: "La whey Gold Standard a changé mes entraînements. Service client top via WhatsApp.", rating: 5 },
+  { name: "Sofiane M.", city: "Oran", text: "La whey Gold Standard a changé mes entraînements. Service client top via Messenger.", rating: 5 },
   { name: "Yacine D.", city: "Constantine", text: "Prix imbattables et livraison rapide même à Constantine. Je recommande à 100% !", rating: 5 },
   { name: "Amine R.", city: "Sétif", text: "J'ai créé mon pack masse et j'ai pris 5kg en 2 mois. Merci Ultra Nutrition !", rating: 4 },
 ];

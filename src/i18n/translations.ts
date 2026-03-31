@@ -196,7 +196,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "packs.title": { fr: "Nos Packs", ar: "باقاتنا" },
   "packs.sub": { fr: "Économisez avec nos packs combinés", ar: "وفّر مع باقاتنا المجمعة" },
   "packs.order": { fr: "Commander", ar: "اطلب الآن" },
-  "packs.whatsapp": { fr: "Contactez-nous sur WhatsApp pour commander ce pack !", ar: "تواصل معنا عبر واتساب لطلب هذه الباقة!" },
+  "packs.whatsapp": { fr: "Contactez-nous sur Messenger pour commander ce pack !", ar: "تواصل معنا عبر ماسنجر لطلب هذه الباقة!" },
   "packs.viewDetail": { fr: "Voir détails →", ar: "عرض التفاصيل →" },
   "packs.contains": { fr: "Ce pack contient", ar: "تحتوي هذه الباقة على" },
   "packs.save": { fr: "Vous économisez", ar: "توفير" },

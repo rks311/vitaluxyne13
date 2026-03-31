@@ -281,9 +281,9 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
             </div>
 
             <div className="flex flex-col gap-2.5 w-full">
-              <Button asChild className="h-10 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading text-sm">
-                <a href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle size={16} className="me-2" aria-hidden="true" /> WhatsApp
+              <Button asChild className="h-10 bg-[#1877F2] hover:bg-[#166FE5] text-white rounded-xl font-heading text-sm">
+                <a href={`${messengerUrl}?ref=${messengerMessage}`} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle size={16} className="me-2" aria-hidden="true" /> Messenger
                 </a>
               </Button>
               <Button variant="outline" onClick={onClose} className="h-10 rounded-xl border-border text-sm">
