@@ -11,16 +11,20 @@ const PAGE_SIZE = 20;
 
 const categoryList = [
   { key: "all", label: "catalog.all" },
-  { key: "beaute", label: "cat.beaute" },
-  { key: "cerveau", label: "cat.cerveau" },
+  { key: "immunite", label: "cat.immunite" },
   { key: "stress", label: "cat.stress" },
+  { key: "energie", label: "cat.energie" },
+  { key: "cerveau", label: "cat.cerveau" },
+  { key: "beaute", label: "cat.beaute" },
   { key: "muscles", label: "cat.muscles" },
   { key: "os", label: "cat.os" },
   { key: "coeur", label: "cat.coeur" },
-  { key: "immunite", label: "cat.immunite" },
   { key: "hormones", label: "cat.hormones" },
   { key: "perte-de-poids", label: "cat.perte" },
-  { key: "autre", label: "cat.autre" },
+  { key: "antioxydants", label: "cat.antioxydants" },
+  { key: "detox", label: "cat.detox" },
+  { key: "digestion", label: "cat.digestion" },
+  { key: "multivitamines", label: "cat.multivitamines" },
 ];
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "popular";

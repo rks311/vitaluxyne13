@@ -26,6 +26,11 @@ export const translations: Record<string, Record<Lang, string>> = {
   "cat.immunite": { fr: "Immunité", ar: "المناعة" },
   "cat.hormones": { fr: "Hormones", ar: "الهرمونات" },
   "cat.perte": { fr: "Perte de poids", ar: "فقدان الوزن" },
+  "cat.energie": { fr: "Énergie", ar: "الطاقة" },
+  "cat.antioxydants": { fr: "Antioxydants", ar: "مضادات الأكسدة" },
+  "cat.detox": { fr: "Détox", ar: "إزالة السموم" },
+  "cat.digestion": { fr: "Digestion", ar: "الهضم" },
+  "cat.multivitamines": { fr: "Multivitamines", ar: "فيتامينات متعددة" },
   "cat.autre": { fr: "Autre", ar: "أخرى" },
 
   // Featured sections
