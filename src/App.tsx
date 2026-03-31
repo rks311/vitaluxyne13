@@ -8,7 +8,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
 import Header from "@/components/layout/Header";
-import WhatsAppButton from "@/components/layout/WhatsAppButton";
+import MessengerButton from "@/components/layout/WhatsAppButton";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { initMetaPixel } from "@/lib/metaPixel";
@@ -98,7 +98,7 @@ const App = () => (
                           </Routes>
                         </main>
                         <Footer />
-                        <WhatsAppButton />
+                        <MessengerButton />
                       </>
                     }
                   />

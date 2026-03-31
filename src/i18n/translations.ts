@@ -13,7 +13,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "hero.titleHighlight": { fr: "pas seulement vos muscles", ar: "ليس فقط لعضلاتك" },
   "hero.subtitle": { fr: "Vitamines, minéraux et compléments certifiés pour toute la famille. Livraison partout en Algérie.", ar: "فيتامينات ومعادن ومكملات معتمدة لجميع أفراد العائلة. توصيل في كل أنحاء الجزائر." },
   "hero.cta": { fr: "Découvrir les produits", ar: "اكتشف المنتجات" },
-  "hero.whatsapp": { fr: "Parler à un conseiller", ar: "تحدث مع مستشار" },
+  "hero.whatsapp": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
 
   // Categories
   "cat.title": { fr: "Nos catégories", ar: "فئاتنا" },
@@ -44,7 +44,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "trust.original": { fr: "Produits authentiques", ar: "منتجات أصلية" },
   "trust.originalDesc": { fr: "Qualité garantie", ar: "جودة مضمونة" },
   "trust.support": { fr: "Conseil gratuit", ar: "استشارة مجانية" },
-  "trust.supportDesc": { fr: "Appelez-nous ou WhatsApp", ar: "اتصل بنا أو واتساب" },
+  "trust.supportDesc": { fr: "Appelez-nous ou Messenger", ar: "اتصل بنا أو ماسنجر" },
 
   // Product Card / Detail
   "product.add": { fr: "Ajouter", ar: "أضف" },
@@ -96,7 +96,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "order.submitting": { fr: "Envoi en cours...", ar: "جاري الإرسال..." },
   "order.thankYou": { fr: "Merci !", ar: "شكراً !" },
   "order.thankYouMsg": { fr: "Un conseiller Vitaluxyne vous appellera pour confirmer votre commande.", ar: "سيتصل بك مستشار Vitaluxyne لتأكيد طلبك." },
-  "order.whatsappContact": { fr: "Contacter sur WhatsApp", ar: "تواصل عبر واتساب" },
+  "order.whatsappContact": { fr: "Contacter sur Messenger", ar: "تواصل عبر ماسنجر" },
   "order.newOrder": { fr: "Nouvelle commande", ar: "طلب جديد" },
 
   // Cart
@@ -132,11 +132,13 @@ export const translations: Record<string, Record<Lang, string>> = {
   "checkout.deliveryLabel": { fr: "Livraison:", ar: "التوصيل:" },
   "checkout.atHome": { fr: "À domicile", ar: "للمنزل" },
   "checkout.relay": { fr: "Point relais", ar: "نقطة استلام" },
-  "checkout.whatsappConfirm": { fr: "Confirmation via WhatsApp", ar: "تأكيد عبر واتساب" },
-  "checkout.whatsappDesc": { fr: "Votre commande sera envoyée via WhatsApp et enregistrée.", ar: "سيتم إرسال طلبك عبر واتساب وتسجيله." },
+  "checkout.whatsappConfirm": { fr: "Confirmation par téléphone", ar: "تأكيد عبر الهاتف" },
+  "checkout.whatsappDesc": { fr: "Votre commande sera enregistrée et confirmée par téléphone.", ar: "سيتم تسجيل طلبك وتأكيده عبر الهاتف." },
+  "checkout.messengerConfirm": { fr: "Confirmation par téléphone", ar: "تأكيد عبر الهاتف" },
+  "checkout.messengerDesc": { fr: "Votre commande sera enregistrée. Un conseiller vous contactera.", ar: "سيتم تسجيل طلبك. سيتواصل معك مستشار." },
   "checkout.back": { fr: "Retour", ar: "رجوع" },
   "checkout.next": { fr: "Suivant", ar: "التالي" },
-  "checkout.confirmViaWhatsapp": { fr: "Confirmer via WhatsApp", ar: "تأكيد عبر واتساب" },
+  "checkout.confirmViaWhatsapp": { fr: "Confirmer la commande", ar: "تأكيد الطلب" },
   "checkout.subtotal": { fr: "Sous-total", ar: "المجموع الفرعي" },
   "checkout.deliveryFee": { fr: "Livraison", ar: "التوصيل" },
   "checkout.free": { fr: "Gratuit", ar: "مجاني" },
@@ -147,7 +149,8 @@ export const translations: Record<string, Record<Lang, string>> = {
 
   // Landing page
   "landing.orderNow": { fr: "Commander maintenant", ar: "اطلب الآن" },
-  "landing.whatsapp": { fr: "Parler sur WhatsApp", ar: "تحدث عبر واتساب" },
+  "landing.whatsapp": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
+  "landing.messenger": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
   "landing.testimonials": { fr: "Avis de nos clients", ar: "آراء عملائنا" },
   "landing.benefits": { fr: "Pourquoi ce produit ?", ar: "لماذا هذا المنتج؟" },
 
@@ -193,7 +196,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "packs.title": { fr: "Nos Packs", ar: "باقاتنا" },
   "packs.sub": { fr: "Économisez avec nos packs combinés", ar: "وفّر مع باقاتنا المجمعة" },
   "packs.order": { fr: "Commander", ar: "اطلب الآن" },
-  "packs.whatsapp": { fr: "Contactez-nous sur WhatsApp pour commander ce pack !", ar: "تواصل معنا عبر واتساب لطلب هذه الباقة!" },
+  "packs.whatsapp": { fr: "Contactez-nous sur Messenger pour commander ce pack !", ar: "تواصل معنا عبر ماسنجر لطلب هذه الباقة!" },
   "packs.viewDetail": { fr: "Voir détails →", ar: "عرض التفاصيل →" },
   "packs.contains": { fr: "Ce pack contient", ar: "تحتوي هذه الباقة على" },
   "packs.save": { fr: "Vous économisez", ar: "توفير" },

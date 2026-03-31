@@ -16,7 +16,7 @@ export default function LandingPage() {
   const { slug } = useParams();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
+  const messengerUrl = "https://m.me/Vitaluxyne";
   const storeName = settings?.store_name || "Vitaluxyne";
   const [showOrderForm, setShowOrderForm] = useState(false);
 
@@ -109,10 +109,10 @@ export default function LandingPage() {
               <Button onClick={scrollToOrder} size="lg" className="h-12 px-8 font-heading text-base bg-primary text-primary-foreground hover:bg-primary/90 rounded-full shadow-lg shadow-primary/20 flex-1">
                 {t("landing.orderNow")}
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 px-8 font-heading text-base rounded-full border-[#25D366] text-[#25D366] hover:bg-[#25D366]/5">
-                <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+              <Button asChild variant="outline" size="lg" className="h-12 px-8 font-heading text-base rounded-full border-[#1877F2] text-[#1877F2] hover:bg-[#1877F2]/5">
+                <a href={messengerUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={18} className="me-2" />
-                  {t("landing.whatsapp")}
+                  {t("landing.messenger")}
                 </a>
               </Button>
             </div>

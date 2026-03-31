@@ -1,20 +1,16 @@
-import { MessageCircle } from "lucide-react";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
-
-export default function WhatsAppButton() {
-  const { data: settings } = useSiteSettings();
-  const whatsapp = settings?.whatsapp || "+213555123456";
-  const cleanNumber = whatsapp.replace(/[^0-9]/g, "");
-
+export default function MessengerButton() {
   return (
     <a
-      href={`https://wa.me/${cleanNumber}?text=${encodeURIComponent("Bonjour, je suis intéressé par vos produits Vitaluxyne")}`}
+      href="https://m.me/Vitaluxyne"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-      aria-label="Contacter sur WhatsApp"
+      className="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-[#1877F2] flex items-center justify-center shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-200"
+      aria-label="Contacter sur Messenger"
+      title="Contacter sur Messenger"
     >
-      <MessageCircle size={28} className="text-white" />
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+        <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.2 5.42 3.15 7.18.16.15.26.36.27.58l.05 1.82c.02.62.66 1.03 1.24.79l2.03-.8c.18-.07.38-.09.56-.05.94.26 1.94.4 2.97.4 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm5.95 7.57l-2.9 4.6c-.46.73-1.45.92-2.14.4l-2.3-1.73a.6.6 0 0 0-.72 0l-3.11 2.36c-.42.31-.96-.18-.69-.63l2.9-4.6c.46-.73 1.45-.92 2.14-.4l2.3 1.73a.6.6 0 0 0 .72 0l3.11-2.36c.42-.31.96.18.69.63z"/>
+      </svg>
     </a>
   );
 }
