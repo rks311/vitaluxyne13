@@ -16,7 +16,7 @@ export default function LandingPage() {
   const { slug } = useParams();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
+  const messengerUrl = "https://m.me/Vitaluxyne";
   const storeName = settings?.store_name || "Vitaluxyne";
   const [showOrderForm, setShowOrderForm] = useState(false);
 
