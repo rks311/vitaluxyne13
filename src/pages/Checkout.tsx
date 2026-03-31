@@ -16,7 +16,7 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://www.facebook.com/messages/t/Vitaluxyne";
+  const messengerUrl = "https://www.facebook.com/share/1BH8Aohcnu/";
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
