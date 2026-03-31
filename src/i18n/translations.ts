@@ -96,7 +96,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "order.submitting": { fr: "Envoi en cours...", ar: "جاري الإرسال..." },
   "order.thankYou": { fr: "Merci !", ar: "شكراً !" },
   "order.thankYouMsg": { fr: "Un conseiller Vitaluxyne vous appellera pour confirmer votre commande.", ar: "سيتصل بك مستشار Vitaluxyne لتأكيد طلبك." },
-  "order.whatsappContact": { fr: "Contacter sur WhatsApp", ar: "تواصل عبر واتساب" },
+  "order.whatsappContact": { fr: "Contacter sur Messenger", ar: "تواصل عبر ماسنجر" },
   "order.newOrder": { fr: "Nouvelle commande", ar: "طلب جديد" },
 
   // Cart
