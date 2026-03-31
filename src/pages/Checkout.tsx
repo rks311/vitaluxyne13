@@ -16,7 +16,7 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const whatsappNumber = (settings?.whatsapp || "+213555123456").replace(/[^0-9]/g, "");
+  const messengerUrl = "https://m.me/Vitaluxyne";
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
