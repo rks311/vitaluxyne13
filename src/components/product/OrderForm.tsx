@@ -104,7 +104,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
     }
   };
 
-  const whatsappMessage = encodeURIComponent(
+  const messengerMessage = encodeURIComponent(
     `Bonjour, j'ai passé la commande ${orderNumber}.\n${product.name} x${form.qty}\nTotal: ${formatPrice(total)}\nNom: ${form.name}\nTél: ${form.phone}\nWilaya: ${form.wilaya}`
   );
 
