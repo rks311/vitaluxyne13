@@ -202,8 +202,8 @@ export default function Checkout() {
                     <p><span className="text-muted-foreground">{t("checkout.deliveryLabel")}</span> {selectedDelivery?.label || "—"}</p>
                   </div>
                   <div className="p-4 rounded-xl border border-primary/20 bg-primary/5">
-                    <div className="flex items-center gap-2 mb-1"><Phone size={14} className="text-primary" /><span className="text-sm font-medium">{t("checkout.whatsappConfirm")}</span></div>
-                    <p className="text-xs text-muted-foreground">{t("checkout.whatsappDesc")}</p>
+                    <div className="flex items-center gap-2 mb-1"><Phone size={14} className="text-primary" /><span className="text-sm font-medium">{t("checkout.messengerConfirm")}</span></div>
+                    <p className="text-xs text-muted-foreground">{t("checkout.messengerDesc")}</p>
                   </div>
                 </motion.div>
               )}
