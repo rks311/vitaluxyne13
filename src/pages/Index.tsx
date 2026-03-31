@@ -2,7 +2,7 @@ import HeroSection from "@/components/home/HeroSection";
 import CategoryGrid from "@/components/home/CategoryGrid";
 import TrustBadges from "@/components/home/TrustBadges";
 import FeaturedSection from "@/components/home/FeaturedSection";
-import { TrendingUp, Flame, Sparkles, Brain, Dumbbell, Shield } from "lucide-react";
+import { TrendingUp, Flame, Sparkles, Brain, Dumbbell, Shield, Moon, Heart, Zap } from "lucide-react";
 
 const Index = () => {
   return (
