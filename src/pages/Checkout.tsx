@@ -16,7 +16,7 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://m.me/Vitaluxyne";
+  const messengerUrl = "https://www.facebook.com/messages/t/Vitaluxyne";
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
@@ -215,7 +215,7 @@ export default function Checkout() {
                 <Button onClick={() => setStep(step + 1)} disabled={!canProceed} className="flex-1 h-12 rounded-xl gradient-primary text-primary-foreground disabled:opacity-50">{t("checkout.next")}</Button>
               ) : (
                 <Button onClick={handleConfirm} disabled={submitting} className="flex-1 h-12 font-heading text-base rounded-xl gradient-primary text-primary-foreground hover:opacity-90">
-                  {submitting ? <Loader2 size={18} className="animate-spin me-2" /> : "✅"} {t("checkout.confirmViaWhatsapp")}
+                  {submitting ? <Loader2 size={18} className="animate-spin me-2" /> : "✅"} {t("checkout.confirmOrder")}
                 </Button>
               )}
             </div>
