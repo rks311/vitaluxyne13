@@ -119,9 +119,9 @@ export default function Checkout() {
             <p className="font-heading font-bold"><span className="text-muted-foreground font-normal">Total:</span> {formatPrice(orderResult.total)}</p>
           </div>
           <div className="flex flex-col gap-3 max-w-sm mx-auto">
-            <Button asChild className="h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl font-heading">
-              <a href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Bonjour, j'ai passé la commande ${orderResult.number}`)}`} target="_blank" rel="noopener noreferrer">
-                <MessageCircle size={18} className="me-2" /> Contacter sur WhatsApp
+            <Button asChild className="h-11 bg-[#1877F2] hover:bg-[#166FE5] text-white rounded-xl font-heading">
+              <a href={messengerUrl} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={18} className="me-2" /> Contacter sur Messenger
               </a>
             </Button>
             <Button variant="outline" onClick={() => navigate("/catalogue")} className="h-11 rounded-xl">Continuer mes achats</Button>
