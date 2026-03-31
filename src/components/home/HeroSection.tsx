@@ -52,7 +52,7 @@ export default function HeroSection() {
             <ArrowDown size={14} aria-hidden="true" />
           </button>
           <a
-            href="https://www.facebook.com/messages/t/Vitaluxyne"
+            href="https://www.facebook.com/share/1BH8Aohcnu/"
             target="_blank"
             rel="noopener noreferrer"
             className="h-11 px-5 font-heading text-sm font-semibold rounded-full bg-white/15 backdrop-blur-sm text-white border border-white/20 flex items-center justify-center gap-1.5 active:scale-[0.97] transition-all"
