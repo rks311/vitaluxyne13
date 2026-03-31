@@ -138,7 +138,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "checkout.messengerDesc": { fr: "Votre commande sera enregistrée. Un conseiller vous contactera.", ar: "سيتم تسجيل طلبك. سيتواصل معك مستشار." },
   "checkout.back": { fr: "Retour", ar: "رجوع" },
   "checkout.next": { fr: "Suivant", ar: "التالي" },
-  "checkout.confirmViaWhatsapp": { fr: "Confirmer via WhatsApp", ar: "تأكيد عبر واتساب" },
+  "checkout.confirmViaWhatsapp": { fr: "Confirmer la commande", ar: "تأكيد الطلب" },
   "checkout.subtotal": { fr: "Sous-total", ar: "المجموع الفرعي" },
   "checkout.deliveryFee": { fr: "Livraison", ar: "التوصيل" },
   "checkout.free": { fr: "Gratuit", ar: "مجاني" },
