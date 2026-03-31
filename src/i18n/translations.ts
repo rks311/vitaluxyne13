@@ -13,7 +13,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "hero.titleHighlight": { fr: "pas seulement vos muscles", ar: "ليس فقط لعضلاتك" },
   "hero.subtitle": { fr: "Vitamines, minéraux et compléments certifiés pour toute la famille. Livraison partout en Algérie.", ar: "فيتامينات ومعادن ومكملات معتمدة لجميع أفراد العائلة. توصيل في كل أنحاء الجزائر." },
   "hero.cta": { fr: "Découvrir les produits", ar: "اكتشف المنتجات" },
-  "hero.whatsapp": { fr: "Parler à un conseiller", ar: "تحدث مع مستشار" },
+  "hero.whatsapp": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
 
   // Categories
   "cat.title": { fr: "Nos catégories", ar: "فئاتنا" },
