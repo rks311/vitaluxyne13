@@ -44,7 +44,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "trust.original": { fr: "Produits authentiques", ar: "منتجات أصلية" },
   "trust.originalDesc": { fr: "Qualité garantie", ar: "جودة مضمونة" },
   "trust.support": { fr: "Conseil gratuit", ar: "استشارة مجانية" },
-  "trust.supportDesc": { fr: "Appelez-nous ou WhatsApp", ar: "اتصل بنا أو واتساب" },
+  "trust.supportDesc": { fr: "Appelez-nous ou Messenger", ar: "اتصل بنا أو ماسنجر" },
 
   // Product Card / Detail
   "product.add": { fr: "Ajouter", ar: "أضف" },
