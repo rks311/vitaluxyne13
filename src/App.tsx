@@ -98,7 +98,7 @@ const App = () => (
                           </Routes>
                         </main>
                         <Footer />
-                        <WhatsAppButton />
+                        <MessengerButton />
                       </>
                     }
                   />
