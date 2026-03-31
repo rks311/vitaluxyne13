@@ -19,7 +19,7 @@ interface OrderFormProps {
 export default function OrderForm({ product, quantity, onClose }: OrderFormProps) {
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://www.facebook.com/share/1BH8Aohcnu/";
+  const messengerUrl = "https://m.me/100094410475373";
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
