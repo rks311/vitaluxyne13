@@ -16,7 +16,7 @@ export default function LandingPage() {
   const { slug } = useParams();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://www.facebook.com/share/1BH8Aohcnu/";
+  const messengerUrl = "https://m.me/100094410475373";
   const storeName = settings?.store_name || "Vitaluxyne";
   const [showOrderForm, setShowOrderForm] = useState(false);
 
