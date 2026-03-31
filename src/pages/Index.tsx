@@ -19,7 +19,13 @@ const Index = () => {
       <FeaturedSection type="category" category="immunite" title="Immunité & Vitalité" icon={<Shield size={18} />} />
 
       <div className="bg-secondary/20">
-        <FeaturedSection type="category" category="muscles" title="Performance Musculaire" icon={<Dumbbell size={18} />} />
+        <FeaturedSection type="category" category="stress" title="Stress & Sommeil" icon={<Moon size={18} />} />
+      </div>
+
+      <FeaturedSection type="category" category="energie" title="Énergie & Vitalité" icon={<Zap size={18} />} />
+
+      <div className="bg-secondary/20">
+        <FeaturedSection type="category" category="beaute" title="Beauté & Peau" icon={<Heart size={18} />} />
       </div>
 
       <FeaturedSection type="category" category="cerveau" title="Cerveau & Focus" icon={<Brain size={18} />} />
