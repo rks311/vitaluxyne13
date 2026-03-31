@@ -215,7 +215,7 @@ export default function Checkout() {
                 <Button onClick={() => setStep(step + 1)} disabled={!canProceed} className="flex-1 h-12 rounded-xl gradient-primary text-primary-foreground disabled:opacity-50">{t("checkout.next")}</Button>
               ) : (
                 <Button onClick={handleConfirm} disabled={submitting} className="flex-1 h-12 font-heading text-base rounded-xl gradient-primary text-primary-foreground hover:opacity-90">
-                  {submitting ? <Loader2 size={18} className="animate-spin me-2" /> : "✅"} {t("checkout.confirmViaWhatsapp")}
+                  {submitting ? <Loader2 size={18} className="animate-spin me-2" /> : "✅"} {t("checkout.confirmOrder")}
                 </Button>
               )}
             </div>

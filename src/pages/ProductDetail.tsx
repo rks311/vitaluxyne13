@@ -276,7 +276,7 @@ export default function ProductDetail() {
                 {conseils ? (
                   <p className="whitespace-pre-line">{conseils}</p>
                 ) : (
-                  <p>Nos conseillers sont disponibles pour vous guider. Contactez-nous par WhatsApp pour des conseils personnalisés.</p>
+                  <p>Nos conseillers sont disponibles pour vous guider. Contactez-nous sur Messenger pour des conseils personnalisés.</p>
                 )}
               </div>
             )}

@@ -1,7 +1,7 @@
 export default function MessengerButton() {
   return (
     <a
-      href="https://m.me/Vitaluxyne"
+      href="https://www.facebook.com/messages/t/Vitaluxyne"
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-[#1877F2] flex items-center justify-center shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-200"

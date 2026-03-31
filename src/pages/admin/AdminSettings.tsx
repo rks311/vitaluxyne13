@@ -100,7 +100,7 @@ export default function AdminSettings() {
           <Field label="Email de contact" settingKey="email" />
           <div className="grid grid-cols-2 gap-3">
             <Field label="Téléphone" settingKey="phone" maxLength={20} />
-            <Field label="WhatsApp" settingKey="whatsapp" maxLength={20} />
+            <Field label="Messenger" settingKey="whatsapp" maxLength={20} />
           </div>
           <Field label="Adresse" settingKey="address" maxLength={200} />
         </div>
