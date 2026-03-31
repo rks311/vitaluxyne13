@@ -149,7 +149,8 @@ export const translations: Record<string, Record<Lang, string>> = {
 
   // Landing page
   "landing.orderNow": { fr: "Commander maintenant", ar: "اطلب الآن" },
-  "landing.whatsapp": { fr: "Parler sur WhatsApp", ar: "تحدث عبر واتساب" },
+  "landing.whatsapp": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
+  "landing.messenger": { fr: "Parler sur Messenger", ar: "تحدث عبر ماسنجر" },
   "landing.testimonials": { fr: "Avis de nos clients", ar: "آراء عملائنا" },
   "landing.benefits": { fr: "Pourquoi ce produit ?", ar: "لماذا هذا المنتج؟" },
 
