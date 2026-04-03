@@ -19,6 +19,7 @@ interface FeaturedSectionProps {
 
 export default function FeaturedSection({ type, category, title, subtitle, icon, limit = 8 }: FeaturedSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const skeletonCount = Math.min(limit, 4);
 
   const { data: products = [] } = useQuery({
     queryKey: ["featured", type, category, limit],
