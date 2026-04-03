@@ -1,14 +1,13 @@
 import { useState, useMemo } from "react";
 import { X, Check, MessageCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLang } from "@/context/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, type DbProduct } from "@/types/database";
 import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
+import { MESSENGER_URL } from "@/lib/messenger";
 
 interface OrderFormProps {
   product: DbProduct;
@@ -17,9 +16,6 @@ interface OrderFormProps {
 }
 
 export default function OrderForm({ product, quantity, onClose }: OrderFormProps) {
-  const { t } = useLang();
-  const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://m.me/100094410475373";
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
@@ -103,11 +99,6 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
       setLoading(false);
     }
   };
-
-  const messengerMessage = encodeURIComponent(
-    `Bonjour, j'ai passé la commande ${orderNumber}.\n${product.name} x${form.qty}\nTotal: ${formatPrice(total)}\nNom: ${form.name}\nTél: ${form.phone}\nWilaya: ${form.wilaya}`
-  );
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -282,7 +273,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
 
             <div className="flex flex-col gap-2.5 w-full">
               <Button asChild className="h-10 bg-[#1877F2] hover:bg-[#166FE5] text-white rounded-xl font-heading text-sm">
-                <a href={`${messengerUrl}?ref=${messengerMessage}`} target="_blank" rel="noopener noreferrer">
+                <a href={MESSENGER_URL} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={16} className="me-2" aria-hidden="true" /> Messenger
                 </a>
               </Button>

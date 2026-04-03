@@ -1,6 +1,7 @@
 import { ArrowDown, MessageCircle, Star } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import heroBg from "@/assets/hero-lifestyle.webp";
+import { MESSENGER_URL } from "@/lib/messenger";
 
 export default function HeroSection() {
   const { t } = useLang();
@@ -52,7 +53,7 @@ export default function HeroSection() {
             <ArrowDown size={14} aria-hidden="true" />
           </button>
           <a
-            href="https://m.me/100094410475373"
+            href={MESSENGER_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="h-11 px-5 font-heading text-sm font-semibold rounded-full bg-white/15 backdrop-blur-sm text-white border border-white/20 flex items-center justify-center gap-1.5 active:scale-[0.97] transition-all"
