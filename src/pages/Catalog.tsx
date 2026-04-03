@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ProductCard from "@/components/product/ProductCard";
-import { Loader2, Search } from "lucide-react";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
+import { Search } from "lucide-react";
 import type { DbProduct } from "@/types/database";
 import { Button } from "@/components/ui/button";
 
