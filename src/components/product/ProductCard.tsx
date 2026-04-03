@@ -1,24 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { useLang } from "@/context/LanguageContext";
 
 interface ProductCardProps {
   product: DbProduct;
   index?: number;
 }
 
-const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, index = 0 }, ref) => {
-  const { t } = useLang();
+const ProductCard = React.memo(({ product, index = 0 }: ProductCardProps) => {
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.05, duration: 0.3 }}
-    >
+    <article className="animate-in fade-in duration-300" style={{ animationDelay: `${index * 30}ms` }}>
       <Link
         to={`/produit/${product.id}`}
         className="block rounded-xl border border-border bg-card overflow-hidden card-hover group"
@@ -28,12 +21,14 @@ const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, 
           <img
             src={getStorageUrl(product.image_url, 400)}
             alt={product.name}
-            className="w-full h-full object-contain p-2 transition-transform group-hover:scale-105"
+            className={`w-full h-full object-contain p-2 transition-all duration-300 group-hover:scale-105 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
             width={400}
             height={400}
             decoding="async"
+            onLoad={() => setImgLoaded(true)}
           />
+          {!imgLoaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
           {product.is_promo && (
             <span className="absolute top-2 start-2 badge-promo">Promo</span>
           )}
@@ -60,7 +55,7 @@ const ProductCard = React.forwardRef<HTMLElement, ProductCardProps>(({ product, 
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 });
 

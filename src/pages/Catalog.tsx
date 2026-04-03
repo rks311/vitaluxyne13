@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ProductCard from "@/components/product/ProductCard";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { Loader2, Search } from "lucide-react";
 import type { DbProduct } from "@/types/database";
 import { Button } from "@/components/ui/button";
@@ -102,7 +103,16 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
     setSearchParams(searchParams);
   };
 
-  if (loading) return <div className="container py-20 flex justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>;
+  if (loading) return (
+    <div className="min-h-screen bg-background">
+      <div className="container py-6 md:py-10">
+        <div className="mb-8"><div className="h-8 w-48 bg-muted animate-pulse rounded" /></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
