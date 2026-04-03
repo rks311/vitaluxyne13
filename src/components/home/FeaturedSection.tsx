@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { getStorageUrl, formatPrice, type DbProduct } from "@/types/database";
 import { Link } from "react-router-dom";
