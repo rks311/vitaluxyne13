@@ -39,11 +39,16 @@ export default function PopularProducts() {
       </div>
 
       <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
-        {products.map((product, i) => (
-          <div key={product.id} className="snap-start shrink-0 w-[160px] md:w-auto">
-            <ProductCard product={product} index={i} />
-          </div>
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="snap-start shrink-0 w-[160px] md:w-auto"><ProductCardSkeleton /></div>
+            ))
+          : products.map((product, i) => (
+              <div key={product.id} className="snap-start shrink-0 w-[160px] md:w-auto">
+                <ProductCard product={product} index={i} />
+              </div>
+            ))
+        }
       </div>
     </section>
   );
