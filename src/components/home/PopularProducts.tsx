@@ -1,22 +1,25 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { DbProduct } from "@/types/database";
 import ProductCard from "@/components/product/ProductCard";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
 import { useLang } from "@/context/LanguageContext";
 
 export default function PopularProducts() {
-  const [products, setProducts] = useState<DbProduct[]>([]);
   const { t } = useLang();
 
-  useEffect(() => {
-    supabase.from("products").select("*").eq("is_top_sale", true).limit(4)
-      .then(({ data }) => setProducts(data || []));
-  }, []);
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["popular-products"],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("*").eq("is_top_sale", true).limit(4);
+      return (data as DbProduct[]) || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
-  if (products.length === 0) return null;
+  if (!isLoading && products.length === 0) return null;
 
   return (
     <section className="container py-10 md:py-16">
