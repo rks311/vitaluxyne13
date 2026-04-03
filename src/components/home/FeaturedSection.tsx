@@ -21,7 +21,7 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
   const scrollRef = useRef<HTMLDivElement>(null);
   const skeletonCount = Math.min(limit, 4);
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [], isLoading } = useQuery({
     queryKey: ["featured", type, category, limit],
     queryFn: async () => {
       let query = supabase.from("products").select("id,name,brand,category,price,old_price,image_url,rating,reviews_count,is_promo,is_top_sale,in_stock,stock_qty").eq("in_stock", true);
@@ -32,7 +32,8 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
       const { data } = await query.limit(limit);
       return (data as DbProduct[]) || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const scroll = (dir: "left" | "right") => {
