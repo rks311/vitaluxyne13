@@ -11,12 +11,12 @@ import OrderForm from "@/components/product/OrderForm";
 import { AnimatePresence } from "framer-motion";
 import { trackViewContent } from "@/lib/metaPixel";
 import { useEffect } from "react";
+import { MESSENGER_URL } from "@/lib/messenger";
 
 export default function LandingPage() {
   const { slug } = useParams();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
-  const messengerUrl = "https://m.me/100094410475373";
   const storeName = settings?.store_name || "Vitaluxyne";
   const [showOrderForm, setShowOrderForm] = useState(false);
 
@@ -110,7 +110,7 @@ export default function LandingPage() {
                 {t("landing.orderNow")}
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-8 font-heading text-base rounded-full border-[#1877F2] text-[#1877F2] hover:bg-[#1877F2]/5">
-                <a href={messengerUrl} target="_blank" rel="noopener noreferrer">
+                <a href={MESSENGER_URL} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={18} className="me-2" />
                   {t("landing.messenger")}
                 </a>
