@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ProductCard from "@/components/product/ProductCard";
 import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import type { DbProduct } from "@/types/database";
 import { Button } from "@/components/ui/button";
 
