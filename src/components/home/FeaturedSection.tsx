@@ -40,7 +40,7 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
     scrollRef.current?.scrollBy({ left: dir === "left" ? -260 : 260, behavior: "smooth" });
   };
 
-  if (products.length === 0) return null;
+  if (!isLoading && products.length === 0) return null;
 
   return (
     <section className="py-6 md:py-10" aria-label={title}>
