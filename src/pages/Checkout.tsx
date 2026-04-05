@@ -113,7 +113,7 @@ export default function Checkout() {
             <Check size={40} className="text-primary" />
           </div>
           <h2 className="font-heading text-2xl font-bold mb-2">Commande {orderResult.number} reçue !</h2>
-          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">Un conseiller Vitaluxyne vous appellera sous 24h pour confirmation finale.</p>
+          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">L'admin va vous appeler pour confirmer votre commande. Merci !</p>
           <div className="max-w-sm mx-auto p-4 rounded-xl bg-secondary/50 border border-border text-sm space-y-1 mb-6 text-left">
             <p><span className="text-muted-foreground">Livraison:</span> {selectedDelivery?.label}</p>
             <p className="font-heading font-bold"><span className="text-muted-foreground font-normal">Total:</span> {formatPrice(orderResult.total)}</p>

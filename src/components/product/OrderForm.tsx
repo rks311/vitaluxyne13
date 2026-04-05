@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { X, Check, MessageCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice, type DbProduct } from "@/types/database";
+import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -132,7 +132,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
               {/* Product summary */}
               <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-md bg-secondary overflow-hidden shrink-0">
-                  <img src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_url}`} alt="" className="w-full h-full object-cover" width={40} height={40} />
+                  <img src={getStorageUrl(product.image_url, 80)} alt="" className="w-full h-full object-cover" width={40} height={40} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-xs truncate">{product.name}</p>
@@ -263,7 +263,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
               <Check size={32} className="text-primary" />
             </motion.div>
             <h3 className="font-heading text-xl font-bold text-foreground mb-2">Commande {orderNumber} reçue !</h3>
-            <p className="text-xs text-muted-foreground mb-4 max-w-xs text-center">Un conseiller vous appellera sous 24h pour confirmation.</p>
+            <p className="text-xs text-muted-foreground mb-4 max-w-xs text-center">L'admin va vous appeler pour confirmer votre commande. Merci !</p>
 
             <div className="w-full p-3 rounded-lg bg-secondary/50 border border-border text-left text-xs space-y-1 mb-4">
               <p><span className="text-muted-foreground">Produit:</span> {product.name} × {form.qty}</p>

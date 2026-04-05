@@ -39,7 +39,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       for (const [key, value] of Object.entries(settings)) {
-        await supabase.from("site_settings" as any).update({ value, updated_at: new Date().toISOString() } as any).eq("key", key);
+        await supabase.from("site_settings" as any).upsert({ key, value, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
       }
       queryClient.invalidateQueries({ queryKey: ["site_settings"] });
       toast.success("Paramètres sauvegardés !");
