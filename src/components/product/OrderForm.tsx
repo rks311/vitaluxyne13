@@ -263,7 +263,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
               <Check size={32} className="text-primary" />
             </motion.div>
             <h3 className="font-heading text-xl font-bold text-foreground mb-2">Commande {orderNumber} reçue !</h3>
-            <p className="text-xs text-muted-foreground mb-4 max-w-xs text-center">Un conseiller vous appellera sous 24h pour confirmation.</p>
+            <p className="text-xs text-muted-foreground mb-4 max-w-xs text-center">L'admin va vous appeler pour confirmer votre commande. Merci !</p>
 
             <div className="w-full p-3 rounded-lg bg-secondary/50 border border-border text-left text-xs space-y-1 mb-4">
               <p><span className="text-muted-foreground">Produit:</span> {product.name} × {form.qty}</p>
