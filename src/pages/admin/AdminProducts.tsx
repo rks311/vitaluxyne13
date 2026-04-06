@@ -419,7 +419,11 @@ export default function AdminProducts() {
                     <span className="font-heading font-bold text-sm text-primary">{formatPrice(p.price)}</span>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
+                      !p.in_stock || (p.stock_qty ?? 0) === 0 ? "bg-red-500/10 text-red-400 border border-red-500/30" :
+                      (p.stock_qty ?? 0) <= 5 ? "bg-amber-500/10 text-amber-400 border border-amber-500/30" :
+                      "bg-emerald-500/10 text-emerald-400"
+                    }`}>
                       {p.in_stock ? `${(p as any).stock_qty ?? 0} en stock` : "Rupture"}
                     </span>
                     <div className="flex gap-0.5">
