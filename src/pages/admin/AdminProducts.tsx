@@ -193,7 +193,7 @@ export default function AdminProducts() {
   return (
     <div className="space-y-4">
       {/* Header with stats */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
         <div className="bg-card border border-border rounded-lg p-3">
           <p className="text-[10px] text-muted-foreground uppercase">Total produits</p>
           <p className="font-heading text-xl font-bold">{products.length}</p>
@@ -202,9 +202,19 @@ export default function AdminProducts() {
           <p className="text-[10px] text-muted-foreground uppercase">En stock</p>
           <p className="font-heading text-xl font-bold text-emerald-400">{products.filter(p => p.in_stock).length}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-3">
-          <p className="text-[10px] text-muted-foreground uppercase">Catégories</p>
-          <p className="font-heading text-xl font-bold text-primary">{Object.keys(categoryCounts).length}</p>
+        <div className="bg-card border border-amber-500/30 rounded-lg p-3">
+          <div className="flex items-center gap-1">
+            <AlertTriangle size={12} className="text-amber-400" />
+            <p className="text-[10px] text-muted-foreground uppercase">Stock faible</p>
+          </div>
+          <p className="font-heading text-xl font-bold text-amber-400">{products.filter(p => (p.stock_qty ?? 0) <= 5 && (p.stock_qty ?? 0) > 0).length}</p>
+        </div>
+        <div className="bg-card border border-red-500/30 rounded-lg p-3">
+          <div className="flex items-center gap-1">
+            <AlertTriangle size={12} className="text-red-400" />
+            <p className="text-[10px] text-muted-foreground uppercase">Rupture</p>
+          </div>
+          <p className="font-heading text-xl font-bold text-red-400">{products.filter(p => (p.stock_qty ?? 0) === 0).length}</p>
         </div>
       </div>
 
