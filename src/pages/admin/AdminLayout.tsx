@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X, Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -51,6 +51,7 @@ export default function AdminLayout() {
     { label: t("admin.clients"), icon: Users, path: "/admin/clients" },
     { label: t("admin.promos"), icon: Tags, path: "/admin/promos" },
     { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
+    { label: "Livraison", icon: Truck, path: "/admin/delivery" },
   ];
 
   useEffect(() => {

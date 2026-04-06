@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
+import { useDeliveryZones, getDeliveryOptionsFromZone } from "@/hooks/useDeliveryZones";
 import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
 import { MESSENGER_URL } from "@/lib/messenger";
 
@@ -17,20 +17,23 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
+  const { data: zones = [] } = useDeliveryZones();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", wilaya: "", commune: "", address: "", delivery: "", notes: "" });
   const navigate = useNavigate();
 
-  const deliveryOptions = useMemo(() => getDeliveryOptions(form.wilaya), [form.wilaya]);
+  const selectedZone = zones.find(z => z.name === form.wilaya);
+  const deliveryOptions = useMemo(() => selectedZone ? getDeliveryOptionsFromZone(selectedZone) : [], [selectedZone]);
   const selectedDelivery = deliveryOptions.find(o => o.id === form.delivery);
   const deliveryFee = selectedDelivery?.price || 0;
   const grandTotal = total + deliveryFee;
 
   const update = (key: string, value: string) => setForm(p => ({ ...p, [key]: value }));
   const handleWilayaChange = (w: string) => {
-    const opts = getDeliveryOptions(w);
+    const zone = zones.find(z => z.name === w);
+    const opts = zone ? getDeliveryOptionsFromZone(zone) : [];
     setForm(f => ({ ...f, wilaya: w, delivery: opts[0]?.id || "" }));
   };
 
@@ -150,7 +153,7 @@ export default function Checkout() {
                     <div className="relative">
                       <select id="ck-wilaya" value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)} className="field-input appearance-none pr-8">
                         <option value="">{t("checkout.selectWilaya")}</option>
-                        {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
+                        {zones.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
                       </select>
                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>

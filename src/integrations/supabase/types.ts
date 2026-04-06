@@ -50,6 +50,51 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_zones: {
+        Row: {
+          code: string
+          created_at: string
+          has_swift_express: boolean
+          has_world_express: boolean
+          id: string
+          name: string
+          remote_price: number
+          swift_bureau_price: number
+          swift_domicile_price: number
+          updated_at: string
+          world_bureau_price: number
+          world_domicile_price: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          has_swift_express?: boolean
+          has_world_express?: boolean
+          id?: string
+          name: string
+          remote_price?: number
+          swift_bureau_price?: number
+          swift_domicile_price?: number
+          updated_at?: string
+          world_bureau_price?: number
+          world_domicile_price?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          has_swift_express?: boolean
+          has_world_express?: boolean
+          id?: string
+          name?: string
+          remote_price?: number
+          swift_bureau_price?: number
+          swift_domicile_price?: number
+          updated_at?: string
+          world_bureau_price?: number
+          world_domicile_price?: number
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           flavor: string | null

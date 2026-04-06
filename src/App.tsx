@@ -29,6 +29,7 @@ const AdminPacks = lazy(() => import("./pages/admin/AdminPacks"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
 const AdminPromos = lazy(() => import("./pages/admin/AdminPromos"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminDelivery = lazy(() => import("./pages/admin/AdminDelivery"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,6 +80,7 @@ const App = () => (
                     <Route path="clients" element={<AdminClients />} />
                     <Route path="promos" element={<AdminPromos />} />
                     <Route path="settings" element={<AdminSettings />} />
+                    <Route path="delivery" element={<AdminDelivery />} />
                   </Route>
 
                   {/* Client routes */}

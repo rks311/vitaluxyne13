@@ -3,7 +3,7 @@ import { X, Check, MessageCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
-import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
+import { useDeliveryZones, getDeliveryOptionsFromZone } from "@/hooks/useDeliveryZones";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
@@ -19,19 +19,22 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const { data: zones = [] } = useDeliveryZones();
   const [form, setForm] = useState({
     name: "", phone: "", wilaya: "", commune: "", address: "", comment: "", qty: quantity,
     deliveryOption: "",
   });
 
-  const deliveryOptions = useMemo(() => getDeliveryOptions(form.wilaya), [form.wilaya]);
+  const selectedZone = zones.find(z => z.name === form.wilaya);
+  const deliveryOptions = useMemo(() => selectedZone ? getDeliveryOptionsFromZone(selectedZone) : [], [selectedZone]);
   const selectedDelivery = deliveryOptions.find(o => o.id === form.deliveryOption);
   const deliveryFee = selectedDelivery?.price || 0;
   const subtotal = product.price * form.qty;
   const total = subtotal + deliveryFee;
 
   const handleWilayaChange = (wilayaName: string) => {
-    const opts = getDeliveryOptions(wilayaName);
+    const zone = zones.find(z => z.name === wilayaName);
+    const opts = zone ? getDeliveryOptionsFromZone(zone) : [];
     setForm(f => ({
       ...f,
       wilaya: wilayaName,
@@ -179,7 +182,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
                     className="w-full h-9 rounded-lg bg-secondary border border-border px-2 text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary" required
                   >
                     <option value="">Wilaya</option>
-                    {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code}-{w.name}</option>)}
+                    {zones.map(w => <option key={w.code} value={w.name}>{w.code}-{w.name}</option>)}
                   </select>
                 </div>
                 <div>
