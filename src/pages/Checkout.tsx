@@ -17,20 +17,23 @@ export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { t } = useLang();
   const { data: settings } = useSiteSettings();
+  const { data: zones = [] } = useDeliveryZones();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<{ number: string; total: number } | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", wilaya: "", commune: "", address: "", delivery: "", notes: "" });
   const navigate = useNavigate();
 
-  const deliveryOptions = useMemo(() => getDeliveryOptions(form.wilaya), [form.wilaya]);
+  const selectedZone = zones.find(z => z.name === form.wilaya);
+  const deliveryOptions = useMemo(() => selectedZone ? getDeliveryOptionsFromZone(selectedZone) : [], [selectedZone]);
   const selectedDelivery = deliveryOptions.find(o => o.id === form.delivery);
   const deliveryFee = selectedDelivery?.price || 0;
   const grandTotal = total + deliveryFee;
 
   const update = (key: string, value: string) => setForm(p => ({ ...p, [key]: value }));
   const handleWilayaChange = (w: string) => {
-    const opts = getDeliveryOptions(w);
+    const zone = zones.find(z => z.name === w);
+    const opts = zone ? getDeliveryOptionsFromZone(zone) : [];
     setForm(f => ({ ...f, wilaya: w, delivery: opts[0]?.id || "" }));
   };
 
