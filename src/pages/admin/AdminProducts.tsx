@@ -477,7 +477,11 @@ export default function AdminProducts() {
                         {p.old_price && <span className="text-[9px] text-muted-foreground line-through ms-1 block">{formatPrice(p.old_price)}</span>}
                       </td>
                       <td className="px-2 py-2.5 hidden md:table-cell">
-                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${
+                          !p.in_stock || (p.stock_qty ?? 0) === 0 ? "bg-red-500/10 text-red-400 border border-red-500/30" :
+                          (p.stock_qty ?? 0) <= 5 ? "bg-amber-500/10 text-amber-400 border border-amber-500/30" :
+                          "bg-emerald-500/10 text-emerald-400"
+                        }`}>
                           {p.in_stock ? `${(p as any).stock_qty ?? 0}` : "0"}
                         </span>
                       </td>
