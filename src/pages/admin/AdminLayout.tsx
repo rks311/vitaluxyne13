@@ -67,6 +67,21 @@ export default function AdminLayout() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Load pending orders count + stock alerts
+  useEffect(() => {
+    const loadCounts = async () => {
+      const [ordersRes, productsRes] = await Promise.all([
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "En préparation"),
+        supabase.from("products").select("stock_qty"),
+      ]);
+      setPendingCount(ordersRes.count || 0);
+      const products = productsRes.data || [];
+      setLowStockCount(products.filter((p: any) => (p.stock_qty ?? 0) <= 5 && (p.stock_qty ?? 0) > 0).length);
+      setCriticalStockCount(products.filter((p: any) => (p.stock_qty ?? 0) === 0).length);
+    };
+    loadCounts();
+  }, [location.pathname]);
+
   useEffect(() => {
     const timer = setTimeout(() => { initialLoadDone.current = true; }, 3000);
     const channel = supabase
@@ -76,6 +91,7 @@ export default function AdminLayout() {
         const order = payload.new as any;
         const notif: Notification = { id: order.id, orderNumber: order.order_number, clientName: order.client_name, total: order.total, timestamp: new Date() };
         setNotifications(prev => [notif, ...prev].slice(0, 20));
+        setPendingCount(prev => prev + 1);
         playNotificationSound();
       })
       .subscribe();
