@@ -38,6 +38,9 @@ export default function AdminLayout() {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showPanel, setShowPanel] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [lowStockCount, setLowStockCount] = useState(0);
+  const [criticalStockCount, setCriticalStockCount] = useState(0);
   const initialLoadDone = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,13 +48,12 @@ export default function AdminLayout() {
 
   const navItems = [
     { label: t("admin.dashboard"), icon: LayoutDashboard, path: "/admin" },
-    { label: t("admin.orders"), icon: ShoppingCart, path: "/admin/orders" },
-    { label: t("admin.products"), icon: Package, path: "/admin/products" },
+    { label: t("admin.orders"), icon: ShoppingCart, path: "/admin/orders", badge: pendingCount },
+    { label: t("admin.products"), icon: Package, path: "/admin/products", stockAlert: lowStockCount > 0, criticalAlert: criticalStockCount > 0 },
     { label: t("admin.packs"), icon: Boxes, path: "/admin/packs" },
-    { label: t("admin.clients"), icon: Users, path: "/admin/clients" },
     { label: t("admin.promos"), icon: Tags, path: "/admin/promos" },
-    { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
     { label: "Livraison", icon: Truck, path: "/admin/delivery" },
+    { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
   ];
 
   useEffect(() => {
