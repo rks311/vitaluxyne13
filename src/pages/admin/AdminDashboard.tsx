@@ -172,7 +172,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {statCards.map((stat, i) => {
           const Icon = stat.icon;
           return (
