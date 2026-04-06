@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { WILAYAS, getDeliveryOptions } from "@/data/wilayas";
+import { useDeliveryZones, getDeliveryOptionsFromZone } from "@/hooks/useDeliveryZones";
 import { trackPurchase, trackInitiateCheckout } from "@/lib/metaPixel";
 import { MESSENGER_URL } from "@/lib/messenger";
 

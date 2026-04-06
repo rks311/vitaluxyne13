@@ -51,6 +51,7 @@ export default function AdminLayout() {
     { label: t("admin.clients"), icon: Users, path: "/admin/clients" },
     { label: t("admin.promos"), icon: Tags, path: "/admin/promos" },
     { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
+    { label: "Livraison", icon: Truck, path: "/admin/delivery" },
   ];
 
   useEffect(() => {
