@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { compressImage } from "@/lib/imageUtils";
-import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus } from "lucide-react";
+import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
