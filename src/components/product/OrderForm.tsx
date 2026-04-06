@@ -182,7 +182,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
                     className="w-full h-9 rounded-lg bg-secondary border border-border px-2 text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary" required
                   >
                     <option value="">Wilaya</option>
-                    {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code}-{w.name}</option>)}
+                    {zones.map(w => <option key={w.code} value={w.name}>{w.code}-{w.name}</option>)}
                   </select>
                 </div>
                 <div>
