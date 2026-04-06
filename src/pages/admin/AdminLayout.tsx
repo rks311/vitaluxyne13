@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X, Truck } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X, Truck, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
