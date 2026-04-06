@@ -19,19 +19,22 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const { data: zones = [] } = useDeliveryZones();
   const [form, setForm] = useState({
     name: "", phone: "", wilaya: "", commune: "", address: "", comment: "", qty: quantity,
     deliveryOption: "",
   });
 
-  const deliveryOptions = useMemo(() => getDeliveryOptions(form.wilaya), [form.wilaya]);
+  const selectedZone = zones.find(z => z.name === form.wilaya);
+  const deliveryOptions = useMemo(() => selectedZone ? getDeliveryOptionsFromZone(selectedZone) : [], [selectedZone]);
   const selectedDelivery = deliveryOptions.find(o => o.id === form.deliveryOption);
   const deliveryFee = selectedDelivery?.price || 0;
   const subtotal = product.price * form.qty;
   const total = subtotal + deliveryFee;
 
   const handleWilayaChange = (wilayaName: string) => {
-    const opts = getDeliveryOptions(wilayaName);
+    const zone = zones.find(z => z.name === wilayaName);
+    const opts = zone ? getDeliveryOptionsFromZone(zone) : [];
     setForm(f => ({
       ...f,
       wilaya: wilayaName,
