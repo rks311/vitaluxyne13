@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X, Truck } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Tags, Boxes, Settings, LogOut, ChevronLeft, Menu, Globe, Bell, X, Truck, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -38,6 +38,9 @@ export default function AdminLayout() {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showPanel, setShowPanel] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [lowStockCount, setLowStockCount] = useState(0);
+  const [criticalStockCount, setCriticalStockCount] = useState(0);
   const initialLoadDone = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,13 +48,12 @@ export default function AdminLayout() {
 
   const navItems = [
     { label: t("admin.dashboard"), icon: LayoutDashboard, path: "/admin" },
-    { label: t("admin.orders"), icon: ShoppingCart, path: "/admin/orders" },
-    { label: t("admin.products"), icon: Package, path: "/admin/products" },
+    { label: t("admin.orders"), icon: ShoppingCart, path: "/admin/orders", badge: pendingCount },
+    { label: t("admin.products"), icon: Package, path: "/admin/products", stockAlert: lowStockCount > 0, criticalAlert: criticalStockCount > 0 },
     { label: t("admin.packs"), icon: Boxes, path: "/admin/packs" },
-    { label: t("admin.clients"), icon: Users, path: "/admin/clients" },
     { label: t("admin.promos"), icon: Tags, path: "/admin/promos" },
-    { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
     { label: "Livraison", icon: Truck, path: "/admin/delivery" },
+    { label: t("admin.settings"), icon: Settings, path: "/admin/settings" },
   ];
 
   useEffect(() => {
@@ -65,6 +67,21 @@ export default function AdminLayout() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Load pending orders count + stock alerts
+  useEffect(() => {
+    const loadCounts = async () => {
+      const [ordersRes, productsRes] = await Promise.all([
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "En préparation"),
+        supabase.from("products").select("stock_qty"),
+      ]);
+      setPendingCount(ordersRes.count || 0);
+      const products = productsRes.data || [];
+      setLowStockCount(products.filter((p: any) => (p.stock_qty ?? 0) <= 5 && (p.stock_qty ?? 0) > 0).length);
+      setCriticalStockCount(products.filter((p: any) => (p.stock_qty ?? 0) === 0).length);
+    };
+    loadCounts();
+  }, [location.pathname]);
+
   useEffect(() => {
     const timer = setTimeout(() => { initialLoadDone.current = true; }, 3000);
     const channel = supabase
@@ -74,6 +91,7 @@ export default function AdminLayout() {
         const order = payload.new as any;
         const notif: Notification = { id: order.id, orderNumber: order.order_number, clientName: order.client_name, total: order.total, timestamp: new Date() };
         setNotifications(prev => [notif, ...prev].slice(0, 20));
+        setPendingCount(prev => prev + 1);
         playNotificationSound();
       })
       .subscribe();
@@ -105,9 +123,22 @@ export default function AdminLayout() {
             const Icon = item.icon;
             const active = location.pathname === item.path;
             return (
-              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", active ? "bg-primary-foreground/20 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground")}>
+              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative", active ? "bg-primary-foreground/20 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground")}>
                 <Icon size={18} className="shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span className="flex-1 text-left">{item.label}</span>}
+                {/* Order count badge */}
+                {(item as any).badge > 0 && (
+                  <span className="min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
+                    {(item as any).badge > 99 ? "99+" : (item as any).badge}
+                  </span>
+                )}
+                {/* Stock alert indicators */}
+                {(item as any).criticalAlert && (
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                )}
+                {(item as any).stockAlert && !(item as any).criticalAlert && (
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                )}
               </button>
             );
           })}

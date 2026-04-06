@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/types/database";
-import { ShoppingCart, Package, Users, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, RotateCcw } from "lucide-react";
+import { ShoppingCart, Package, DollarSign, ArrowUpRight, TrendingUp, Calendar, AlertCircle, Clock, Truck, CheckCircle2, XCircle, Activity, FileText, FileSpreadsheet, RotateCcw } from "lucide-react";
 import { exportDashboardPDF, exportDashboardExcel } from "@/lib/exportUtils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -134,8 +134,7 @@ export default function AdminDashboard() {
     { label: "Chiffre d'affaires", value: formatPrice(stats.revenue), icon: DollarSign, sub: `${stats.deliveredOrders} livrées · ${stats.confirmedOrders} confirmées`, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-400" },
     { label: "Commandes", value: stats.orders.toString(), icon: ShoppingCart, sub: `${stats.pendingOrders} en attente`, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-400" },
     { label: "Retours", value: stats.returnOrders.toString(), icon: RotateCcw, sub: "Commandes retournées", color: "from-orange-500/20 to-orange-500/5", iconColor: "text-orange-400" },
-    { label: "Produits", value: stats.products.toString(), icon: Package, sub: "Dans le catalogue", color: "from-purple-500/20 to-purple-500/5", iconColor: "text-purple-400" },
-    { label: "Clients", value: stats.clients.toString(), icon: Users, sub: `Panier moyen: ${formatPrice(stats.avgOrderValue)}`, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-400" },
+    { label: "Produits", value: stats.products.toString(), icon: Package, sub: `Panier moyen: ${formatPrice(stats.avgOrderValue)}`, color: "from-purple-500/20 to-purple-500/5", iconColor: "text-purple-400" },
   ];
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -173,7 +172,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {statCards.map((stat, i) => {
           const Icon = stat.icon;
           return (

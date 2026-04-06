@@ -21,12 +21,13 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 const AdminPacks = lazy(() => import("./pages/admin/AdminPacks"));
-const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
+const AdminClients = lazy(() => import("./pages/admin/AdminClients")); // kept for route but removed from nav
 const AdminPromos = lazy(() => import("./pages/admin/AdminPromos"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminDelivery = lazy(() => import("./pages/admin/AdminDelivery"));
@@ -72,6 +73,7 @@ const App = () => (
 
                   {/* Admin routes */}
                   <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route path="/admin/reset-password" element={<ResetPassword />} />
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="orders" element={<AdminOrders />} />

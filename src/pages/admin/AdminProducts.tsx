@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
 import { compressImage } from "@/lib/imageUtils";
-import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus } from "lucide-react";
+import { Package, Plus, Search, Edit, Trash2, X, Upload, Loader2, Filter, Grid3X3, List, Link2, Minus, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -193,7 +193,7 @@ export default function AdminProducts() {
   return (
     <div className="space-y-4">
       {/* Header with stats */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
         <div className="bg-card border border-border rounded-lg p-3">
           <p className="text-[10px] text-muted-foreground uppercase">Total produits</p>
           <p className="font-heading text-xl font-bold">{products.length}</p>
@@ -202,9 +202,19 @@ export default function AdminProducts() {
           <p className="text-[10px] text-muted-foreground uppercase">En stock</p>
           <p className="font-heading text-xl font-bold text-emerald-400">{products.filter(p => p.in_stock).length}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-3">
-          <p className="text-[10px] text-muted-foreground uppercase">Catégories</p>
-          <p className="font-heading text-xl font-bold text-primary">{Object.keys(categoryCounts).length}</p>
+        <div className="bg-card border border-amber-500/30 rounded-lg p-3">
+          <div className="flex items-center gap-1">
+            <AlertTriangle size={12} className="text-amber-400" />
+            <p className="text-[10px] text-muted-foreground uppercase">Stock faible</p>
+          </div>
+          <p className="font-heading text-xl font-bold text-amber-400">{products.filter(p => (p.stock_qty ?? 0) <= 5 && (p.stock_qty ?? 0) > 0).length}</p>
+        </div>
+        <div className="bg-card border border-red-500/30 rounded-lg p-3">
+          <div className="flex items-center gap-1">
+            <AlertTriangle size={12} className="text-red-400" />
+            <p className="text-[10px] text-muted-foreground uppercase">Rupture</p>
+          </div>
+          <p className="font-heading text-xl font-bold text-red-400">{products.filter(p => (p.stock_qty ?? 0) === 0).length}</p>
         </div>
       </div>
 
@@ -409,7 +419,11 @@ export default function AdminProducts() {
                     <span className="font-heading font-bold text-sm text-primary">{formatPrice(p.price)}</span>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
+                      !p.in_stock || (p.stock_qty ?? 0) === 0 ? "bg-red-500/10 text-red-400 border border-red-500/30" :
+                      (p.stock_qty ?? 0) <= 5 ? "bg-amber-500/10 text-amber-400 border border-amber-500/30" :
+                      "bg-emerald-500/10 text-emerald-400"
+                    }`}>
                       {p.in_stock ? `${(p as any).stock_qty ?? 0} en stock` : "Rupture"}
                     </span>
                     <div className="flex gap-0.5">
@@ -463,7 +477,11 @@ export default function AdminProducts() {
                         {p.old_price && <span className="text-[9px] text-muted-foreground line-through ms-1 block">{formatPrice(p.old_price)}</span>}
                       </td>
                       <td className="px-2 py-2.5 hidden md:table-cell">
-                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${p.in_stock ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${
+                          !p.in_stock || (p.stock_qty ?? 0) === 0 ? "bg-red-500/10 text-red-400 border border-red-500/30" :
+                          (p.stock_qty ?? 0) <= 5 ? "bg-amber-500/10 text-amber-400 border border-amber-500/30" :
+                          "bg-emerald-500/10 text-emerald-400"
+                        }`}>
                           {p.in_stock ? `${(p as any).stock_qty ?? 0}` : "0"}
                         </span>
                       </td>
