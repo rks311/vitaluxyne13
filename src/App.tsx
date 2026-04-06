@@ -26,7 +26,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 const AdminPacks = lazy(() => import("./pages/admin/AdminPacks"));
-const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
+const AdminClients = lazy(() => import("./pages/admin/AdminClients")); // kept for route but removed from nav
 const AdminPromos = lazy(() => import("./pages/admin/AdminPromos"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminDelivery = lazy(() => import("./pages/admin/AdminDelivery"));

@@ -123,9 +123,22 @@ export default function AdminLayout() {
             const Icon = item.icon;
             const active = location.pathname === item.path;
             return (
-              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", active ? "bg-primary-foreground/20 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground")}>
+              <button key={item.path} onClick={() => { navigate(item.path); setMobileOpen(false); }} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative", active ? "bg-primary-foreground/20 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground")}>
                 <Icon size={18} className="shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span className="flex-1 text-left">{item.label}</span>}
+                {/* Order count badge */}
+                {(item as any).badge > 0 && (
+                  <span className="min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
+                    {(item as any).badge > 99 ? "99+" : (item as any).badge}
+                  </span>
+                )}
+                {/* Stock alert indicators */}
+                {(item as any).criticalAlert && (
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                )}
+                {(item as any).stockAlert && !(item as any).criticalAlert && (
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                )}
               </button>
             );
           })}
