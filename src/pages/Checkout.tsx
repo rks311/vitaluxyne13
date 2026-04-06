@@ -153,7 +153,7 @@ export default function Checkout() {
                     <div className="relative">
                       <select id="ck-wilaya" value={form.wilaya} onChange={e => handleWilayaChange(e.target.value)} className="field-input appearance-none pr-8">
                         <option value="">{t("checkout.selectWilaya")}</option>
-                        {WILAYAS.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
+                        {zones.map(w => <option key={w.code} value={w.name}>{w.code} - {w.name}</option>)}
                       </select>
                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>
