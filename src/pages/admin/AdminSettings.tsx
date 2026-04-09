@@ -1,4 +1,4 @@
-import { Store, Truck, Globe, Save, Lock, Mail, AlertTriangle } from "lucide-react";
+import { Store, Globe, Save, Lock, Mail, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -167,17 +167,6 @@ export default function AdminSettings() {
         </div>
       </div>
 
-      {/* Delivery */}
-      <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Truck size={18} className="text-primary" />
-          <h3 className="font-heading font-bold text-base">Livraison</h3>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Frais livraison domicile (DA)" settingKey="delivery_fee_home" type="number" />
-          <Field label="Frais point relais (DA)" settingKey="delivery_fee_relay" type="number" />
-        </div>
-      </div>
 
       {/* Social */}
       <div className="bg-card border border-border rounded-xl p-5 space-y-4">
