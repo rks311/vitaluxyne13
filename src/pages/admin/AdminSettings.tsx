@@ -1,9 +1,19 @@
-import { Store, Truck, Globe, Save, Lock, Mail } from "lucide-react";
+import { Store, Truck, Globe, Save, Lock, Mail, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminSettings() {
   const queryClient = useQueryClient();
@@ -12,11 +22,17 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
 
   // Auth fields
+  const [currentEmail, setCurrentEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
+  const [currentPasswordForPwd, setCurrentPasswordForPwd] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [authSaving, setAuthSaving] = useState(false);
+
+  // Confirmation dialogs
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -27,7 +43,10 @@ export default function AdminSettings() {
       setLoading(false);
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) setNewEmail(user.email);
+      if (user?.email) {
+        setCurrentEmail(user.email);
+        setNewEmail(user.email);
+      }
     })();
   }, []);
 
@@ -49,27 +68,69 @@ export default function AdminSettings() {
     setSaving(false);
   };
 
+  const validateEmailChange = () => {
+    if (!newEmail.trim()) { toast.error("Entrez le nouvel email"); return false; }
+    if (newEmail === currentEmail) { toast.error("Le nouvel email est identique à l'actuel"); return false; }
+    if (!currentPasswordForEmail.trim()) { toast.error("Entrez votre mot de passe actuel pour confirmer"); return false; }
+    return true;
+  };
+
   const handleEmailChange = async () => {
-    if (!newEmail.trim()) return toast.error("Email requis");
+    setShowEmailConfirm(false);
     setAuthSaving(true);
-    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    try {
+      // Re-authenticate with current password first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPasswordForEmail,
+      });
+      if (signInError) {
+        toast.error("Mot de passe actuel incorrect");
+        setAuthSaving(false);
+        return;
+      }
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      if (error) throw error;
+      setCurrentPasswordForEmail("");
+      toast.success("Un email de confirmation a été envoyé à la nouvelle adresse. Vérifiez votre boîte de réception.");
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors du changement d'email");
+    }
     setAuthSaving(false);
-    if (error) return toast.error(error.message);
-    toast.success("Un email de confirmation a été envoyé à la nouvelle adresse");
+  };
+
+  const validatePasswordChange = () => {
+    if (!currentPasswordForPwd.trim()) { toast.error("Entrez votre mot de passe actuel"); return false; }
+    if (!newPassword || !confirmPassword) { toast.error("Remplissez tous les champs"); return false; }
+    if (newPassword.length < 6) { toast.error("Le nouveau mot de passe doit contenir au moins 6 caractères"); return false; }
+    if (newPassword !== confirmPassword) { toast.error("Les mots de passe ne correspondent pas"); return false; }
+    return true;
   };
 
   const handlePasswordChange = async () => {
-    if (!newPassword || !confirmPassword) return toast.error("Remplissez tous les champs");
-    if (newPassword.length < 6) return toast.error("Le mot de passe doit contenir au moins 6 caractères");
-    if (newPassword !== confirmPassword) return toast.error("Les mots de passe ne correspondent pas");
+    setShowPasswordConfirm(false);
     setAuthSaving(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    try {
+      // Re-authenticate with current password first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPasswordForPwd,
+      });
+      if (signInError) {
+        toast.error("Mot de passe actuel incorrect");
+        setAuthSaving(false);
+        return;
+      }
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setCurrentPasswordForPwd("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Mot de passe modifié avec succès !");
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors du changement de mot de passe");
+    }
     setAuthSaving(false);
-    if (error) return toast.error(error.message);
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    toast.success("Mot de passe modifié avec succès");
   };
 
   if (loading) return <div className="flex items-center justify-center h-40"><div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" /></div>;
@@ -140,17 +201,43 @@ export default function AdminSettings() {
           <Mail size={18} className="text-primary" />
           <h3 className="font-heading font-bold text-base">Changer l'email admin</h3>
         </div>
-        <p className="text-xs text-muted-foreground">Un email de confirmation sera envoyé à la nouvelle adresse.</p>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Nouvel email</label>
-          <input
-            type="email"
-            value={newEmail}
-            onChange={e => setNewEmail(e.target.value)}
-            className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+        <p className="text-xs text-muted-foreground">Un email de confirmation sera envoyé à la nouvelle adresse. Vous devez entrer votre mot de passe actuel pour confirmer.</p>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Email actuel</label>
+            <input
+              type="email"
+              value={currentEmail}
+              disabled
+              className="w-full h-10 rounded-md bg-muted border border-border px-3 text-sm text-muted-foreground cursor-not-allowed"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Nouvel email</label>
+            <input
+              type="email"
+              value={newEmail}
+              onChange={e => setNewEmail(e.target.value)}
+              className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Mot de passe actuel (confirmation)</label>
+            <input
+              type="password"
+              value={currentPasswordForEmail}
+              onChange={e => setCurrentPasswordForEmail(e.target.value)}
+              placeholder="••••••••"
+              className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
         </div>
-        <Button onClick={handleEmailChange} disabled={authSaving} variant="outline" className="font-heading">
+        <Button
+          onClick={() => { if (validateEmailChange()) setShowEmailConfirm(true); }}
+          disabled={authSaving}
+          variant="outline"
+          className="font-heading"
+        >
           <Mail size={14} className="mr-2" /> Changer l'email
         </Button>
       </div>
@@ -163,6 +250,16 @@ export default function AdminSettings() {
         </div>
         <div className="space-y-3">
           <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Mot de passe actuel</label>
+            <input
+              type="password"
+              value={currentPasswordForPwd}
+              onChange={e => setCurrentPasswordForPwd(e.target.value)}
+              placeholder="••••••••"
+              className="w-full h-10 rounded-md bg-secondary border border-border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+          <div>
             <label className="text-xs text-muted-foreground mb-1 block">Nouveau mot de passe</label>
             <input
               type="password"
@@ -173,7 +270,7 @@ export default function AdminSettings() {
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Confirmer le mot de passe</label>
+            <label className="text-xs text-muted-foreground mb-1 block">Confirmer le nouveau mot de passe</label>
             <input
               type="password"
               value={confirmPassword}
@@ -183,10 +280,59 @@ export default function AdminSettings() {
             />
           </div>
         </div>
-        <Button onClick={handlePasswordChange} disabled={authSaving} variant="outline" className="font-heading">
+        <Button
+          onClick={() => { if (validatePasswordChange()) setShowPasswordConfirm(true); }}
+          disabled={authSaving}
+          variant="outline"
+          className="font-heading"
+        >
           <Lock size={14} className="mr-2" /> Changer le mot de passe
         </Button>
       </div>
+
+      {/* Email Change Confirmation Dialog */}
+      <AlertDialog open={showEmailConfirm} onOpenChange={setShowEmailConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle size={18} className="text-yellow-500" />
+              Confirmer le changement d'email
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir changer votre email de connexion de <strong className="text-foreground">{currentEmail}</strong> à <strong className="text-foreground">{newEmail}</strong> ?
+              <br /><br />
+              Un email de confirmation sera envoyé à la nouvelle adresse. Vous devrez cliquer sur le lien pour valider le changement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleEmailChange} disabled={authSaving}>
+              Confirmer le changement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Password Change Confirmation Dialog */}
+      <AlertDialog open={showPasswordConfirm} onOpenChange={setShowPasswordConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle size={18} className="text-yellow-500" />
+              Confirmer le changement de mot de passe
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir changer votre mot de passe ? Vous serez toujours connecté après le changement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handlePasswordChange} disabled={authSaving}>
+              Confirmer le changement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
