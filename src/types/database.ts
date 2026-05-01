@@ -35,3 +35,21 @@ export function getStorageUrl(path: string | null, width?: number): string {
   }
   return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 }
+
+/**
+ * Build a responsive srcset string for product images.
+ * Returns undefined when the image is external (non-Supabase) and cannot be resized.
+ */
+export function getStorageSrcSet(
+  path: string | null,
+  widths: number[] = [200, 400, 600, 800]
+): string | undefined {
+  if (!path) return undefined;
+  const isExternalNonSupabase =
+    path.startsWith("http") &&
+    !path.includes("/storage/v1/object/public/product-images/");
+  if (isExternalNonSupabase) return undefined;
+  return widths
+    .map((w) => `${getStorageUrl(path, w)} ${w}w`)
+    .join(", ");
+}
