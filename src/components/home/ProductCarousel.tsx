@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getStorageUrl, formatPrice, type DbProduct } from "@/types/database";
+import { formatPrice, type DbProduct } from "@/types/database";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -57,13 +58,14 @@ export default function ProductCarousel({ category, titleKey }: ProductCarouselP
                 className="block w-[200px] md:w-[220px] shrink-0 rounded-xl border border-border bg-card overflow-hidden card-hover group"
               >
                 <div className="aspect-square bg-secondary/50 overflow-hidden">
-                  <img
-                    src={getStorageUrl(p.image_url, 300)}
+                  <OptimizedImage
+                    path={p.image_url}
                     alt={p.name}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    loading="lazy"
                     width={220}
-                    height={220}
+                    sizes="(max-width: 640px) 50vw, 220px"
+                    srcSetWidths={[200, 300, 440]}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
                 </div>
                 <div className="p-3">

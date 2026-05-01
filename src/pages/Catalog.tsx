@@ -168,7 +168,7 @@ const Catalog = React.forwardRef<HTMLDivElement>(function Catalog(_, ref) {
         {filtered.length > 0 ? (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+              {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} priority={i < 2} />)}
             </div>
             {hasMore && !search.trim() && (
               <div className="flex justify-center mt-8">

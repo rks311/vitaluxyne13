@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
+import { formatPrice, type DbProduct } from "@/types/database";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 interface ProductCardProps {
   product: DbProduct;
   index?: number;
+  /** Set true for the first row above the fold to prioritize LCP */
+  priority?: boolean;
 }
 
-const ProductCard = React.memo(({ product, index = 0 }: ProductCardProps) => {
-  const [imgLoaded, setImgLoaded] = useState(false);
-
+const ProductCard = React.memo(({ product, index = 0, priority = false }: ProductCardProps) => {
   return (
     <article className="animate-in fade-in duration-300" style={{ animationDelay: `${index * 30}ms` }}>
       <Link
@@ -18,17 +19,16 @@ const ProductCard = React.memo(({ product, index = 0 }: ProductCardProps) => {
         aria-label={`${product.name} — ${formatPrice(product.price)}`}
       >
         <div className="aspect-square bg-secondary/50 overflow-hidden relative">
-          <img
-            src={getStorageUrl(product.image_url, 400)}
+          <OptimizedImage
+            path={product.image_url}
             alt={product.name}
-            className={`w-full h-full object-contain p-2 transition-all duration-300 group-hover:scale-105 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-            loading="lazy"
             width={400}
-            height={400}
-            decoding="async"
-            onLoad={() => setImgLoaded(true)}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            srcSetWidths={[200, 300, 400, 600]}
+            priority={priority}
+            wrapperClassName="w-full h-full"
+            className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
           />
-          {!imgLoaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
           {product.is_promo && (
             <span className="absolute top-2 start-2 badge-promo">Promo</span>
           )}
