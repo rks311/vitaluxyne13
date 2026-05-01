@@ -222,4 +222,17 @@ export const translations: Record<string, Record<Lang, string>> = {
   // Flash Banner
   "flash.title": { fr: "OFFRE SPÉCIALE", ar: "عرض خاص" },
   "flash.ends": { fr: "se termine dans", ar: "ينتهي خلال" },
+
+  // Home sections
+  "home.topTitle": { fr: "Les plus demandés", ar: "الأكثر طلباً" },
+  "home.topSub": { fr: "Nos best-sellers plébiscités par nos clients", ar: "أكثر منتجاتنا مبيعاً" },
+  "home.promoTitle": { fr: "Offres & Promotions", ar: "العروض والتخفيضات" },
+  "home.promoSub": { fr: "Profitez de nos réductions", ar: "استفد من تخفيضاتنا" },
+  "home.immunite": { fr: "Immunité & Vitalité", ar: "المناعة والحيوية" },
+  "home.stress": { fr: "Stress & Sommeil", ar: "التوتر والنوم" },
+  "home.energie": { fr: "Énergie & Vitalité", ar: "الطاقة والحيوية" },
+  "home.beaute": { fr: "Beauté & Peau", ar: "الجمال والبشرة" },
+  "home.cerveau": { fr: "Cerveau & Focus", ar: "الدماغ والتركيز" },
+  "home.newTitle": { fr: "Nouveautés", ar: "وصل حديثاً" },
+  "home.newSub": { fr: "Derniers produits ajoutés", ar: "أحدث المنتجات المضافة" },
 };
