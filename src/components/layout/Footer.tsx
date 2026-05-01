@@ -22,15 +22,15 @@ export default function Footer() {
             <p className="text-xs text-primary-foreground/60 leading-relaxed">{t("footer.desc")}</p>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Navigation</h4>
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">{t("footer.navigation")}</h4>
             <ul className="space-y-1.5 text-xs text-primary-foreground/60">
               <li><Link to="/catalogue" className="hover:text-primary-foreground transition-colors">{t("nav.catalog")}</Link></li>
-              <li><Link to="/catalogue?cat=muscles" className="hover:text-primary-foreground transition-colors">Muscles</Link></li>
-              <li><Link to="/catalogue?cat=immunite" className="hover:text-primary-foreground transition-colors">Immunité</Link></li>
+              <li><Link to="/catalogue?cat=muscles" className="hover:text-primary-foreground transition-colors">{t("cat.muscles")}</Link></li>
+              <li><Link to="/catalogue?cat=immunite" className="hover:text-primary-foreground transition-colors">{t("cat.immunite")}</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Info</h4>
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">{t("footer.info")}</h4>
             <ul className="space-y-1.5 text-xs text-primary-foreground/60">
               <li>{t("footer.faq")}</li>
               <li>{t("footer.returns")}</li>
@@ -38,7 +38,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">Contact</h4>
+            <h4 className="font-heading font-semibold mb-2 text-xs uppercase tracking-wider text-primary-foreground/70">{t("footer.contact")}</h4>
             <ul className="space-y-1.5 text-xs text-primary-foreground/60">
               <li className="flex items-center gap-1.5"><Phone size={12} aria-hidden="true" /> <a href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a></li>
               <li className="flex items-center gap-1.5"><Mail size={12} aria-hidden="true" /> <a href={`mailto:${email}`}>{email}</a></li>

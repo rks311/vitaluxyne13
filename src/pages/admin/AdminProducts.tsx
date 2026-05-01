@@ -98,7 +98,7 @@ export default function AdminProducts() {
     if (!file) return;
     setUploading(true);
     try {
-      const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+      const { blob } = await compressImage(file, { maxWidth: 1600, quality: 0.92, format: "webp" });
       const mainPath = `products/${Date.now()}.webp`;
       const { error } = await supabase.storage.from("product-images").upload(mainPath, blob, { contentType: "image/webp", upsert: true });
       if (error) throw error;
@@ -120,7 +120,7 @@ export default function AdminProducts() {
     try {
       const uploads = await Promise.all(
         Array.from(files).map(async (file) => {
-          const { blob } = await compressImage(file, { maxWidth: 1200, quality: 0.82, format: "webp" });
+          const { blob } = await compressImage(file, { maxWidth: 1600, quality: 0.92, format: "webp" });
           const path = `products/${Date.now()}_${Math.random().toString(36).slice(2, 6)}.webp`;
           const { error } = await supabase.storage.from("product-images").upload(path, blob, { contentType: "image/webp", upsert: true });
           if (error) throw error;
@@ -273,8 +273,8 @@ export default function AdminProducts() {
 
       {/* Product Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-2 pt-8 md:items-center md:p-4" onClick={() => setShowForm(false)}>
-          <div className="bg-card border border-border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-2 pt-8 md:items-center md:p-4">
+          <div className="bg-card border border-border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             {/* Form header */}
             <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center justify-between rounded-t-xl">
               <h3 className="font-heading font-bold text-base">{editing ? "✏️ Modifier" : "➕ Ajouter"} un produit</h3>

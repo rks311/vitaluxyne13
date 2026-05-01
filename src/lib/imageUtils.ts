@@ -29,9 +29,9 @@ export async function compressImage(
   options: CompressOptions = {}
 ): Promise<{ blob: Blob; width: number; height: number }> {
   const {
-    maxWidth = 1200,
-    maxHeight = 1200,
-    quality = 0.82,
+    maxWidth = 1600,
+    maxHeight = 1600,
+    quality = 0.92,
     format = "webp",
   } = options;
 
@@ -70,17 +70,17 @@ export async function compressImage(
         currentQuality
       );
     });
-    currentQuality -= 0.08;
-  } while (blob.size > 300 * 1024 && currentQuality > 0.3);
+    currentQuality -= 0.05;
+  } while (blob.size > 600 * 1024 && currentQuality > 0.55);
 
   return { blob, width, height };
 }
 
 export async function compressThumbnail(file: File): Promise<Blob> {
   const { blob } = await compressImage(file, {
-    maxWidth: 400,
-    maxHeight: 400,
-    quality: 0.7,
+    maxWidth: 600,
+    maxHeight: 600,
+    quality: 0.85,
     format: "webp",
   });
   return blob;

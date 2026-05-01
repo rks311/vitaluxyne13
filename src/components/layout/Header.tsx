@@ -26,8 +26,8 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-5 text-sm font-medium" aria-label="Navigation principale">
           <Link to="/catalogue" className="text-muted-foreground hover:text-primary transition-colors">{t("nav.catalog")}</Link>
-          <Link to="/catalogue?cat=muscles" className="text-muted-foreground hover:text-primary transition-colors">Muscles</Link>
-          <Link to="/catalogue?cat=immunite" className="text-muted-foreground hover:text-primary transition-colors">Immunité</Link>
+          <Link to="/catalogue?cat=muscles" className="text-muted-foreground hover:text-primary transition-colors">{t("cat.muscles")}</Link>
+          <Link to="/catalogue?cat=immunite" className="text-muted-foreground hover:text-primary transition-colors">{t("cat.immunite")}</Link>
         </nav>
 
         <div className="flex items-center gap-0.5">
@@ -84,10 +84,10 @@ export default function Header() {
             <nav className="container py-3 flex flex-col gap-1" aria-label="Navigation mobile">
               {[
                 { to: "/catalogue", label: t("nav.catalog") },
-                { to: "/catalogue?cat=muscles", label: "Muscles" },
-                { to: "/catalogue?cat=immunite", label: "Immunité" },
-                { to: "/catalogue?cat=beaute", label: "Beauté" },
-                { to: "/catalogue?cat=stress", label: "Stress & Sommeil" },
+                { to: "/catalogue?cat=muscles", label: t("cat.muscles") },
+                { to: "/catalogue?cat=immunite", label: t("cat.immunite") },
+                { to: "/catalogue?cat=beaute", label: t("cat.beaute") },
+                { to: "/catalogue?cat=stress", label: t("cat.stress") },
               ].map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)} className="py-2.5 px-2 rounded-lg text-sm font-medium hover:bg-secondary hover:text-primary transition-colors">
                   {link.label}
