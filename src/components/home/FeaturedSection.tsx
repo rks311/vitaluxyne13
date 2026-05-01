@@ -2,7 +2,8 @@ import { useRef, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { supabase } from "@/integrations/supabase/client";
-import { getStorageUrl, formatPrice, type DbProduct } from "@/types/database";
+import { formatPrice, type DbProduct } from "@/types/database";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { Star, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -109,14 +110,14 @@ export default function FeaturedSection({ type, category, title, subtitle, icon,
                       )}
 
                       <div className="aspect-square overflow-hidden relative bg-gradient-to-br from-secondary to-mint">
-                        <img
-                          src={getStorageUrl(p.image_url, 300)}
+                        <OptimizedImage
+                          path={p.image_url}
                           alt={p.name}
-                          className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
-                          decoding="async"
                           width={300}
-                          height={300}
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          srcSetWidths={[200, 300, 400, 600]}
+                          wrapperClassName="w-full h-full"
+                          className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
 

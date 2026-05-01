@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { formatPrice, getStorageUrl, type DbProduct } from "@/types/database";
+import { formatPrice, type DbProduct } from "@/types/database";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 const COMPLEMENTS: Record<string, string[]> = {
@@ -90,14 +91,14 @@ export default function ComplementaryProducts({ product }: Props) {
                   <span className="absolute top-2 left-2 z-10 badge-promo text-[10px]">-{discount}%</span>
                 )}
                 <div className="aspect-square overflow-hidden bg-gradient-to-br from-secondary to-mint">
-                  <img
-                    src={getStorageUrl(p.image_url, 300)}
+                  <OptimizedImage
+                    path={p.image_url}
                     alt={p.name}
-                    className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
                     width={300}
-                    height={300}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    srcSetWidths={[200, 300, 400, 600]}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-2.5 md:p-3.5">
