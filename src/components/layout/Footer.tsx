@@ -1,4 +1,4 @@
-import { Phone, MapPin, Mail } from "lucide-react";
+import { Phone, MapPin, Mail, Instagram, Facebook } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -12,6 +12,11 @@ export default function Footer() {
   const phone = settings?.phone || "0555 12 34 56";
   const email = settings?.email || "contact@vitaluxyne.com";
   const address = settings?.address || "Alger, Algérie";
+  const instagram = settings?.instagram?.trim();
+  const facebook = settings?.facebook?.trim();
+
+  const normalizeUrl = (v: string, base: string) =>
+    /^https?:\/\//i.test(v) ? v : `${base}${v.replace(/^@/, "")}`;
 
   return (
     <footer className="bg-primary text-primary-foreground" role="contentinfo">
@@ -44,6 +49,30 @@ export default function Footer() {
               <li className="flex items-center gap-1.5"><Mail size={12} aria-hidden="true" /> <a href={`mailto:${email}`}>{email}</a></li>
               <li className="flex items-center gap-1.5"><MapPin size={12} aria-hidden="true" /> {address}</li>
             </ul>
+            {(instagram || facebook) && (
+              <div className="flex items-center gap-2 mt-3">
+                {instagram && (
+                  <a
+                    href={normalizeUrl(instagram, "https://instagram.com/")}
+                    target="_blank" rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="w-7 h-7 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
+                  >
+                    <Instagram size={13} />
+                  </a>
+                )}
+                {facebook && (
+                  <a
+                    href={normalizeUrl(facebook, "https://facebook.com/")}
+                    target="_blank" rel="noopener noreferrer"
+                    aria-label="Facebook"
+                    className="w-7 h-7 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
+                  >
+                    <Facebook size={13} />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-6 pt-4 border-t border-primary-foreground/15 text-center text-[10px] text-primary-foreground/40">
