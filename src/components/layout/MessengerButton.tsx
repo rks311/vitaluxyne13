@@ -1,9 +1,17 @@
 import { MESSENGER_URL } from "@/lib/messenger";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function MessengerButton() {
+  const { data: settings } = useSiteSettings();
+  const raw = settings?.whatsapp?.trim() || settings?.facebook?.trim();
+  const href = raw
+    ? (/^https?:\/\//i.test(raw)
+        ? raw.replace("facebook.com", "m.me")
+        : `https://m.me/${raw.replace(/^@/, "")}`)
+    : MESSENGER_URL;
   return (
     <a
-      href={MESSENGER_URL}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-[#1877F2] flex items-center justify-center shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-200"
