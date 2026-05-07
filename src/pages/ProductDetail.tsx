@@ -58,6 +58,36 @@ export default function ProductDetail() {
     }
   }, [product]);
 
+  // Dynamic SEO: title + JSON-LD Product schema
+  useEffect(() => {
+    if (!product) return;
+    const prevTitle = document.title;
+    document.title = `${product.name} - Vitaluxyne`;
+    const ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.id = "product-jsonld";
+    ld.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      brand: { "@type": "Brand", name: product.brand },
+      category: product.category,
+      image: product.image_url ? [getStorageUrl(product.image_url)] : undefined,
+      description: product.description || undefined,
+      offers: {
+        "@type": "Offer",
+        price: product.price,
+        priceCurrency: "DZD",
+        availability: product.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      },
+    });
+    document.head.appendChild(ld);
+    return () => {
+      document.title = prevTitle;
+      document.getElementById("product-jsonld")?.remove();
+    };
+  }, [product]);
+
   if (loading) return <div className="container py-20 flex justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>;
 
   if (!product) {
