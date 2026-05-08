@@ -101,11 +101,20 @@ export function trackInitiateCheckout(value: number, numItems: number) {
   });
 }
 
-export function trackPurchase(value: number, orderId: string) {
+export interface PurchaseItem {
+  id: string;
+  quantity: number;
+  price: number;
+}
+
+export function trackPurchase(value: number, orderId: string, items: PurchaseItem[] = []) {
   track("Purchase", {
     value,
     currency: "DZD",
     content_type: "product",
+    content_ids: items.map((i) => i.id),
+    contents: items.map((i) => ({ id: i.id, quantity: i.quantity, item_price: i.price })),
+    num_items: items.reduce((s, i) => s + i.quantity, 0),
     order_id: orderId,
   });
 }
