@@ -68,7 +68,7 @@ export default function Checkout() {
 
       const clientRef = `CMD-${orderId.slice(0, 6).toUpperCase()}`;
       setOrderResult({ number: clientRef, total: grandTotal });
-      trackPurchase(grandTotal, clientRef);
+      trackPurchase(grandTotal, clientRef, items.map(i => ({ id: i.productId, quantity: i.quantity, price: i.price })));
       clearCart();
       setStep(4);
     } catch (err: any) {
