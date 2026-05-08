@@ -93,7 +93,7 @@ export default function OrderForm({ product, quantity, onClose }: OrderFormProps
 
       const clientRef = `CMD-${orderId.slice(0, 6).toUpperCase()}`;
       setOrderNumber(clientRef);
-      trackPurchase(total, clientRef);
+      trackPurchase(total, clientRef, [{ id: product.id, quantity: form.qty, price: product.price }]);
       setStep("success");
     } catch (err: any) {
       toast.error(err?.message || "Erreur lors de l'envoi. Réessayez.");
